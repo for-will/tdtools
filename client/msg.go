@@ -66,6 +66,8 @@ func init() {
 		GameMsg.MsgId_C2S_ModifyPlayerName:           &GameMsg.ModifyPlayerName{},
 		GameMsg.MsgId_S2C_ModifyPlayerNameRs:         &GameMsg.ModifyPlayerNameRs{},
 		GameMsg.MsgId_S2C_PlayerOffline:              &GameMsg.PlayerOffline{},
+		GameMsg.MsgId_C2S_QualityUp:                  &GameMsg.HeroQualityUp{},
+		GameMsg.MsgId_S2C_QualityUpRs:                &GameMsg.HeroQualityUpRs{},
 	}
 
 	for id, v := range msgId {
@@ -80,8 +82,6 @@ func JsonString(v interface{}) string {
 	return s
 }
 
-func NewRetCode(code GameMsg.ReturnCode) *GameMsg.ReturnCode {
-	p := new(GameMsg.ReturnCode)
-	*p = code
-	return p
+func NewRetCode(code GameMsg.ReturnCode) GameMsg.ReturnCode {
+	return code
 }
