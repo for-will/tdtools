@@ -1,6 +1,7 @@
 package client
 
 import (
+	"github.com/myPuffer/gotosql"
 	"google.golang.org/protobuf/proto"
 	"reflect"
 	"robot/GameMsg"
@@ -30,4 +31,8 @@ func TestEmptyMsg(t *testing.T) {
 	hb := &GameMsg.HeartBeat{}
 	b, err := proto.Marshal(hb)
 	t.Log(len(b), err)
+}
+
+func TestGotosql(t *testing.T) {
+	db.GenModelAutoFile("sql_auto.go", "", &GameMsg.SyncPlayerBase{})
 }

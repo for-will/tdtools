@@ -59,8 +59,8 @@ func (r *Robot) OnMessage(id GameMsg.MsgId, msg interface{}) {
 
 func (r *Robot) Login(account string, password string) {
 	r.SendMsg(&GameMsg.AccountCheck{
-		Account:  &account,
-		Password: &password,
+		Account:  NewString(account),
+		Password: NewString(password),
 	})
 }
 
@@ -68,15 +68,19 @@ func (r *Robot) Explore() {
 	var area int32 = 5
 	var times GameMsg.ExploreTimes = GameMsg.ExploreTimes_Ten
 	r.SendMsg(&GameMsg.Explore{
-		Area:  &area,
-		Times: &times,
+		Area:  NewInt32(area),
+		Times: times,
 	})
 }
 
 func (r *Robot) UnlockCard() {
 
-	var cardId int32 = 1004
-	r.SendMsg(&GameMsg.CardUnLock{CardId: &cardId})
+	//var cardId int32 = 1005
+	r.SendMsg(&GameMsg.CardUnLock{CardId: NewInt32(1005)})
+}
+
+func (r *Robot) HeroQualityUp() {
+	r.SendMsg(&GameMsg.HeroQualityUp{HeroSn: NewInt32(1632454723)})
 }
 
 func (r *Robot) GetCrystalBackpack() {
@@ -184,7 +188,7 @@ func (r *Robot) PlaceLoot() {
 
 func (r *Robot) ModifyNickname() {
 	r.SendMsg(&GameMsg.ModifyPlayerName{
-		Name: NewString("vanish2"),
+		Name: NewString("x"),
 	})
 }
 
@@ -234,13 +238,14 @@ func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
 	//r.Explore()
 	//r.LogInstall()
 	//r.UnlockCard()
-	//r.LootMissionList()
+	r.LootMissionList()
 	//r.PlaceLoot()
 	//r.GetLootWall()
 	//r.ClearLootWall()
 	//r.GetLootWall()
-	r.ModifyNickname()
+	//r.ModifyNickname()
 	//r.ModifyHeadImage()
+	//r.HeroQualityUp()
 }
 
 func OnHeroTalentInfoRs(r *Robot, msg *GameMsg.HeroTalentInfoRs) {
@@ -251,15 +256,28 @@ func OnHeroTalentInfoRs(r *Robot, msg *GameMsg.HeroTalentInfoRs) {
 	//r.ResetHeroTalentPage()
 	//r.ModifyNickname()
 }
+//
+//func NewInt32(v int32) *int32 {
+//	return &v
+//}
+//
+//func NewInt64(v int64) *int64 {
+//	return &v
+//}
+//
+//func NewString(v string) *string {
+//	return &v
+//}
 
-func NewInt32(v int32) *int32 {
-	return &v
+
+func NewInt32(v int32) int32 {
+	return v
 }
 
-func NewInt64(v int64) *int64 {
-	return &v
+func NewInt64(v int64) int64 {
+	return v
 }
 
-func NewString(v string) *string {
-	return &v
+func NewString(v string) string {
+	return v
 }
