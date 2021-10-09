@@ -1,115 +1,163 @@
 //
 
-syntax="proto2";
+syntax="proto3";
 
 option go_package = ".;GameMsg";
 
 package GameMsg;
 
-enum MsgId
-{
-    C2S_AccountCheck	= 0;  // 1.验证账号：client to login
-    S2C_AccountCheckRs	= 1;	// 验证账号结果
-    C2S_CreatePlayer	= 2;	// 请求创建角色
-    S2C_CreatePlayerRs	= 3;	// 请求创建角色结果，是否有错
-    S2C_SyncPlayer		= 4;	// 同步玩家数据
-    
-    C2S_EnterStage	    = 5;	// 请求进入一个关卡
-    S2C_EnterStageRs	= 6;	// 请求进入关卡结果，是否有错
+enum MsgId {
+	C2S_AccountCheck               = 0;   // 1.验证账号：client to login
+	S2C_AccountCheckRs             = 1;   // 验证账号结果
+	C2S_CreatePlayer               = 2;   // 请求创建角色
+	S2C_CreatePlayerRs             = 3;   // 请求创建角色结果，是否有错
+	S2C_SyncPlayer                 = 4;   // 同步玩家数据
 
-    C2S_OverStage      = 7;   // 请求结束一个关卡
-    S2C_OverStageRs    = 8;   // 请求结束关卡结果，是否有错    
-    
-    C2S_ChangeTeam      = 9;   // 修改队伍
-    S2C_ChangeTeamRs    = 10;   // 
+	C2S_EnterStage                 = 5;   // 请求进入一个关卡
+	S2C_EnterStageRs               = 6;   // 请求进入关卡结果，是否有错
 
-    C2S_GetRewardStage        = 11;   // 请求领取章节宝箱
-    S2C_GetRewardStageRs      = 12;   //
-    
-    S2C_UpdateInfo			  = 13;	// 更新玩家信息
+	C2S_OverStage                  = 7;   // 请求结束一个关卡
+	S2C_OverStageRs                = 8;   // 请求结束关卡结果，是否有错
 
-    C2S_QualityUp			  = 14;	// 卡牌品质提升
-    S2C_QualityUpRs			  = 15;	// 卡牌品质提升
+	C2S_ChangeTeam                 = 9;   // 修改队伍
+	S2C_ChangeTeamRs               = 10;  //
 
-    S2C_TaskInfo              = 16;   // 每日任务数据
-    C2S_GetTaskReward         = 17;   // 领取任务奖励
-    S2C_GetTaskRewardRs       = 18;   // 
-    
-    C2S_HeartBeat             = 19;   // 心跳
-    S2C_HeartBeatRs           = 20;   // 
+	C2S_GetRewardStage             = 11;  // 请求领取章节宝箱
+	S2C_GetRewardStageRs           = 12;  //
 
-    S2C_SyncMainlineTask      = 21;   // 同步主线任务数据
-    S2C_MainlineTaskInfo      = 22;   // 更新当前主线任务
+	S2C_UpdateInfo                 = 13;  // 更新玩家信息
 
-    C2S_Explore               = 23;   // 拾荒者中心-探索
-    S2C_ExploreRs             = 24;   // 
+	C2S_QualityUp                  = 14;  // 卡牌品质提升
+	S2C_QualityUpRs                = 15;  // 卡牌品质提升
 
-    C2S_CardUnLock            = 25;   // 酒馆-卡牌解锁
-    S2C_CardUnLockRs          = 26;   // 
+	S2C_TaskInfo                   = 16;  // 每日任务数据
+	C2S_GetTaskReward              = 17;  // 领取任务奖励
+	S2C_GetTaskRewardRs            = 18;  //
 
-    C2S_CrystalBackPack       = 27;   // 获取水晶背包
-    S2C_CrystalBackPackRs     = 28;   //
+	C2S_HeartBeat                  = 19;  // 心跳
+	S2C_HeartBeatRs                = 20;  //
 
-    C2S_EquipCrystal          = 29;   // 装备水晶
-    S2C_EquipCrystalRs        = 30;
+	S2C_SyncMainlineTask           = 21;  // 同步主线任务数据
+	S2C_MainlineTaskInfo           = 22;  // 更新当前主线任务
 
-    C2S_UnlockUnit            = 31;   // 解锁军团或建筑
-    S2C_UnlockUnitRs          = 32;   // 
+	C2S_Explore                    = 23;  // 拾荒者中心-探索
+	S2C_ExploreRs                  = 24;  //
 
-    C2S_UpgradeUnit           = 33;   // 升级军团或建筑
-    S2C_UpgradeUnitRs         = 34;   //
+	C2S_CardUnLock                 = 25;  // 酒馆-卡牌解锁
+	S2C_CardUnLockRs               = 26;  //
 
-    S2C_SyncPlayerTalentList       = 35;  // 同步玩家天赋列表
+	C2S_CrystalBackPack            = 27;  // 获取水晶背包
+	S2C_CrystalBackPackRs          = 28;  //
 
-    C2S_UpgradePlayerTalent        = 36;  // 升级玩家天赋
-    S2C_UpgradePlayerTalentRs      = 37;
+	C2S_EquipCrystal               = 29;  // 装备水晶
+	S2C_EquipCrystalRs             = 30;
 
-    C2S_HeroTalentInfo             = 38;  // 请求英雄天赋
-    S2C_HeroTalentInfoRs           = 39;
+	C2S_UnlockUnit                 = 31;  // 解锁军团或建筑
+	S2C_UnlockUnitRs               = 32;  //
 
-    C2S_ResetHeroTalentPage        = 40;  // 重置英雄天赋页
-    S2C_ResetHeroTalentPageRs      = 41;
+	C2S_UpgradeUnit                = 33;  // 升级军团或建筑
+	S2C_UpgradeUnitRs              = 34;  //
 
-    C2S_SwitchHeroTalentPage       = 42;  // 切换英雄天赋页
-    S2C_SwitchHeroTalentPageRs     = 43;
+	S2C_SyncPlayerTalentList       = 35;  // 同步玩家天赋列表
 
-    C2S_UpgradeHeroTalent          = 44;  // 升级英雄天赋
-    S2C_UpgradeHeroTalentRs        = 45;
+	C2S_UpgradePlayerTalent        = 36;  // 升级玩家天赋
+	S2C_UpgradePlayerTalentRs      = 37;
 
-    C2S_ModifyHeroTalentPageName   = 46;  // 修改天赋页名称
-    S2C_ModifyHeroTalentPageNameRs = 47;
+	C2S_HeroTalentInfo             = 38;  // 请求英雄天赋
+	S2C_HeroTalentInfoRs           = 39;
 
-    C2S_UnlockHeroTalentPage       = 48;  // 解锁英雄天赋页
-    S2C_UnlockHeroTalentPageRs     = 49;
+	C2S_ResetHeroTalentPage        = 40;  // 重置英雄天赋页
+	S2C_ResetHeroTalentPageRs      = 41;
 
-    C2S_UseItem                    = 50;  // 使用道具
-    S2C_UseItemRs                  = 51;
+	C2S_SwitchHeroTalentPage       = 42;  // 切换英雄天赋页
+	S2C_SwitchHeroTalentPageRs     = 43;
 
-    S2C_SyncHeroValidTalentPage    = 52;  // 同步英雄当前天赋页
+	C2S_UpgradeHeroTalent          = 44;  // 升级英雄天赋
+	S2C_UpgradeHeroTalentRs        = 45;
 
-    C2S_SdkLogin                   = 53;  // SDK登录
-    S2C_SdkLoginRs                 = 54;
+	C2S_ModifyHeroTalentPageName   = 46;  // 修改天赋页名称
+	S2C_ModifyHeroTalentPageNameRs = 47;
 
-    C2S_Relogin                    = 55;  // 断线重连
-    S2C_ReloginRs                  = 56;
+	C2S_UnlockHeroTalentPage       = 48;  // 解锁英雄天赋页
+	S2C_UnlockHeroTalentPageRs     = 49;
 
-    S2C_OnlinePlayerInfo           = 57;  // 在线的玩家信息
-    S2C_PlayerOffline              = 58;  // 玩家下线
+	C2S_UseItem                    = 50;  // 使用道具
+	S2C_UseItemRs                  = 51;
 
-    C2S_SendChat                   = 59;  // 聊天
-    S2C_ChatRs                     = 60;
-    S2C_ChatMessage                = 61;
+	S2C_SyncHeroValidTalentPage    = 52;  // 同步英雄当前天赋页
 
-    C2S_ChatBlacklist              = 62;  // 屏蔽聊天玩家
-    C2S_CancelChatBlacklist        = 63;
-    S2C_ChatBlacklistRs            = 64;
+	C2S_SdkLogin                   = 53;  // SDK登录
+	S2C_SdkLoginRs                 = 54;
 
-    C2S_ChatPrivateList            = 65;  // 获取私聊对象在线状态
-    S2C_ChatPrivateListRs          = 66;
+	C2S_Relogin                    = 55;  // 断线重连
+	S2C_ReloginRs                  = 56;
 
-    C2S_LogInstallReq              = 67;
-    S2C_LogInstallRsp              = 68;
+	S2C_OnlinePlayerInfo           = 57;  // 在线的玩家信息
+	S2C_PlayerOffline              = 58;  // 玩家下线
 
-    C2S_GetOtherPlayerInfo         = 69;  // 获取其他玩家信息
-    S2C_GetOtherPlayerInfoRs       = 70;
+	C2S_SendChat                   = 59;  // 聊天
+	S2C_ChatRs                     = 60;
+	S2C_ChatMessage                = 61;
+
+	C2S_ChatBlacklist              = 62;  // 屏蔽聊天玩家
+	C2S_CancelChatBlacklist        = 63;
+	S2C_ChatBlacklistRs            = 64;
+
+	C2S_ChatPrivateList            = 65;  // 获取私聊对象在线状态
+	S2C_ChatPrivateListRs          = 66;
+
+	C2S_LogInstallReq              = 67;
+	S2C_LogInstallRsp              = 68;
+
+	C2S_GetOtherPlayerInfo         = 69;  // 获取其他玩家信息
+	S2C_GetOtherPlayerInfoRs       = 70;
+
+	C2C_MailList                   = 71;  // 获取邮件列表
+	S2C_MailListRs                 = 72;
+
+	C2C_MailDelete                 = 73;  // 删除邮件
+	S2C_MailDeleteRs               = 74;
+
+	C2C_MailGetAward               = 75;  // 领取邮件
+	S2C_MailGetAwardRs             = 76;
+
+	C2C_RankList                   = 77;  // 排行榜列表
+	S2C_RankListRs                 = 78;
+
+	// 战利品
+	C2S_LootMissionList            = 79;  // 获取战利品任务列表
+	S2C_LootMissionListRs          = 80;
+	C2S_RewardLootMission          = 81;  // 获取战利品任务奖励
+	S2C_RewardLootMissionRs        = 82;
+	C2S_GetLootWall                = 83;  // 获取战利品列表
+	S2C_GetLootWallRs              = 84;
+	C2S_PlaceLoot                  = 85;  // 放置战利品
+	S2C_PlaceLootRs                = 86;
+	C2S_ClearLootWall              = 87;  // 清空战利品展示墙
+	S2C_ClearLootWallRs            = 88;
+
+	C2S_ModifyPlayerName           = 89;  //修改玩家名字
+	S2C_ModifyPlayerNameRs         = 90;
+
+	C2S_ModifyPlayerIcon           = 91;  //修改玩家头像
+	S2C_ModifyPlayerIconRs         = 92;
+
+	C2C_MailGetDesc                = 93;  //获取邮件内容描述
+	S2C_MailGetDescRs              = 94;
+
+	C2S_VersionInfoReqID           = 95;  //  版本匹配
+	S2C_VersionInfoRspID           = 96;
+	C2S_MailHeadListReqID          = 97;  //  邮件头
+	S2C_MailHeadListRspID          = 98;
+	C2S_MailBodyReqID              = 99;  //  邮件体
+	S2C_MailBodyRspID              = 100;
+	C2S_MailStateReqID             = 101; //  邮件状态
+	C2S_MailStateRspID             = 102;
+	C2S_MailBoxStateReqID          = 103; //  邮箱状态
+	S2C_MailBoxStateRspID          = 104;
+	C2S_MailDeleteReqID            = 105; //  删除邮件
+	S2C_MailDeleteRspID            = 106;
+	C2S_MailGetAwardReqID          = 107; //  取邮件附件
+	S2C_MailGetAwardRspID          = 108;
+
 }

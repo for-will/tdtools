@@ -1,737 +1,939 @@
 //
 
-
-syntax="proto2";
-
+syntax="proto3";
 
 option go_package = ".;GameMsg";
-
 
 package GameMsg;
 
 // 所有协议的返回值
-enum ReturnCode
-{
-    OK = 0;
-    AccountCheck_UNKONWN            = 1;
-    AccountCheck_NOT_FOUND_ACCOUNT  = 2;
-    AccountCheck_PASSWORD_WRONG     = 3;
-    AccountCheck_LOGGING            = 4;     // 正在登录
-    AccountCheck_TIMEOUT            = 5;     // 超时
-    AccountCheck_ONLINE             = 6;     // 已在线  
+enum ReturnCode {
+	OK                             = 0;
+	AccountCheck_UNKONWN           = 1;
+	AccountCheck_NOT_FOUND_ACCOUNT = 2;
+	AccountCheck_PASSWORD_WRONG    = 3;
+	AccountCheck_LOGGING           = 4;   // 正在登录
+	AccountCheck_TIMEOUT           = 5;   // 超时
+	AccountCheck_ONLINE            = 6;   // 已在线
 
-    CreatePlayer_Exit = 10;     // 角色已存在
+	CreatePlayer_Exit              = 10;  // 角色已存在
 
-    ReLoginFailed       = 20;    //断线重连失败
-    
-    ChangeTeamInvalidTeam       = 30;   // 无效的队伍
-    ChangeTeamInvalidHero       = 31;   // 无效的英雄
-    ChangeTeamInvalidSolider    = 32;   // 无效的士兵
+	ReLoginFailed                  = 20;  //断线重连失败
 
-        
-    EnterStage_Forbid   = 100;   // 不能进该关卡
+	ChangeTeamInvalidTeam          = 30;  // 无效的队伍
+	ChangeTeamInvalidHero          = 31;  // 无效的英雄
+	ChangeTeamInvalidSolider       = 32;  // 无效的士兵
 
-    OverStage_Failed    = 110;   // 结束战场失败
+	EnterStage_Forbid              = 100; // 不能进该关卡
 
-    // 英雄升级失败
-    QualityUp_NoHero    = 120;  // 没有找到英雄
-    QualityUp_MaxLv     = 121;  // 已达最高等级
-    QualityUp_NoToken   = 122;  // 信物不足
-    QualityUp_NoConfig  = 123;  // 配置错误
+	OverStage_Failed               = 110; // 结束战场失败
 
-    // 解锁军团或建筑
-    UnlockUnitInvalidID   = 126; // 无效的cardId
-    UnlockUnitAgain       = 127; // 军团或建筑已经解锁
-    UnlockUnitNoneItem    = 128; // 缺少道具
+	GetRewardStageFailed           = 115; // 领取章节奖励失败
+	GetRewardStageRewarded         = 116; // 章节奖励已领取
 
-    //任务领奖失败
-    TaskReward_NotFinished  = 130;  // 任务未完成
-    TaskReward_Rewarded     = 131;  // 任务奖励已领取
-    TaskReward_MaxItems     = 132;  // 奖励物品已达上限
+	// 英雄升级失败
+	QualityUp_NoHero               = 120; // 没有找到英雄
+	QualityUp_MaxLv                = 121; // 已达最高等级
+	QualityUp_NoToken              = 122; // 信物不足
+	QualityUp_NoConfig             = 123; // 配置错误
 
-    // 探索失败
-    ExploreUnknownArea    = 140; // 探索区域配置不存在
-    ExploreAreaLocked     = 141; // 区域未解锁
-    ExploreAssetsShortage = 142; // 探索券不足
+	// 解锁军团或建筑
+	UnlockUnitInvalidID            = 126; // 无效的cardId
+	UnlockUnitAgain                = 127; // 军团或建筑已经解锁
+	UnlockUnitNoneItem             = 128; // 缺少道具
 
-    // 解锁英雄
-    UnlockCardInvalidID   = 143; // 无效的cardId
-    UnlockCardAgain       = 144; // 英雄已经解锁
-    UnlockCardNoneToken   = 145; // 缺少信物
+	//任务领奖失败
+	TaskReward_NotFinished         = 130; // 任务未完成
+	TaskReward_Rewarded            = 131; // 任务奖励已领取
+	TaskReward_MaxItems            = 132; // 奖励物品已达上限
 
-    // 装备
-    EquipIlleagalSlot     = 146; // 非法槽位
-    EquipmentSysNotOpen   = 147; // 功能未开放
+	// 探索失败
+	ExploreUnknownArea             = 140; // 探索区域配置不存在
+	ExploreAreaLocked              = 141; // 区域未解锁
+	ExploreAssetsShortage          = 142; // 探索券不足
 
-    // 玩家天赋
-    PlayerTalentInvalidId    = 148; // 无效的id
-    PlayerTalentUnlockCond   = 149; // 解锁条件未达到
-    PlayerTalentLvMax        = 150; // 天赋等级已达上限
-    PlayerTalentCostItem     = 151; // 道具不足
+	// 解锁英雄
+	UnlockCardInvalidID            = 143; // 无效的cardId
+	UnlockCardAgain                = 144; // 英雄已经解锁
+	UnlockCardNoneToken            = 145; // 缺少信物
 
-    // 英雄天赋
-    HeroTalentInvalidCard       = 152; // 无效的card
-    HeroTalentInvalidPage       = 153; // 无效的天赋页
-    HeroTalentCheckHeroLv       = 154; // 英雄等级不足
-    HeroTalentCostItem          = 155; // 道具不足
-    HeroTalentCheckHeroQuality  = 156; // 英雄品级不足
-    HeroTalentInvalidId         = 157; // 无效的天赋id
-    HeroTalentPageNameLenMax    = 158; // 名称超长
-    HeroTalentLvMax             = 159; // 天赋等级已达上限
+	// 装备
+	EquipIlleagalSlot              = 146; // 非法槽位
+	EquipmentSysNotOpen            = 147; // 功能未开放
 
-    // 使用道具
-    UseItemInvalidId        = 160;  // 无效的道具ID
-    UseItemNotEnoughItem    = 161;  // 道具数量不足
-    UseItemCannotUse        = 162;  // 道具不可使用
+	// 玩家天赋
+	PlayerTalentInvalidId          = 148; // 无效的id
+	PlayerTalentUnlockCond         = 149; // 解锁条件未达到
+	PlayerTalentLvMax              = 150; // 天赋等级已达上限
+	PlayerTalentCostItem           = 151; // 道具不足
 
-    // 聊天
-    OfflineChatMsgMax       = 165;  // 离线消息已达上限
+	// 英雄天赋
+	HeroTalentInvalidCard          = 152; // 无效的card
+	HeroTalentInvalidPage          = 153; // 无效的天赋页
+	HeroTalentCheckHeroLv          = 154; // 英雄等级不足
+	HeroTalentCostItem             = 155; // 道具不足
+	HeroTalentCheckHeroQuality     = 156; // 英雄品级不足
+	HeroTalentInvalidId            = 157; // 无效的天赋id
+	HeroTalentPageNameLenMax       = 158; // 名称超长
+	HeroTalentLvMax                = 159; // 天赋等级已达上限
+
+	// 使用道具
+	UseItemInvalidId               = 160; // 无效的道具ID
+	UseItemNotEnoughItem           = 161; // 道具数量不足
+	UseItemCannotUse               = 162; // 道具不可使用
+
+	// 聊天
+	OfflineChatMsgMax              = 165; // 离线消息已达上限
+
+	// 战利品
+	LootMissionInvalidId           = 170; // 无效的Id
+	LootMissionProcessing          = 171; // 任务还未完成
+	LootMissionRewarded            = 172; // 任务奖励已经领取
+	LootMissionConfigNil           = 173; // 任务配置文件未找到
+	PlaceLootFailed                = 174; // 放置战利品失败
+
+	// 修改昵称/头像
+	ModifyNameAssertDemanded       = 175; // 物品不足
+	ModifyNameLenExceed            = 176; // 昵称超长
+	ModifyNameUsed                 = 177; // 昵称已被使用
+	ModifyNameError                = 178; // 修改昵称失败
+	ModifyAvatarFailed             = 179; // 修改头像失败
 }
 
 // 水晶 (装备) 属性
 message AttrItem {
-    optional int32 Type = 1;  // 属性类型
-    optional int32 Lv   = 2;  // 属性等级
-    optional int32 Idx  = 3;  // 位置
+	int32 Type = 1; // 属性类型
+	int32 Lv   = 2; // 属性等级
+	int32 Idx  = 3; // 位置
 }
 
 // 水晶
-message CrystalInfo
-{
-    optional int32    Sn        = 1;
-    optional int32    Id        = 2;
-    optional int32    CreatedAt = 3; // 获得时间
-    optional int32    HeroSn    = 4;
-    optional int32    Slot      = 5; // 槽位
-    repeated AttrItem Attrs     = 6; // 属性
-    optional int32    SkillId   = 7; // 扩展属性
+message CrystalInfo {
+	int32             Sn        = 1;
+	int32             Id        = 2;
+	int32             CreatedAt = 3; // 获得时间
+	int32             HeroSn    = 4;
+	int32             Slot      = 5; // 槽位
+	repeated AttrItem Attrs     = 6; // 属性
+	int32             SkillId   = 7; // 扩展属性
 }
 
-message AccountCheck 
-{
-    optional string Account = 1;
-    optional string Password = 2;
+message DeviceInfo {
+	string DeviceModel  = 1;  // 设备型号
+	int32  DeviceHeight = 2;  //
+	int32  DeviceWidth  = 3;  //
+	string OsName       = 4;  // 操作系统
+	string OsVer        = 5;  // 操作系统版本
+	string MacAddr      = 6;  // 设备mac地址
+	string Udid         = 7;  // 设备唯一标示符
+	string Idfa         = 8;  // 广告标识
+	string AppChannel   = 9;  // 运营渠道
+	string AppVer       = 10; // 客户端版本号
+	string Server       = 11; // 游戏服
+	string AccountId    = 12; // 账号唯一标识符
+	string OldAccountId = 13; // 游客身份标识符
+	string RoleId       = 14; // 角色唯一标识符
+	string RoleName     = 15; //
+	string SdkVer       = 16; // SDK版本号
+	string IMEI         = 17; // 移动设备国际身份码
 }
 
-message AccountCheckRs 
-{
-    optional ReturnCode ReturnCode = 1;
+message AccountCheck {
+	string     Account  = 1;
+	string     Password = 2;
+	DeviceInfo Device   = 3;
 }
 
-
-message SdkLogin
-{
-    optional string SauthJson = 1;
+message AccountCheckRs {
+	ReturnCode ReturnCode = 1;
 }
 
-message SdkLoginRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32  Code = 2;
-    optional int32  SubCode = 3;
-    optional string UnisdkLoginJson = 4;
-    optional string LoginSessionId = 5;       // 游戏服务器返回的LoginSessionId，用于断线重连
+message SdkLogin {
+	string     SauthJson = 1;
+	DeviceInfo Device    = 2;
+}
+
+message SdkLoginRs {
+	ReturnCode ReturnCode      = 1;
+	int32      Code            = 2;
+	int32      SubCode         = 3;
+	string     UnisdkLoginJson = 4;
+	string     LoginSessionId  = 5; // 游戏服务器返回的LoginSessionId，用于断线重连
 }
 
 // 断线重连
-message ReLogin
-{
-    optional string LoginSessionId = 1;       // 游戏服务器返回的LoginSessionId，用于断线重连
+message ReLogin {
+	string LoginSessionId = 1; // 游戏服务器返回的LoginSessionId，用于断线重连
 }
 
-message ReLoginRs
-{
-    optional ReturnCode ReturnCode = 1;
+message ReLoginRs {
+	ReturnCode ReturnCode = 1;
 }
 
-message CreatePlayer
-{
-    
+message CreatePlayer {
+
 }
 
-message CreatePlayerRs 
-{
-    optional ReturnCode ReturnCode = 1;
+message CreatePlayerRs {
+	ReturnCode ReturnCode = 1;
 }
 
-message SyncCard
-{
-    optional int32 Sn = 1;  // 唯一标识，同个ID可能有多个
-    optional int32 Id = 2;
-    optional int32 Level = 3;
-    optional int32 QualityId = 4;      // 提升的品质id:QualityUpCfg中的id
+message SyncCard {
+	int32 Sn        = 1; // 唯一标识，同个ID可能有多个
+	int32 Id        = 2;
+	int32 Level     = 3;
+	int32 QualityId = 4; // 提升的品质id:QualityUpCfg中的id
 }
 
-message TeamHero
-{
-    optional int32 HeroSn = 1;
-    optional int32 SoliderSn = 2;    
+message TeamHero {
+	int32 HeroSn    = 1;
+	int32 SoliderSn = 2;
 }
 
-message SyncTeam
-{
-    optional int32 Sn = 1;
-    repeated TeamHero Heros = 2;
+message SyncTeam {
+	int32             Sn    = 1;
+	repeated TeamHero Heros = 2;
 }
 
-message StageItem
-{
-     optional int32 StageId = 1;  // 己完成的关卡
-     optional int32 StarNum = 2;  // 星星数量
+message StageItem {
+	int32 StageId = 1; // 己完成的关卡
+	int32 StarNum = 2; // 星星数量
 }
 
-message StageReward
-{
-   optional int32 Id = 1;           // 领取的id
-   optional int32 Status = 2;       // 领取状态
-   optional int32 ChapterId = 3;    // 章节id
+message StageReward {
+	int32 Id        = 1; // 领取的id
+	int32 Status    = 2; // 领取状态
+	int32 ChapterId = 3; // 章节id
 }
 
-message SyncStage 
-{
-    repeated StageItem StageItems = 1;  // 己完成的关卡
-    repeated StageReward StageRewards = 2;  // 已领取的宝箱
+message SyncStage {
+	repeated StageItem   StageItems   = 1; // 己完成的关卡
+	repeated StageReward StageRewards = 2; // 已领取的宝箱
 }
 
-message SyncShip
-{
-    optional int32 MaxHp = 1; 
+message SyncShip {
+	int32 MaxHp = 1;
 }
 
-message Item
-{
-    optional int32 Id = 1;			// 道具ID
-    optional int32 Cnt = 2;			// 道具数量
-    optional int32 UpdateTime = 3;  // 最近更新时间
+message Item {
+	int32 Id         = 1; // 道具ID
+	int32 Cnt        = 2; // 道具数量
+	int32 UpdateTime = 3; // 最近更新时间
 }
 
 // 每日任务数据
-message Task
-{
-    optional int32 Id = 1;          // 任务ID
-    optional int32 Status = 2;      // 任务状态(0：进行中，1：已完成，2：已领取奖励)
-    optional int32 Countdown = 3;   // 倒计时（秒）
-    optional int32 Finished = 4;    // 已完成的步骤
-    optional int32 Needed = 5;      // 需要完成的步骤
+message Task {
+	int32 Id        = 1; // 任务ID
+	int32 Status    = 2; // 任务状态(0：进行中，1：已完成，2：已领取奖励)
+	int32 Countdown = 3; // 倒计时（秒）
+	int32 Finished  = 4; // 已完成的步骤
+	int32 Needed    = 5; // 需要完成的步骤
 }
 
-message SyncPlayerBase
-{
-    optional int32 Lv = 1;          // 玩家等级
-    optional int32 Exp = 2;         // 经验
-    optional int32 Gold = 3;        // 金币
-    optional int32 Honor = 4;       // 荣耀
-    optional int32 Achievement = 5; // 成就
-    optional int32 Diamond = 6;     // 晶币（钻石）
+message SyncPlayerBase {
+	int32  Lv          = 1; // 玩家等级
+	int32  Exp         = 2; // 经验
+	int32  Gold        = 3; // 金币
+	int32  Honor       = 4; // 荣耀
+	int32  Achievement = 5; // 成就
+	int32  Diamond     = 6; // 晶币（钻石）
+	string Name        = 7; // 玩家名字
+	int32  Icon        = 8; // 玩家头像
 }
 
-message SyncPlayer
-{
-    optional int32          PlayerSn    = 1;
-    repeated SyncCard       Cards       = 2;
-    repeated SyncTeam       Teams       = 3;
-    optional SyncStage      Stage       = 4;
-    optional SyncShip       Ship        = 5; // 基地数据
-    optional SyncPlayerBase Base        = 6;
-    repeated Item           Items       = 7; // 道具  
-    repeated Task           Tasks       = 8; // 每日任务  
-    repeated CrystalInfo    CrystalList = 9; // 装备列表
+message SyncPlayer {
+	int32                PlayerSn    = 1;
+	repeated SyncCard    Cards       = 2;
+	repeated SyncTeam    Teams       = 3;
+	SyncStage            Stage       = 4;
+	SyncShip             Ship        = 5;   // 基地数据
+	SyncPlayerBase       Base        = 6;
+	repeated Item        Items       = 7;   // 道具
+	repeated Task        Tasks       = 8;   // 每日任务
+	repeated CrystalInfo CrystalList = 9;   // 装备列表
 
-    // 客户端使用
-    optional int32          Version     = 100;
+	// 客户端使用
+	int32                Version     = 100;
 }
 
-message UpdateInfo
-{
-    optional SyncPlayerBase Base        = 1;    
-    repeated Item           Items       = 2; // 道具  
-    repeated CrystalInfo    CrystalList = 3; // 装备列表
+message UpdateInfo {
+	SyncPlayerBase       Base        = 1;
+	repeated Item        Items       = 2; // 道具
+	repeated CrystalInfo CrystalList = 3; // 装备列表
 }
 
-message EnterStage
-{
-    optional int32 StageId = 1;
-    optional int32 TeamSn = 2;
+message EnterStage {
+	int32 StageId = 1;
+	int32 TeamSn  = 2;
 }
 
-message EnterStageRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32 StageId = 2;
-    optional int32 TeamSn = 3;    
+message EnterStageRs {
+	ReturnCode ReturnCode = 1;
+	int32      StageId    = 2;
+	int32      TeamSn     = 3;
 }
 
-message OverStage
-{
-    optional int32 StageId = 1;
-    optional bool IsWin = 2;
-    optional int32 StarNum = 3;
+message OverStage {
+
+	int32 StageId = 1;
+	bool  IsWin   = 2;
+	//optional int32 StarNum = 3;
+	int32 Param   = 4;
+	int32 KillNum = 5;
 }
 
-message OverStageRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32 StageId = 2;
-    optional bool IsWin = 3;
-    optional int32 StarNum = 4;   
-    optional int32 LvOld = 5;              // 旧等级
-    optional int32 ExpOld = 6;
-    optional int32 ExpAdd = 7;			// 经验
-    optional int32 Gold = 8;			// 奖励金币
-    optional int32 Honor = 9;			// 奖励荣耀
-    optional int32 Achievement = 10;		// 奖励成就
-    optional int32 Diamond = 11;        // 奖励钻石
-    repeated Item Items = 12;	// 奖励道具
-    repeated CrystalInfo CrystalList = 13; // 奖励装备
+message OverStageRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                StageId     = 2;
+	bool                 IsWin       = 3;
+	int32                Param       = 4;
+	int32                LvOld       = 5;  // 旧等级
+	int32                ExpOld      = 6;
+	int32                ExpAdd      = 7;  // 经验
+	int32                Gold        = 8;  // 奖励金币
+	int32                Honor       = 9;  // 奖励荣耀
+	int32                Achievement = 10; // 奖励成就
+	int32                Diamond     = 11; // 奖励钻石
+	repeated Item        Items       = 12; // 奖励道具
+	repeated CrystalInfo CrystalList = 13; // 奖励装备
 }
 
-message GetRewardStage // 领取关卡宝箱
-{ 
-     optional int32 Id = 1;
-     optional int32 ChapterId = 2;
+// 领取关卡宝箱
+message GetRewardStage {
+	int32 Id        = 1;
+	int32 ChapterId = 2;
 }
 
-message GetRewardStageRs // 领取关卡宝箱
-{ 
-    optional ReturnCode ReturnCode = 1;
-    optional int32 Id = 2;
-    optional int32 ChapterId = 3;
-    optional int32 Status = 4;
+// 领取关卡宝箱
+message GetRewardStageRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                Id          = 2;
+	int32                ChapterId   = 3;
+	int32                Status      = 4;
+	int32                ExpAdd      = 5;  // 奖励经验
+	int32                Gold        = 6;  // 奖励金币
+	int32                Honor       = 7;  // 奖励荣耀
+	int32                Achievement = 8;  // 奖励成就
+	int32                Diamond     = 9;  // 奖励钻石
+	repeated Item        Items       = 10; // 奖励道具
+	repeated CrystalInfo CrystalList = 11; // 奖励装备
 }
 
-message ChangeTeam
-{
-    optional SyncTeam Team = 1;
+message ChangeTeam {
+	SyncTeam Team = 1;
 }
 
-message ChangeTeamRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional SyncTeam Team = 2;
-}
-
-// 品质提升
-message HeroQualityUp
-{
-    optional int32 HeroSn = 1;
+message ChangeTeamRs {
+	ReturnCode ReturnCode = 1;
+	SyncTeam   Team       = 2;
 }
 
 // 品质提升
-message HeroQualityUpRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32 HeroSn = 2;        // 卡牌的sn
-    optional int32 QualityId = 3;      // 提升的品质id:QualityUpCfg中的id
+message HeroQualityUp {
+	int32 HeroSn = 1;
+}
+
+// 品质提升
+message HeroQualityUpRs {
+	ReturnCode ReturnCode = 1;
+	int32      HeroSn     = 2; // 卡牌的sn
+	int32      QualityId  = 3; // 提升的品质id:QualityUpCfg中的id
 }
 
 // 解锁军团或建筑
-message UnlockUnit
-{
-    optional int32 CardId = 1;
+message UnlockUnit {
+	int32 CardId = 1;
 }
 
-message UnlockUnitRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional SyncCard   Card       = 2;
+message UnlockUnitRs {
+	ReturnCode ReturnCode = 1;
+	SyncCard   Card       = 2;
 }
 
 // 升级军团或建筑
-message UpgradeUnit
-{
-    optional int32 CardSn = 1;
+message UpgradeUnit {
+	int32 CardSn = 1;
 }
 
-message UpgradeUnitRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32 CardSn = 2;         // 卡牌的sn
-    optional int32 QualityId = 3;      // 提升的品质id:QualityUpCfg中的id
+message UpgradeUnitRs {
+	ReturnCode ReturnCode = 1;
+	int32      CardSn     = 2; // 卡牌的sn
+	int32      QualityId  = 3; // 提升的品质id:QualityUpCfg中的id
 }
 
 // 每日任务
-message TaskInfo
-{
-    optional bool IsAll = 1;        // 是否全部任务
-    repeated Task Tasks = 2;        // 任务列表
+message TaskInfo {
+	bool          IsAll = 1; // 是否全部任务
+	repeated Task Tasks = 2; // 任务列表
 }
 
 // 已完成的主线任务
-message CompletedMainlineTask
-{
-    optional int32 Id = 1;          // 任务ID
-    optional int32 CompletedTime = 2;// Unix时间戳
+message CompletedMainlineTask {
+	int32 Id            = 1; // 任务ID
+	int32 CompletedTime = 2; // Unix时间戳
 }
 
 // 主线任务
-message MainlineTask
-{
-    optional int32 Id = 1;          // 任务ID
-    optional int32 Status = 2;      // 任务状态(0：进行中，1：已完成，2：已领取奖励，3：未解锁)
-    optional int32 CompletedTime = 3;// Unix时间戳
-    optional int32 Finished = 4;    // 已完成的步骤
-    optional int32 Needed = 5;      // 需要完成的步骤
+message MainlineTask {
+	int32 Id            = 1; // 任务ID
+	int32 Status        = 2; // 任务状态(0：进行中，1：已完成，2：已领取奖励，3：未解锁)
+	int32 CompletedTime = 3; // Unix时间戳
+	int32 Finished      = 4; // 已完成的步骤
+	int32 Needed        = 5; // 需要完成的步骤
 }
 
 // 同步主线任务（登录时发）
-message SyncMainTask
-{
-    repeated CompletedMainlineTask CompletedTasks = 1;  //已完成的任务
-    optional MainlineTask CurrTask = 2;                 //当前任务
+message SyncMainTask {
+	repeated CompletedMainlineTask CompletedTasks = 1; //已完成的任务
+	MainlineTask                   CurrTask       = 2; //当前任务
 }
 
 // 更新主线任务
-message MainlineTaskInfo
-{
-    optional MainlineTask task = 1;
+message MainlineTaskInfo {
+	MainlineTask task = 1;
 }
 
-message GetTaskReward
-{
-    repeated int32 Id = 1;          // 任务ID
+message GetTaskReward {
+	repeated int32 Id = 1; // 任务ID
 }
 
-message GetTaskRewardRs
-{
-    optional ReturnCode ReturnCode = 1;
-    repeated int32 Id = 2;              // 任务ID
-    optional int32 ExpAdd = 3;			// 奖励经验
-    optional int32 Gold = 4;			// 奖励金币
-    optional int32 Honor = 5;			// 奖励荣耀
-    optional int32 Achievement = 6;		// 奖励成就
-    optional int32 Diamond = 7;         // 奖励钻石
-    repeated Item Items = 8;	        // 奖励道具
-    repeated CrystalInfo CrystalList = 9;    // 奖励装备
+message GetTaskRewardRs {
+	ReturnCode           ReturnCode  = 1;
+	repeated int32       Id          = 2; // 任务ID
+	int32                ExpAdd      = 3; // 奖励经验
+	int32                Gold        = 4; // 奖励金币
+	int32                Honor       = 5; // 奖励荣耀
+	int32                Achievement = 6; // 奖励成就
+	int32                Diamond     = 7; // 奖励钻石
+	repeated Item        Items       = 8; // 奖励道具
+	repeated CrystalInfo CrystalList = 9; // 奖励装备
 }
 
 // 使用道具
-message UseItem
-{
-    optional int32 Id = 1;			// 道具ID
-    optional int32 Cnt = 2;			// 道具数量
+message UseItem {
+	int32 Id  = 1; // 道具ID
+	int32 Cnt = 2; // 道具数量
 }
 
-message UseItemRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32 Gold = 2;			// 奖励金币
-    optional int32 Honor = 3;			// 奖励荣耀
-    optional int32 Achievement = 4;		// 奖励成就
-    optional int32 Diamond = 5;         // 奖励钻石
-    repeated Item Items = 6;	        // 奖励道具
-    repeated CrystalInfo CrystalList = 7;    // 奖励装备
+message UseItemRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                Gold        = 2; // 奖励金币
+	int32                Honor       = 3; // 奖励荣耀
+	int32                Achievement = 4; // 奖励成就
+	int32                Diamond     = 5; // 奖励钻石
+	repeated Item        Items       = 6; // 奖励道具
+	repeated CrystalInfo CrystalList = 7; // 奖励装备
 }
 
-message HeartBeat
-{
-    
+message HeartBeat {
+
 }
-message HeartBeatRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32 ServerTime = 2;              // 服务器时间
+message HeartBeatRs {
+	ReturnCode ReturnCode = 1;
+	int32      ServerTime = 2; // 服务器时间
 }
 
-//拾荒者中心-探索
+// 拾荒者中心-探索
 
-enum ExploreTimes
-{
-    Single = 1; // 探索一次
-    Ten    = 2; // 探索10次
+enum ExploreTimes {
+	ExploreTimes_ZERO = 0;
+	Single            = 1;  // 探索一次
+	Ten               = 10; // 探索10次
 }
 
-message Explore
-{
-    optional int32        Area  = 1; // 地区
-    required ExploreTimes Times = 2; // 探索10次
+message Explore {
+	int32        Area  = 1; // 地区
+	ExploreTimes Times = 2; // 探索10次
 }
 
-message ExploreRs
-{
-    optional ReturnCode  ReturnCode  = 1;
-    repeated Item        Items       = 2; // 奖励道具
-    repeated CrystalInfo CrystalList = 3; // 道具-水晶
+message ExploreRs {
+	ReturnCode           ReturnCode  = 1;
+	repeated Item        Items       = 2; // 奖励道具
+	repeated CrystalInfo CrystalList = 3; // 道具-水晶
 }
 
 // 酒馆-卡牌解锁
-message CardUnLock
-{
-    optional int32  CardId  = 1; // 卡牌id
+message CardUnLock {
+	int32 CardId = 1; // 卡牌id
 }
 
 // 酒馆-卡牌解锁
-message CardUnLockRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional SyncCard Card = 2;
+message CardUnLockRs {
+	ReturnCode ReturnCode = 1;
+	SyncCard   Card       = 2;
 }
-
-
 
 // 水晶背包
-message CrystalBackPack
-{
+message CrystalBackPack {
 }
 
-message CrystalBackPackRs
-{
-    repeated CrystalInfo CrystalList = 1;
+message CrystalBackPackRs {
+	repeated CrystalInfo CrystalList = 1;
 }
 
 // 装备水晶
-message EquipCrystal
-{
-    optional int32 Sn     = 1;
-    optional int32 HeroSn = 2;
-    optional int32 Slot   = 3;
+message EquipCrystal {
+	int32 Sn     = 1;
+	int32 HeroSn = 2;
+	int32 Slot   = 3;
 }
 
-message EquipCrystalRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32      Sn         = 2;
-    optional int32      HeroSn     = 3;
-    optional int32      Slot       = 4;
+message EquipCrystalRs {
+	ReturnCode ReturnCode = 1;
+	int32      Sn         = 2;
+	int32      HeroSn     = 3;
+	int32      Slot       = 4;
 }
 
 // 玩家天赋
-message PlayerTalent
-{
-    optional int32 Id = 1;
-    optional int32 Lv = 2;
+message PlayerTalent {
+	int32 Id = 1;
+	int32 Lv = 2;
 }
 
-message SyncPlayerTalentList
-{
-    repeated PlayerTalent List = 1;
+message SyncPlayerTalentList {
+	repeated PlayerTalent List = 1;
 }
 
 // 升级玩家天赋
-message UpgradePlayerTalent
-{
-    optional int32 Id = 1;
+message UpgradePlayerTalent {
+	int32 Id = 1;
 }
 
-message UpgradePlayerTalentRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32      Id         = 2;
-    optional int32      Lv         = 3; // 升级后天赋等级
+message UpgradePlayerTalentRs {
+	ReturnCode ReturnCode = 1;
+	int32      Id         = 2;
+	int32      Lv         = 3; // 升级后天赋等级
 }
 
 // 英雄天赋
-message HeroTalent
-{
-    optional int32 Id = 1;
-    optional int32 Lv = 2;
+message HeroTalent {
+	int32 Id = 1;
+	int32 Lv = 2;
 }
 
-message HeroTalentPage
-{
-    optional int32      Page       = 1;
-    optional int32      HonorUsed  = 2; // 已消耗的荣耀
-    optional string     Name       = 3; // 天赋页名称
-    repeated HeroTalent TalentList = 4;
-    optional int32      CardSn     = 5;
+message HeroTalentPage {
+	int32               Page       = 1;
+	int32               HonorUsed  = 2; // 已消耗的荣耀
+	string              Name       = 3; // 天赋页名称
+	repeated HeroTalent TalentList = 4;
+	int32               CardSn     = 5;
 }
 
-message HeroTalentInfo
-{
-    optional int32 CardSn = 1;
+message HeroTalentInfo {
+	int32 CardSn = 1;
 }
 
-message HeroTalentInfoRs
-{
-    optional ReturnCode     ReturnCode = 1;
-    optional int32          CardSn     = 2;
-    optional int32          CurPage    = 3;
-    repeated HeroTalentPage Pages      = 4;
-    optional int32          Honor      = 5;
+message HeroTalentInfoRs {
+	ReturnCode              ReturnCode = 1;
+	int32                   CardSn     = 2;
+	int32                   CurPage    = 3;
+	repeated HeroTalentPage Pages      = 4;
+	int32                   Honor      = 5;
 }
 
 // 解锁英雄天赋页
-message UnlockHeroTalentPage
-{
-    optional int32 CardSn = 1;
-    optional int32 Page   = 2;
+message UnlockHeroTalentPage {
+	int32 CardSn = 1;
+	int32 Page   = 2;
 }
 
-message UnlockHeroTalentPageRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32      CardSn     = 2;
-    optional int32      Page       = 3;
+message UnlockHeroTalentPageRs {
+	ReturnCode ReturnCode = 1;
+	int32      CardSn     = 2;
+	int32      Page       = 3;
 }
 
 // 重置英雄天赋页
-message ResetHeroTalentPage
-{
-    optional int32 CardSn = 1;
-    optional int32 Page   = 2;
+message ResetHeroTalentPage {
+	int32 CardSn = 1;
+	int32 Page   = 2;
 }
 
-message ResetHeroTalentPageRs
-{
-    optional ReturnCode ReturnCode = 1;
+message ResetHeroTalentPageRs {
+	ReturnCode ReturnCode = 1;
 }
 
 // 切换英雄天赋页
-message SwitchHeroTalentPage
-{
-    optional int32 CardSn = 1;
-    optional int32 Page   = 2;
+message SwitchHeroTalentPage {
+	int32 CardSn = 1;
+	int32 Page   = 2;
 }
 
-message SwitchHeroTalentPageRs
-{
-    optional ReturnCode ReturnCode = 1;
+message SwitchHeroTalentPageRs {
+	ReturnCode ReturnCode = 1;
 }
 
 // 升级英雄天赋
-message UpgradeHeroTalent
-{
-    optional int32 CardSn   = 1;
-    optional int32 Page     = 2;
-    optional int32 TalentId = 3;
+message UpgradeHeroTalent {
+	int32 CardSn   = 1;
+	int32 Page     = 2;
+	int32 TalentId = 3;
 }
 
-message UpgradeHeroTalentRs
-{
-    optional ReturnCode ReturnCode    = 1;
-    optional int32      CardSn        = 2;
-    optional int32      Page          = 3;
-    optional int32      TalentId      = 4;
-    optional int32      Lv            = 5;
-    optional int32      PageHonorUsed = 6; // 天赋页已使用天赋点数
+message UpgradeHeroTalentRs {
+	ReturnCode ReturnCode    = 1;
+	int32      CardSn        = 2;
+	int32      Page          = 3;
+	int32      TalentId      = 4;
+	int32      Lv            = 5;
+	int32      PageHonorUsed = 6; // 天赋页已使用天赋点数
 }
 
 // 重命名天赋页
-message ModifyHeroTalentPageName
-{
-    optional int32  CardSn   = 1;
-    optional int32  Page     = 2;
-    optional string Name     = 3;
+message ModifyHeroTalentPageName {
+	int32  CardSn = 1;
+	int32  Page   = 2;
+	string Name   = 3;
 }
 
-message ModifyHeroTalentPageNameRs
-{
-    optional ReturnCode ReturnCode = 1;
-    optional int32      CardSn     = 2;
-    optional int32      Page       = 3;
-    optional string     Name       = 4;
+message ModifyHeroTalentPageNameRs {
+	ReturnCode ReturnCode = 1;
+	int32      CardSn     = 2;
+	int32      Page       = 3;
+	string     Name       = 4;
 }
 
 // 同步英雄当前使用的天赋页
-message SyncHeroValidTalentPage
-{
-    repeated HeroTalentPage HerosTalentPage = 1;
+message SyncHeroValidTalentPage {
+	repeated HeroTalentPage HerosTalentPage = 1;
 }
 
 // 在线的玩家信息
-message OnlinePlayerInfo
-{
-    optional int32          PlayerSn    = 1;
-    optional string         NickName    = 2;    // 昵称
-    optional int32          HeadImage   = 3;    // 头像
-    optional int32          Lv          = 4;    // 等级
-    repeated int32          Collection  = 5;    // 藏品
+message OnlinePlayerInfo {
+	int32          PlayerSn   = 1;
+	string         NickName   = 2; // 昵称
+	int32          HeadImage  = 3; // 头像
+	int32          Lv         = 4; // 等级
+	repeated int32 Collection = 5; // 藏品
 }
 
 // 玩家下线
-message PlayerOffline
-{
-    optional int32          PlayerSn    = 1;
+message PlayerOffline {
+	int32 PlayerSn = 1;
 }
 
 // 聊天C2S
-message SendChat
-{
-    optional int32          Receiver    = 1;    // 私聊对象PlayerSn（0：世界频道）
-    optional string         Content     = 2;    // 聊天内容
+message SendChat {
+	int32  Receiver = 1; // 私聊对象PlayerSn（0：世界频道）
+	string Content  = 2; // 聊天内容
 }
 
 // 聊天S2C
-message ChatRs
-{
-    optional ReturnCode     ReturnCode  = 1;
+message ChatRs {
+	ReturnCode ReturnCode = 1;
 }
 
 // 聊天S2C
-message ChatMessage
-{
-    optional int32          Sender      = 1;    // 发送方（0：系统）
-    optional int32          Receiver    = 2;    // 接受方（0：世界频道）
-    optional int32          SendTime    = 3;    // 发送时间（Unix时间戳）
-    optional string         Content     = 4;    // 聊天内容
+message ChatMessage {
+	int32  Sender   = 1; // 发送方（0：系统）
+	int32  Receiver = 2; // 接受方（0：世界频道）
+	int32  SendTime = 3; // 发送时间（Unix时间戳）
+	string Content  = 4; // 聊天内容
 }
 
 // 屏蔽聊天玩家
-message ChatBlacklist
-{
-    optional int32          PlayerSn    = 1;
+message ChatBlacklist {
+	int32 PlayerSn = 1;
 }
 
 // 取消屏蔽聊天玩家
-message CancelChatBlacklist
-{
-    optional int32          PlayerSn    = 1;
+message CancelChatBlacklist {
+	int32 PlayerSn = 1;
 }
 
 // 屏蔽聊天玩家列表
-message ChatBlacklistRs
-{
-    optional ReturnCode     ReturnCode  = 1;
-    repeated int32          PlayerList  = 2;
+message ChatBlacklistRs {
+	ReturnCode     ReturnCode = 1;
+	repeated int32 PlayerList = 2;
 }
 
 // 获取私聊对象在线状态
-message ChatPrivateList
-{
-    repeated int32          PlayerList    = 1;
+message ChatPrivateList {
+	repeated int32 PlayerList = 1;
 }
 
-message ChatPlayerState
-{
-    optional int32          PlayerSn    = 1;
-    optional int32          Online      = 2;    // 0:不在线，1：在线
+message ChatPlayerState {
+	int32 PlayerSn = 1;
+	int32 Online   = 2; // 0:不在线，1：在线
 }
 
-message ChatPrivateListRs
-{
-    repeated ChatPlayerState    PlayerList  = 1;
+message ChatPrivateListRs {
+	repeated ChatPlayerState PlayerList = 1;
 }
 
 // 用户安装客户端
-message LogInstallReq
-{
-    optional int64  InstallTime = 1;
-    optional string Ip          = 2;
-    optional string DeviceModel = 3;
-    optional string OsName      = 4;
-    optional string OsVer       = 5;
-    optional string MacAddr     = 6;
-    optional string Udid        = 7;
-    optional string AppChannel  = 8;
-    optional string AppVer      = 9;
+message LogInstallReq {
+	int64  InstallTime = 1;
+	string Ip          = 2;
+	string DeviceModel = 3;
+	string OsName      = 4;
+	string OsVer       = 5;
+	string MacAddr     = 6;
+	string Udid        = 7;
+	string AppChannel  = 8;
+	string AppVer      = 9;
 }
 
-message LogInstallRsp
-{
-    optional ReturnCode ReturnCode = 1;
+message LogInstallRsp {
+	ReturnCode ReturnCode = 1;
 }
 
-message GetOtherPlayerInfo
-{
-    optional int32          PlayerSn    = 1;
+message GetOtherPlayerInfo {
+	int32 PlayerSn = 1;
 }
 
-message GetOtherPlayerInfoRs
-{
-    optional int32          PlayerSn    = 1;
-    optional string         NickName    = 2;    // 昵称
-    optional int32          HeadImage   = 3;    // 头像
-    optional int32          Lv          = 4;    // 等级
-    optional int32          Online      = 5;    // 0:不在线，1：在线
-    repeated int32          Collection  = 6;    // 藏品
+message LootItem {
+	int32 LootMissionId = 1;
+	int32 PsX           = 2; // 摆放位置 x
+	int32 PsY           = 3; // 摆放位置 y
 }
 
+message GetOtherPlayerInfoRs {
+	int32             PlayerSn   = 1;
+	string            NickName   = 2; // 昵称
+	int32             HeadImage  = 3; // 头像
+	int32             Lv         = 4; // 等级
+	int32             Online     = 5; // 0:不在线，1：在线
+	repeated LootItem Collection = 6; // 藏品
+}
+
+message MailInfoReq {
+
+}
+
+// 邮件详情
+message MailInfo {
+	int32         MailId   = 1;
+	int32         State    = 2; //邮件状态 0：已领取 1：未领取
+	string        Title    = 3;
+	string        Name     = 4;
+	int64         Time     = 5;
+	int32         DownTime = 6;
+	repeated Item Items    = 7; // 奖励道具
+}
+
+message MailInfoRes {
+	ReturnCode        ReturnCode = 1;
+	repeated MailInfo Infos      = 2; // 邮件列表
+}
+
+// 获取邮件内容描述
+message MailGetDescReq {
+	int32 MailId = 1;
+}
+
+message MailGetDescRs {
+	ReturnCode ReturnCode = 1;
+	int32      MailId     = 2;
+	string     Desc       = 3; // 内容描述
+}
+
+// 删除邮件
+message MailDeleteReq {
+	int32 MailId = 1;
+}
+message MailDeleteRs {
+	ReturnCode ReturnCode = 1;
+	int32      MailId     = 2;
+}
+
+// 领取邮件
+message MailGetAwardReq {
+	int32 MailId = 1;
+}
+
+// 领取邮件
+message MailGetAwardRs {
+	ReturnCode ReturnCode = 1;
+	int32      MailId     = 2;
+}
+
+message RankListReq {
+	int32 Type = 1; //榜单类型 0: 通关星数榜 1: 通关次数榜 2: 关卡进度榜 3: 战利品收集榜 4: 击杀积分榜
+}
+
+//排行榜详情
+message RankInfo {
+	int32  Rank      = 1; //名次
+	int32  PlayerSn  = 2; //玩家Id
+	int32  HeadImage = 3; //玩家头像Id
+	string NickName  = 4; //昵称
+	int64  Num       = 5; //数量
+}
+
+message RankListRes {
+	ReturnCode        ReturnCode = 1;
+	int32             Type       = 2; //榜单类型
+	repeated RankInfo Infos      = 3; //排行List
+	RankInfo          My         = 4; //玩家自身排行数据
+}
+
+// 战利品任务
+message LootMission {
+	enum Status {
+		Processing = 0; // 未完成
+		Finished   = 1; // 待领取
+		Rewarded   = 2; // 已领取
+	}
+
+	int32  Id            = 1;
+	Status State         = 2;
+	int32  Progress      = 3; // 当前完成数量
+	int32  CompletedTime = 4;
+}
+
+// 获取战利品任务列表
+message LootMissionList {
+}
+
+message LootMissionListRs {
+	ReturnCode           ReturnCode = 1;
+	repeated LootMission List       = 2;
+}
+
+// 获取战利品任务奖励
+message RewardLootMission {
+	int32 Id = 1;
+}
+
+message RewardLootMissionRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                Id          = 2; // 任务ID
+	int32                ExpAdd      = 3; // 奖励经验
+	int32                Gold        = 4; // 奖励金币
+	int32                Honor       = 5; // 奖励荣耀
+	int32                Achievement = 6; // 奖励成就
+	int32                Diamond     = 7; // 奖励钻石
+	repeated Item        Items       = 8; // 奖励道具
+	repeated CrystalInfo CrystalList = 9; // 奖励装备
+}
+
+// 获取战利品列表
+message GetLootWall {
+}
+
+message GetLootWallRs {
+	ReturnCode        ReturnCode = 1;
+	repeated LootItem List       = 2;
+}
+
+// 放置战利品
+message PlaceLoot {
+	repeated LootItem List = 1;
+}
+
+message PlaceLootRs {
+	ReturnCode ReturnCode = 1;
+}
+
+// 清空战利品展示墙
+message ClearLootWall {
+}
+
+message ClearLootWallRs {
+	ReturnCode ReturnCode = 1;
+}
+
+// 重命名玩家名字
+message ModifyPlayerName {
+	int32  Sn   = 1;
+	string Name = 2;
+}
+
+message ModifyPlayerNameRs {
+	ReturnCode ReturnCode = 1;
+	int32      Sn         = 2;
+	string     Name       = 3;
+}
+
+// 设置玩家头像
+message ModifyPlayerIcon {
+	int32 Sn   = 1;
+	int32 Icon = 2;
+}
+
+message ModifyPlayerIconRs {
+	ReturnCode ReturnCode = 1;
+	int32      Sn         = 2;
+	int32      Icon       = 3;
+}
+
+//  版本匹配
+message C2S_VersionInfoReq {
+}
+
+message S2C_VersionInfoRsp {
+	string Version = 1;
+}
+
+//  邮件头
+message MailHead {
+	uint32 MailID     = 1;
+	uint32 MailState  = 2; //邮件状态 0：已领取 1：未领取
+	string MailTitle  = 3;
+	string SenderName = 4;
+	uint64 SendTime   = 5;
+	uint32 DownTime   = 6;
+}
+
+message C2S_MailHeadListReq {
+}
+
+message S2C_MailHeadListRsp {
+	repeated MailHead MailHeadList = 1;
+}
+
+//  邮件体
+message MailEnclosure {
+	uint32 EnclosureType = 1;
+	uint32 EnclosureID   = 2;
+	uint32 EnclosureNum  = 3;
+}
+
+message C2S_MailBodyReq {
+	uint32 MailId = 1;
+}
+
+message S2C_MailBodyRsp {
+	string                 MailContent       = 1;
+	repeated MailEnclosure MailEnclosureList = 2;
+}
+
+//  邮件状态
+message C2S_MailStateReq {
+	uint32 MailID = 1;
+}
+
+message C2S_MailStateRsp {
+	uint32 MailID    = 1;
+	uint32 MailState = 2;
+}
+
+//  邮箱状态
+message C2S_MailBoxStateReq {
+}
+
+message S2C_MailBoxStateRsp {
+	uint32 MailBoxState = 1;
+}
+
+// 删除邮件
+message C2S_MailDeleteReq {
+	uint32 MailID = 1;
+}
+
+message S2C_MailDeleteRsp {
+	uint32 MailID    = 1;
+	uint32 MailState = 2;
+}
+
+//  取邮件附件
+message C2S_MailGetAwardReq {
+	uint32 MailID = 1;
+}
+
+message S2C_MailGetAwardRsp {
+	uint32 MailID    = 1;
+	uint32 MailState = 2;
+}

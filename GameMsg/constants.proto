@@ -1,0 +1,26 @@
+//
+
+syntax="proto3";
+
+option go_package = ".;GameMsg";
+
+enum TASK_CONDITION {
+	TC_ZERO           = 0;
+	GOLD              = 1;  //获取金币
+	STAGE             = 2;  //完成指定关卡
+	PASS_TIMES        = 3;  //累计通关次数
+	COST_GOLD         = 4;  //消耗金币
+	DIAMOND           = 5;  //消耗钻石
+	STAR              = 6;  //获取星星数量
+	LV                = 7;  //达到等级
+	EQUIP_CNT         = 8;  //获得装备总数量
+	SPECIFIC_EQUIP    = 9;  //获得指定品质装备数量
+	HERO_CNT          = 10; //获得英雄数量
+	SPECIFIC_HERO     = 11; //获得指定品质英雄数量
+	SOLIDER_CNT       = 12; //获得军团数量
+	SPECIFIC_SOLIDER  = 13; //获得指定品质军团数量
+	BUILDING_CNT      = 14; //获得建筑数量
+	SPECIFIC_BUILDING = 15; //获得指定品质建筑数量
+	EXPLORE_TIMES     = 16; //探索总数量
+	EXPLORE_AREA      = 17; //探索指定地点数量
+}
