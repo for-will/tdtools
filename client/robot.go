@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"reflect"
 	"robot/GameMsg"
@@ -13,6 +14,8 @@ type Robot struct {
 	MsgHandler  map[GameMsg.MsgId]interface{}
 	ValidCardSn int32
 	SyncPlayer  *GameMsg.SyncPlayer
+	Account     string
+	Password    string
 }
 
 const (
@@ -66,10 +69,9 @@ func (r *Robot) Login(account string, password string) {
 
 func (r *Robot) Explore() {
 	var area int32 = 5
-	var times GameMsg.ExploreTimes = GameMsg.ExploreTimes_Ten
 	r.SendMsg(&GameMsg.Explore{
 		Area:  NewInt32(area),
-		Times: times,
+		Times: GameMsg.ExploreTimes_Single,
 	})
 }
 
@@ -188,7 +190,7 @@ func (r *Robot) PlaceLoot() {
 
 func (r *Robot) ModifyNickname() {
 	r.SendMsg(&GameMsg.ModifyPlayerName{
-		Name: NewString("x"),
+		Name: NewString("xxx"),
 	})
 }
 
@@ -198,8 +200,51 @@ func (r *Robot) ModifyHeadImage() {
 	})
 }
 
+func (r *Robot) InitPlayerName() {
+	r.SendMsg(&GameMsg.InitPlayerName{
+		Name: "x3",
+	})
+}
+
+func (r *Robot) OverStage() {
+	r.SendMsg(&GameMsg.OverStage{
+		StageId: 1010001,
+		IsWin:   true,
+		Param:   0,
+		KillNum: 11,
+		//EnemyList: nil,
+	})
+}
+
+func (r *Robot) StoreInfoReq() {
+	r.SendMsg(&GameMsg.StoreInfoReq{})
+}
+
+func (r *Robot) StorePurchaseReq() {
+	r.SendMsg(&GameMsg.StorePurchaseReq{
+		Id:  6,
+		Cnt: 2,
+	})
+}
+
+func (r *Robot) OpeningActivitiesReq() {
+	r.SendMsg(&GameMsg.OpeningActivitiesReq{})
+}
+
+func (r *Robot) OALoginRewardReq() {
+	r.SendMsg(&GameMsg.OALoginRewardReq{
+		ActivityId: NewInt32(1),
+	})
+}
+
+func (r *Robot) OATaskRewardReq() {
+	r.SendMsg(&GameMsg.OATaskRewardReq{
+		Id: 13,
+	})
+}
+
 func OnConnected(r *Robot) {
-	r.Login(RobotAccount, RobotPassword)
+	r.Login(r.Account, r.Password)
 	//r.Login("11", "11")
 }
 
@@ -235,10 +280,10 @@ func OnCrystalBackPackRs(r *Robot, msg *GameMsg.CrystalBackPackRs) {
 func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
 	//r.HeroTalentInfo()
 	//r.UpgradePlayerTalent()
-	//r.Explore()
+	r.Explore()
 	//r.LogInstall()
 	//r.UnlockCard()
-	r.LootMissionList()
+	//r.LootMissionList()
 	//r.PlaceLoot()
 	//r.GetLootWall()
 	//r.ClearLootWall()
@@ -246,6 +291,24 @@ func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
 	//r.ModifyNickname()
 	//r.ModifyHeadImage()
 	//r.HeroQualityUp()
+	//r.InitPlayerName()
+	//fmt.Println(r.Account, JsonString(msg))
+	//r.OverStage()
+	//r.StoreInfoReq()
+	//r.OpeningActivitiesReq()
+	//r.OALoginRewardReq()
+	//r.OATaskRewardReq()
+	//r.OpeningActivitiesReq()
+}
+
+func OnStoreInfoRs(r *Robot, msg *GameMsg.StoreInfoRs) {
+
+	//for _, s := range msg.Stores {
+	//	fmt.Println(time.Unix(int64(s.NextFreshTime), 0))
+	//}
+	//Log.Debug("NextFreshTime")
+	r.StorePurchaseReq()
+	r.StorePurchaseReq()
 }
 
 func OnHeroTalentInfoRs(r *Robot, msg *GameMsg.HeroTalentInfoRs) {
@@ -255,7 +318,22 @@ func OnHeroTalentInfoRs(r *Robot, msg *GameMsg.HeroTalentInfoRs) {
 	//r.UpgradeHeroTalent()
 	//r.ResetHeroTalentPage()
 	//r.ModifyNickname()
+
 }
+
+func OnLootMissionListRs(r *Robot, msg *GameMsg.LootMissionListRs) {
+	zap.L().Debug("OnLootMissionListRs", zap.Any("rsp", msg))
+}
+
+func OnExploreRs(r *Robot, msg *GameMsg.ExploreRs) {
+	zap.L().Debug("OnExploreRs", zap.Any("rsp", msg))
+
+	for _, card := range msg.Cards {
+		r.ValidCardSn = card.Sn
+		r.HeroTalentInfo()
+	}
+}
+
 //
 //func NewInt32(v int32) *int32 {
 //	return &v
@@ -269,7 +347,6 @@ func OnHeroTalentInfoRs(r *Robot, msg *GameMsg.HeroTalentInfoRs) {
 //	return &v
 //}
 
-
 func NewInt32(v int32) int32 {
 	return v
 }
@@ -280,4 +357,16 @@ func NewInt64(v int64) int64 {
 
 func NewString(v string) string {
 	return v
+}
+
+var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
+	NetworkConnected:                       OnConnected,
+	GameMsg.MsgId_S2C_SyncMainlineTask:     OnSyncMainlineTaskRs,
+	GameMsg.MsgId_S2C_AccountCheckRs:       OnAccountCheckRs,
+	GameMsg.MsgId_S2C_SyncPlayer:           OnSyncPlayer,
+	GameMsg.MsgId_S2C_CrystalBackPackRs:    OnCrystalBackPackRs,
+	GameMsg.MsgId_S2C_SyncPlayerTalentList: OnSyncPlayerTalentList,
+	GameMsg.MsgId_S2C_HeroTalentInfoRs:     OnHeroTalentInfoRs,
+	GameMsg.MsgId_S2C_StoreInfoRs:          OnStoreInfoRs,
+	GameMsg.MsgId_S2C_ExploreRs:            OnExploreRs,
 }

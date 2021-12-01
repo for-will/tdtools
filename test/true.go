@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"robot/GameMsg"
 	"runtime"
 )
 
@@ -40,6 +42,14 @@ func main() {
 	//var p Person
 	//var p2 = p
 	//fmt.Println(p2)
+	//var arr = [...]int{1, 2, 3, 4}
+	var s = "hello\tworld\n"
+	fmt.Printf("%q", s)
+
+	var cd = GameMsg.TASK_CONDITION_COST_GOLD
+	fmt.Println(cd)
+	cd += 1
+
 }
 
 func ShowMemEscape() interface{} {
@@ -97,4 +107,3 @@ type Person struct {
 //type DoNotCompare [0]func()
 //
 //type NoUnkeyedLiterals struct{}
-

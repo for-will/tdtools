@@ -1,6 +1,12 @@
 package db
 
-import "time"
+import (
+	db "github.com/myPuffer/gotosql"
+	"time"
+)
+
+var LogSql = db.LogSql
+var LogError = db.LogError
 
 type RewardTask struct {
 	ReturnCode  *int32 `db:"index"`
@@ -23,6 +29,27 @@ type TestTableTask struct {
 	PsY        int32
 }
 
-func CreateTable()  {
+type _StorePurchase struct {
+	Id        int32 `db:"primary_key"`
+	PlayerSn  int32 `db:"unique:udx_internal_purchase_player_goods"`
+	GoodsId   int32 `db:"unique:udx_internal_purchase_player_goods"`
+	Purchased int32
+	FreshTime time.Time `db:"type:timestamp"`
+}
 
+type _OpeningActivity struct {
+	Id           int32 `db:"primary_key"`
+	PlayerSn     int32 `db:"unique:udx_opening_activity_player_activity"`
+	ActivityType int32 `db:"unique:udx_opening_activity_player_activity"`
+	ActivityId   int32 `db:"unique:udx_opening_activity_player_activity"`
+	State        int32
+	Progress     int32
+	StartAt      time.Time `db:"type:timestamp"`
+}
+
+type _ActivityTreasureBox struct {
+	Id       int32 `db:"primary_key"`
+	PlayerSn int32 `db:"unique:udx_activity_treasure_player_box"`
+	BoxId    int32 `db:"unique:udx_activity_treasure_player_box"`
+	Status   int32
 }

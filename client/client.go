@@ -122,7 +122,7 @@ func (r *Client) ReadMsg() error {
 	msgId := GameMsg.MsgId(id)
 	typ, ok := messageType[msgId]
 	if !ok {
-		fmt.Printf("unknown msg id %v(%v)\n", msgId, id)
+		Log.Error("unknown msg id", zap.String("id", msgId.String()), zap.Uint32("value", id))
 		return nil
 	}
 	msg := reflect.New(typ.Elem()).Interface().(proto.Message)
@@ -147,9 +147,10 @@ func (r *Client) ReadMsg() error {
 func fetchReturnCode(msg interface{}) GameMsg.ReturnCode {
 	typ := reflect.TypeOf(msg).Elem()
 	val := reflect.ValueOf(msg).Elem()
+	ReturnCodeType := reflect.TypeOf(GameMsg.ReturnCode(0))
 	for i := 0; i < typ.NumField(); i++ {
-		if typ.Field(i).Type == reflect.TypeOf(new(GameMsg.ReturnCode)) {
-			return val.Field(i).Elem().Interface().(GameMsg.ReturnCode)
+		if typ.Field(i).Type == ReturnCodeType {
+			return val.Field(i).Interface().(GameMsg.ReturnCode)
 		}
 	}
 	return GameMsg.ReturnCode_OK

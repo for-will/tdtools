@@ -1,8 +1,9 @@
 package main
 
 import (
-	"robot/GameMsg"
+	"fmt"
 	"robot/client"
+	"sync"
 )
 
 func main() {
@@ -11,23 +12,36 @@ func main() {
 	//fmt.Println(f())
 	//
 	newRobot()
+	//Benchmark()
 }
 
 func newRobot() {
 	r := &client.Robot{
-		MsgHandler: map[GameMsg.MsgId]interface{}{
-			client.NetworkConnected:                client.OnConnected,
-			GameMsg.MsgId_S2C_SyncMainlineTask:     client.OnSyncMainlineTaskRs,
-			GameMsg.MsgId_S2C_AccountCheckRs:       client.OnAccountCheckRs,
-			GameMsg.MsgId_S2C_SyncPlayer:           client.OnSyncPlayer,
-			GameMsg.MsgId_S2C_CrystalBackPackRs:    client.OnCrystalBackPackRs,
-			GameMsg.MsgId_S2C_SyncPlayerTalentList: client.OnSyncPlayerTalentList,
-			GameMsg.MsgId_S2C_HeroTalentInfoRs:     client.OnHeroTalentInfoRs,
-		},
+		MsgHandler: client.DefaultMsgHandler,
+		Account:    client.RobotAccount,
+		Password:   client.RobotPassword,
 	}
 
 	r.Start()
 	client.Log.Sync()
+}
+
+func Benchmark() {
+	wg := &sync.WaitGroup{}
+	for i := 0; i < 1000; i++ {
+		r := &client.Robot{
+			MsgHandler: client.DefaultMsgHandler,
+			Account:    fmt.Sprintf("Test%d", i),
+			Password:   "123456",
+		}
+
+		wg.Add(1)
+		go func() {
+			r.Start()
+			wg.Done()
+		}()
+	}
+	wg.Wait()
 }
 
 func f() (r int) {

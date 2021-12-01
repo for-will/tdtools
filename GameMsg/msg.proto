@@ -98,6 +98,34 @@ enum ReturnCode {
 	ModifyNameUsed                 = 177; // 昵称已被使用
 	ModifyNameError                = 178; // 修改昵称失败
 	ModifyAvatarFailed             = 179; // 修改头像失败
+
+	//  邮件
+	MailHeadListEmpty              = 180; // 邮件头列表为空
+	MailHeadException              = 181; // 邮件头异常
+	MailBodyException              = 182; // 邮件体异常
+	MailAppendixException          = 183; // 邮件附件异常
+	MailStateException             = 184; // 邮件状态异常
+	MailDeleteIDListEmpty          = 185; // 邮件删除列表为空
+	MailDeleteIDReturnListEmpty    = 186; // 邮件删除都异常
+
+	//  背包
+	PackGridNumNotEnough           = 187; // 背包空位不足
+
+	// 初始设置昵称
+	InitNameModified               = 190; // 不是第一次修改昵称
+
+	// 商店购买
+	SP_InvalidGoods                = 191; // 无效的商品id
+	SP_CntExceeded                 = 102; // 购买数量超过上限
+	SP_CurrencyShortage            = 103; // 货币不足
+
+	// 开服7日活动
+	OpeningActivityOutdated        = 104;
+	OpeningActivityInvalidId       = 105;
+	OpeningActivityUnfinished      = 106;
+	OpeningActivityRewarded        = 107; // 已领取
+	OpeningActivityConfigMiss      = 108; // 未找到配置文件
+	OpeningActivityPointsDemanded  = 109; // 活跃点不足
 }
 
 // 水晶 (装备) 属性
@@ -119,23 +147,36 @@ message CrystalInfo {
 }
 
 message DeviceInfo {
-	string DeviceModel  = 1;  // 设备型号
-	int32  DeviceHeight = 2;  //
-	int32  DeviceWidth  = 3;  //
-	string OsName       = 4;  // 操作系统
-	string OsVer        = 5;  // 操作系统版本
-	string MacAddr      = 6;  // 设备mac地址
-	string Udid         = 7;  // 设备唯一标示符
-	string Idfa         = 8;  // 广告标识
-	string AppChannel   = 9;  // 运营渠道
-	string AppVer       = 10; // 客户端版本号
-	string Server       = 11; // 游戏服
-	string AccountId    = 12; // 账号唯一标识符
-	string OldAccountId = 13; // 游客身份标识符
-	string RoleId       = 14; // 角色唯一标识符
-	string RoleName     = 15; //
-	string SdkVer       = 16; // SDK版本号
-	string IMEI         = 17; // 移动设备国际身份码
+	string DeviceModel    = 1;  // 设备型号
+	int32  DeviceHeight   = 2;  //
+	int32  DeviceWidth    = 3;  //
+	string OsName         = 4;  // 操作系统
+	string OsVer          = 5;  // 操作系统版本
+	string MacAddr        = 6;  // 设备mac地址
+	string Udid           = 7;  // 设备唯一标示符
+	string Idfa           = 8;  // 广告标识
+	string AppChannel     = 9;  // 运营渠道
+	string AppVer         = 10; // 客户端版本号
+	string Server         = 11; // 游戏服
+	string AccountId      = 12; // 账号唯一标识符
+	string OldAccountId   = 13; // 游客身份标识符
+	string RoleId         = 14; // 角色唯一标识符
+	string RoleName       = 15; //
+	string SdkVer         = 16; // SDK版本号
+	string IMEI           = 17; // 移动设备国际身份码
+	string TransId        = 18; // .base.UniSdkUtils.getTransid
+	string UnisdkDeviceId = 19; // .base.UniSdkUtils.getUnisdkDeviceId
+	int32  IsEmulator     = 20; // .base.UniSdkUtils.isEmulator获取
+	int32  IsRoot         = 21; // .base.iUniSdkUtils.sDeviceRooted获取
+	string CountryCode    = 22; // .base.ConstProp接口的COUNTRY_CODE
+	string OAID           = 23;
+	string EngineVer      = 24; // SdkMgr.getInst().getPropstr(ConstProp.ENGINE_VERSION)
+	int64  AID            = 25;
+	string AasMsg         = 26;
+	string RealnameMsg    = 27;
+	string SAuthLoginType = 28;
+	string Isp            = 29;
+	string Network        = 30;
 }
 
 message AccountCheck {
@@ -212,7 +253,17 @@ message SyncStage {
 }
 
 message SyncShip {
-	int32 MaxHp = 1;
+	int32 MaxHp              = 1;  // 初始基地生命值
+	int32 BattlePoint        = 2;  // 初始矿石资源值
+	int32 WavePoint          = 3;  // 波次奖励矿石资源值
+	int32 BuildPoint         = 4;  // 初始建筑能量值
+	int32 SkillInitialEnergy = 5;  // 英雄初始能量
+	int32 SkillChargeRate    = 6;  // 技能充能速率（点/秒）
+	int32 SkillConsumeEnergy = 7;  // 一次技能消耗的能量
+	int32 HeroCostRate       = 8;  // 英雄上场费用参数
+	int32 MaxPackItemNum     = 9;  // 一个背包格子的上限
+	int32 MaxPackGridNum     = 10; // 背包格子数的上限
+	int32 MailMax            = 11; // 邮件数量上限
 }
 
 message Item {
@@ -231,14 +282,15 @@ message Task {
 }
 
 message SyncPlayerBase {
-	int32  Lv          = 1; // 玩家等级
-	int32  Exp         = 2; // 经验
-	int32  Gold        = 3; // 金币
-	int32  Honor       = 4; // 荣耀
-	int32  Achievement = 5; // 成就
-	int32  Diamond     = 6; // 晶币（钻石）
-	string Name        = 7; // 玩家名字
-	int32  Icon        = 8; // 玩家头像
+	int32  Lv           = 1; // 玩家等级
+	int32  Exp          = 2; // 经验
+	int32  Gold         = 3; // 金币
+	int32  Honor        = 4; // 荣耀
+	int32  Achievement  = 5; // 成就
+	int32  Diamond      = 6; // 晶币（钻石）
+	string Name         = 7; // 玩家名字
+	int32  Icon         = 8; // 玩家头像
+	int32  NameModified = 9; // 修改昵称次数
 }
 
 message SyncPlayer {
@@ -275,11 +327,12 @@ message EnterStageRs {
 
 message OverStage {
 
-	int32 StageId = 1;
-	bool  IsWin   = 2;
+	int32          StageId   = 1;
+	bool           IsWin     = 2;
 	//optional int32 StarNum = 3;
-	int32 Param   = 4;
-	int32 KillNum = 5;
+	int32          Param     = 4;
+	int32          KillNum   = 5;
+	repeated int32 EnemyList = 6; // 怪物列表
 }
 
 message OverStageRs {
@@ -296,6 +349,7 @@ message OverStageRs {
 	int32                Diamond     = 11; // 奖励钻石
 	repeated Item        Items       = 12; // 奖励道具
 	repeated CrystalInfo CrystalList = 13; // 奖励装备
+	int32                HeroCard    = 14; // 奖励英雄
 }
 
 // 领取关卡宝箱
@@ -450,6 +504,7 @@ message ExploreRs {
 	ReturnCode           ReturnCode  = 1;
 	repeated Item        Items       = 2; // 奖励道具
 	repeated CrystalInfo CrystalList = 3; // 道具-水晶
+	repeated SyncCard    Cards       = 4; // 英雄
 }
 
 // 酒馆-卡牌解锁
@@ -785,6 +840,7 @@ message LootMission {
 
 // 获取战利品任务列表
 message LootMissionList {
+
 }
 
 message LootMissionListRs {
@@ -837,8 +893,7 @@ message ClearLootWallRs {
 
 // 重命名玩家名字
 message ModifyPlayerName {
-	int32  Sn   = 1;
-	string Name = 2;
+	string Name = 1;
 }
 
 message ModifyPlayerNameRs {
@@ -867,37 +922,47 @@ message S2C_VersionInfoRsp {
 	string Version = 1;
 }
 
+message MailEnclosure {
+	int32 EnclosureType = 1;
+	int32 EnclosureID   = 2;
+	int32 EnclosureNum  = 3;
+}
+
 //  邮件头
 message MailHead {
-	uint32 MailID     = 1;
-	uint32 MailState  = 2; //邮件状态 0：已领取 1：未领取
-	string MailTitle  = 3;
-	string SenderName = 4;
-	uint64 SendTime   = 5;
-	uint32 DownTime   = 6;
+	uint32                 MailID            = 1;
+	int32                  MailState         = 2;  //邮件状态 0：已领取 1：未领取
+	int32                  TitleFlag         = 3;  //0: MailTitle; 1: TitleID(后端从MailTemplateConfig.json读取TitleID)
+	string                 MailTitle         = 4;
+	int32                  TitleID           = 5;
+	int32                  SenderFlag        = 6;  //0:SenderName;  1:SenderID(后端从MailTemplateConfig.json读取SenderID)
+	string                 SenderName        = 7;
+	int32                  SenderID          = 8;
+	uint64                 SendTime          = 9;
+	uint64                 DownTime          = 10;
+	repeated MailEnclosure MailEnclosureList = 11;
 }
 
 message C2S_MailHeadListReq {
 }
 
 message S2C_MailHeadListRsp {
-	repeated MailHead MailHeadList = 1;
+	ReturnCode        ReturnCode   = 1;
+	repeated MailHead MailHeadList = 2;
 }
 
 //  邮件体
-message MailEnclosure {
-	uint32 EnclosureType = 1;
-	uint32 EnclosureID   = 2;
-	uint32 EnclosureNum  = 3;
-}
-
 message C2S_MailBodyReq {
-	uint32 MailId = 1;
+	uint32 MailID = 1;
 }
 
 message S2C_MailBodyRsp {
-	string                 MailContent       = 1;
-	repeated MailEnclosure MailEnclosureList = 2;
+	ReturnCode ReturnCode  = 1;
+	uint32     MailID      = 2;
+	int32      ContentFlag = 3; //0: string; 1: ContentID(后端从MailTemplateConfig.json读取ContentID)
+	string     MailContent = 4;
+	int32      ContentID   = 5;
+	int32      MailState   = 6;
 }
 
 //  邮件状态
@@ -905,9 +970,10 @@ message C2S_MailStateReq {
 	uint32 MailID = 1;
 }
 
-message C2S_MailStateRsp {
-	uint32 MailID    = 1;
-	uint32 MailState = 2;
+message S2C_MailStateRsp {
+	ReturnCode ReturnCode = 1;
+	uint32     MailID     = 2;
+	int32      MailState  = 3;
 }
 
 //  邮箱状态
@@ -915,17 +981,22 @@ message C2S_MailBoxStateReq {
 }
 
 message S2C_MailBoxStateRsp {
-	uint32 MailBoxState = 1;
+	int32 MailBoxState = 1;
 }
 
 // 删除邮件
-message C2S_MailDeleteReq {
+message DeleteMailID {
 	uint32 MailID = 1;
 }
 
+message C2S_MailDeleteReq {
+	repeated DeleteMailID MailDeleteIDList = 1;
+}
+
 message S2C_MailDeleteRsp {
-	uint32 MailID    = 1;
-	uint32 MailState = 2;
+	ReturnCode            ReturnCode              = 1;
+	repeated DeleteMailID MailDeleteSuccessIDList = 2;
+	int32                 Result                  = 3;
 }
 
 //  取邮件附件
@@ -934,6 +1005,167 @@ message C2S_MailGetAwardReq {
 }
 
 message S2C_MailGetAwardRsp {
-	uint32 MailID    = 1;
-	uint32 MailState = 2;
+	ReturnCode ReturnCode = 1;
+	uint32     MailID     = 2;
+	int32      MailState  = 3;
+}
+
+// 解锁怪物列表
+message GetUnLockEnemyListReq {
+
+}
+
+// 解锁怪物列表
+message GetUnLockEnemyListRs {
+	ReturnCode     ReturnCode = 1;
+	repeated int32 EnemyList  = 2;
+}
+
+/// 发起问卷调查
+message ShowWebViewRs {
+	string Url = 1;
+}
+
+// 问卷调查
+message QuestionnaireReq {
+	string Action = 1;
+	string Data   = 2;
+}
+
+// 问卷调查
+message QuestionnaireRs {
+	ReturnCode ReturnCode = 1;
+
+}
+
+// 初始玩家名字
+message InitPlayerName {
+	string Name = 1;
+}
+
+message InitPlayerNameRs {
+	ReturnCode ReturnCode = 1;
+	string     Name       = 2;
+}
+
+// 获取商店信息
+message StoreGoodsInfo {
+	int32 GoodsId = 1;
+	int32 Amount  = 2;
+}
+
+message StoreInfoReq {
+
+}
+
+message StoreFreshTimeInfo {
+	int32 StoreID       = 1;
+	int32 NextFreshTime = 2;
+}
+
+message StoreInfoRs {
+	ReturnCode                  ReturnCode = 1;
+	repeated StoreGoodsInfo     GoodsList  = 2;
+	repeated StoreFreshTimeInfo Stores     = 3;
+}
+
+// 游戏内购买
+message StorePurchaseReq {
+	int32 Id  = 1; // 购买商品ID
+	int32 Cnt = 2; // 购买商品数量
+}
+
+message StorePurchaseRs {
+	ReturnCode     ReturnCode = 1;
+	StoreGoodsInfo GoodsInfo  = 2;
+}
+
+// 开服七日活动
+message OpeningActivity {
+	enum Status {
+		WaitStart  = 0;
+		Processing = 1; // 未完成
+		Finished   = 2; // 待领取
+		Rewarded   = 3; // 已领取
+	}
+	int32  Id       = 1;
+	Status State    = 2;
+	int32  Progress = 3;
+}
+
+message OATreasureBox {
+	int32 Id       = 1;
+	bool  Rewarded = 2;
+}
+
+message OpeningActivitiesReq {
+
+}
+
+message OpeningActivitiesRs {
+	ReturnCode               ReturnCode         = 1;
+	repeated OpeningActivity LoginActivities    = 2; // 登录
+	repeated OpeningActivity PracticeActivities = 3; // 试炼
+	repeated OpeningActivity TaskActivities     = 4; // 任务
+	repeated OATreasureBox   Boxes              = 5; // 宝箱
+	int32                    ActiviePoints      = 6; // 当前活跃点数
+	int32                    EndTime            = 7;
+}
+
+message OALoginRewardReq {
+	int32 ActivityId = 1;
+}
+
+message OALoginRewardRs {
+	ReturnCode           ReturnCode  = 1;
+	OpeningActivity      Activity    = 2;
+	repeated Item        Items       = 3; // 奖励道具
+	repeated CrystalInfo CrystalList = 4; // 奖励装备
+	repeated SyncCard    Cards       = 5; // 英雄
+}
+
+message OATaskRewardReq {
+	int32 Id = 1;
+}
+
+message OATaskRewardRs {
+	ReturnCode           ReturnCode    = 1;
+	OpeningActivity      Activity      = 2;
+	repeated Item        Items         = 3; // 奖励道具
+	repeated CrystalInfo CrystalList   = 4; // 奖励装备
+	repeated SyncCard    Cards         = 5; // 英雄
+	int32                ActiviePoints = 6; // 当前活跃点数
+}
+
+message OATreasureBoxRewardReq {
+	int32 Id = 1;
+}
+
+message OATreasureBoxRewardRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                Id          = 2;
+	bool                 Rewarded    = 3;
+	repeated Item        Items       = 4; // 奖励道具
+	repeated CrystalInfo CrystalList = 5; // 奖励装备
+	repeated SyncCard    Cards       = 6; // 英雄
+}
+
+// 请求版本号
+message VersionContrastReq {
+
+}
+
+// 版本号返回
+message VersionContrastRs {
+	ReturnCode ReturnCode = 1;
+	string     Version    = 2;
+
+}
+
+// NgGMBridge 客服
+message GMTReq {
+}
+
+message GMTRs {
+	string GMTokenJson = 1;
 }

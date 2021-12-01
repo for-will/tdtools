@@ -1,0 +1,131 @@
+//
+// Code generated auto. DO NOT EDIT.
+
+package db
+
+import (
+	"database/sql"
+	"strings"
+)
+
+func NewTblStorePurchase(db *sql.DB) {
+
+	querySql := `create or replace table store_purchase
+(
+    id         int       not null auto_increment
+        primary key,
+    player_sn  int       not null,
+    goods_id   int       not null,
+    purchased  int       not null,
+    fresh_time timestamp not null,
+	unique index udx_internal_purchase_player_goods(player_sn, goods_id) using btree
+)`
+	log.Debug(querySql)
+	_, err := db.Exec(querySql)
+	if err != nil {
+		log.Error("%+v", err)
+	}
+}
+
+func SaveStorePurchase(db *sql.DB, obj *StorePurchase) error {
+
+	log.Debug("INSERT INTO store_purchase(player_sn, goods_id, purchased, fresh_time) VALUE ('%v', '%v', '%v', '%v')",
+		obj.PlayerSn, obj.GoodsId, obj.Purchased, obj.FreshTime)
+	result, err := db.Exec("INSERT INTO store_purchase(player_sn, goods_id, purchased, fresh_time) VALUE (?, ?, ?, ?)",
+		obj.PlayerSn, obj.GoodsId, obj.Purchased, obj.FreshTime)
+
+	if err != nil {
+		log.Error("db query error: %+v", err)
+		return err
+	}
+
+	if id, err := result.LastInsertId(); err != nil {
+		log.Error("get last insert id error: %+v", err)
+		return err
+	} else {
+		obj.Id = int32(id)
+	}
+	return nil
+}
+
+func FirstStorePurchase(db *sql.DB, out *StorePurchase, cond string, args ...interface{}) error {
+
+	sfmt := strings.Replace(cond, "?", "'%+v'", -1)
+	log.Debug("SELECT id, player_sn, goods_id, purchased, fresh_time FROM store_purchase WHERE "+sfmt+" LIMIT 1", args...)
+	rows, err := db.Query("SELECT id, player_sn, goods_id, purchased, fresh_time FROM store_purchase WHERE "+cond+" LIMIT 1", args...)
+	if rows != nil {
+		defer rows.Close()
+	}
+	if err != nil {
+		log.Error("db query error: %+v", err)
+		return err
+	}
+
+	if rows.Next() {
+		if err = rows.Scan(&out.Id, &out.PlayerSn, &out.GoodsId, &out.Purchased, &out.FreshTime); err != nil {
+			log.Error("db query Scan error: %+v", err)
+			return err
+		}
+	} else {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func FindStorePurchase(db *sql.DB, out *[]*StorePurchase, cond string, args ...interface{}) error {
+
+	sfmt := strings.Replace(cond, "?", "'%+v'", -1)
+	log.Debug("SELECT id, player_sn, goods_id, purchased, fresh_time FROM store_purchase WHERE "+sfmt, args...)
+	rows, err := db.Query("SELECT id, player_sn, goods_id, purchased, fresh_time FROM store_purchase WHERE "+cond, args...)
+	if rows != nil {
+		defer rows.Close()
+	}
+	if err != nil {
+		log.Error("db query error: %+v", err)
+		return err
+	}
+
+	for rows.Next() {
+		obj := &StorePurchase{}
+		if err = rows.Scan(&obj.Id, &obj.PlayerSn, &obj.GoodsId, &obj.Purchased, &obj.FreshTime); err != nil {
+			log.Error("db query Scan error: %+v", err)
+			return err
+		}
+		*out = append(*out, obj)
+	}
+	return nil
+}
+
+func UpdateStorePurchased(db *sql.DB, where_id int32, add_purchased int32) error {
+
+	log.Debug("UPDATE store_purchase SET purchased = purchased + '%v' WHERE id = '%v'",
+		add_purchased, where_id)
+	result, err := db.Exec("UPDATE store_purchase SET purchased = purchased + ? WHERE id = ?",
+		add_purchased, where_id)
+
+	if err != nil {
+		log.Error("db query error: %+v", err)
+		return err
+	}
+
+	return nil
+}
+
+
+
+
+
+func FreshStorePurchaseTime(db *sql.DB, where_id int32, purchased int32, fresh_time time.Time) error {
+
+	log.Debug("UPDATE store_purchase SET purchased = '%v', fresh_time = '%v' WHERE id = '%v'",
+		purchased, fresh_time, where_id)
+	result, err := db.Exec("UPDATE store_purchase SET purchased = ?, fresh_time = ? WHERE id = ?",
+		purchased, fresh_time, where_id)
+
+	if err != nil {
+		log.Error("db query error: %+v", err)
+		return err
+	}
+
+	return nil
+}

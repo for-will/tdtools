@@ -147,17 +147,52 @@ enum MsgId {
 
 	C2S_VersionInfoReqID           = 95;  //  版本匹配
 	S2C_VersionInfoRspID           = 96;
+
 	C2S_MailHeadListReqID          = 97;  //  邮件头
 	S2C_MailHeadListRspID          = 98;
+
 	C2S_MailBodyReqID              = 99;  //  邮件体
 	S2C_MailBodyRspID              = 100;
+
 	C2S_MailStateReqID             = 101; //  邮件状态
-	C2S_MailStateRspID             = 102;
+	S2C_MailStateRspID             = 102;
+
 	C2S_MailBoxStateReqID          = 103; //  邮箱状态
 	S2C_MailBoxStateRspID          = 104;
+
 	C2S_MailDeleteReqID            = 105; //  删除邮件
 	S2C_MailDeleteRspID            = 106;
+
 	C2S_MailGetAwardReqID          = 107; //  取邮件附件
 	S2C_MailGetAwardRspID          = 108;
 
+	C2S_GetUnLockEnemyListReq      = 109; //  解锁怪物列表
+	S2C_GetUnLockEnemyListRs       = 110;
+
+	S2C_ShowWebViewRs              = 111; // 发起问卷调查
+	C2S_QuestionnaireReq           = 112; // 问卷调查完成请求
+	S2C_QuestionnaireRs            = 113; // 问卷调查完成rs
+
+	C2S_InitPlayerName             = 114; // 初始玩家昵称
+	S2C_InitPlayerNameRs           = 115;
+
+	C2S_StoreInfoReq               = 116; // 获取商店商品数量
+	S2C_StoreInfoRs                = 117;
+	C2S_StorePurchaseReq           = 118; // 购买商品
+	S2C_StorePurchaseRs            = 119;
+
+	// 开服7日活动
+	C2S_OpeningActivitiesReq       = 120; // 获取活动列表
+	S2C_OpeningActivitiesRs        = 121;
+	C2S_OALoginRewardReq           = 122; // 领取登录奖励
+	S2C_OALoginRewardRs            = 123;
+	C2S_OATaskRewardReq            = 124; // 领取任务奖励
+	S2C_OATaskRewardRs             = 125;
+	C2S_OATreasureBoxRewardReq     = 126; // 领取宝箱奖励
+	S2C_OATreasureBoxRewardRs      = 127;
+	// NgGMBridge 客服
+	C2S_GMTReq                     = 128;
+	S2C_GMTRs                      = 129;
+	C2S_VersionContrastReq         = 130; // 获取版本号
+	S2C_VersionContrastRs          = 131;
 }
