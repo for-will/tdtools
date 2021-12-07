@@ -57,3 +57,30 @@ func goroutineExplode() {
 
 	close(ch)
 }
+
+
+type Pill int
+
+const (
+	Placebo Pill = iota
+	Aspirin
+	Ibuprofen
+	Paracetamol
+	Acetaminophen = Paracetamol
+)
+
+type Pill2 int
+
+const (
+	PillPlacebo Pill2 = iota
+	PillAspirin
+	PillIbuprofen
+	PillParacetamol
+	PillAcetaminophen = Paracetamol
+)
+
+
+//go:generate stringer -type=Pill2
+
+//go:generate stringer -type=Pill
+

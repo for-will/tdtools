@@ -196,7 +196,7 @@ func (r *Robot) ModifyNickname() {
 
 func (r *Robot) ModifyHeadImage() {
 	r.SendMsg(&GameMsg.ModifyPlayerIcon{
-		Icon: NewInt32(11),
+		Icon: NewInt32(12),
 	})
 }
 
@@ -280,7 +280,7 @@ func OnCrystalBackPackRs(r *Robot, msg *GameMsg.CrystalBackPackRs) {
 func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
 	//r.HeroTalentInfo()
 	//r.UpgradePlayerTalent()
-	r.Explore()
+	//r.Explore()
 	//r.LogInstall()
 	//r.UnlockCard()
 	//r.LootMissionList()
@@ -289,7 +289,7 @@ func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
 	//r.ClearLootWall()
 	//r.GetLootWall()
 	//r.ModifyNickname()
-	//r.ModifyHeadImage()
+	r.ModifyHeadImage()
 	//r.HeroQualityUp()
 	//r.InitPlayerName()
 	//fmt.Println(r.Account, JsonString(msg))
