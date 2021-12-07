@@ -97,7 +97,7 @@ func (r *Client) writeMsgLoop() {
 			log.Fatalf("conn.Write error: %v", err)
 		}
 
-		fmt.Printf("> %-30s| %s\n", id, JsonString(msg))
+		fmt.Printf("\u001B[33m> %-30s| %s\u001B[0m\n", id, JsonString(msg))
 
 		//Log.Debugw("send message", zap.Any("MsgID", id.String()), zap.String("message", JsonString(msg)))
 	}
@@ -135,7 +135,7 @@ func (r *Client) ReadMsg() error {
 
 	//fmt.Printf("MsgLen: %d\n", msgLen)
 
-	fmt.Printf("< %-30s| %v\n", msgId, JsonString(msg))
+	fmt.Printf("\u001B[32m< %-30s| %v\u001B[0m\n", msgId, JsonString(msg))
 	if code := fetchReturnCode(msg); code != GameMsg.ReturnCode_OK {
 		Log.Debug("Request failed", zap.Any("ReturnCode", code))
 	}

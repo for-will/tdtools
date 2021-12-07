@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"golang.org/x/tools/cmd/stringer"
 	"reflect"
 	"regexp"
 	"robot/GameMsg"
@@ -24,6 +25,7 @@ func TestRegex(t *testing.T) {
 func TestTimeJson(t *testing.T) {
 	t.Log(JsonString(time.Now()))
 
+	_ = main.Generator{}
 	var tm time.Time
 	//jsoniter.UnmarshalFromString("\"2021-11-03T14:08:57+08:00\"", &tm)
 	//time.Parse()
