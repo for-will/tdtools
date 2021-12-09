@@ -140,10 +140,10 @@ message CrystalInfo {
 	int32             Sn        = 1;
 	int32             Id        = 2;
 	int32             CreatedAt = 3; // 获得时间
-	int32             HeroSn    = 4;
-	int32             Slot      = 5; // 槽位
+	sint32            HeroSn    = 4;
+	sint32            Slot      = 5; // 槽位
 	repeated AttrItem Attrs     = 6; // 属性
-	int32             SkillId   = 7; // 扩展属性
+	sint32            SkillId   = 7; // 扩展属性
 }
 
 message DeviceInfo {
@@ -303,6 +303,7 @@ message SyncPlayer {
 	repeated Item        Items       = 7;   // 道具
 	repeated Task        Tasks       = 8;   // 每日任务
 	repeated CrystalInfo CrystalList = 9;   // 装备列表
+	int32                LogintTime  = 10;  // 登录时间 秒
 
 	// 客户端使用
 	int32                Version     = 100;
@@ -1110,6 +1111,7 @@ message OpeningActivitiesRs {
 	repeated OATreasureBox   Boxes              = 5; // 宝箱
 	int32                    ActiviePoints      = 6; // 当前活跃点数
 	int32                    EndTime            = 7;
+	int32                    TimeNow            = 8; // 当前时间
 }
 
 message OALoginRewardReq {

@@ -24,3 +24,8 @@ enum TASK_CONDITION {
 	EXPLORE_TIMES     = 16; //探索总数量
 	EXPLORE_AREA      = 17; //探索指定地点数量
 }
+
+message TestInt32Size {
+	 sint32 A1 = 1;
+	 int32  A2 = 2;
+}
