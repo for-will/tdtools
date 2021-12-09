@@ -71,7 +71,7 @@ func (r *Robot) Explore() {
 	var area int32 = 5
 	r.SendMsg(&GameMsg.Explore{
 		Area:  NewInt32(area),
-		Times: GameMsg.ExploreTimes_Single,
+		Times: GameMsg.ExploreTimes_Ten,
 	})
 }
 
@@ -190,7 +190,7 @@ func (r *Robot) PlaceLoot() {
 
 func (r *Robot) ModifyNickname() {
 	r.SendMsg(&GameMsg.ModifyPlayerName{
-		Name: NewString("xxx"),
+		Name: NewString("x-1"),
 	})
 }
 
@@ -262,6 +262,22 @@ func OnSyncPlayer(r *Robot, msg *GameMsg.SyncPlayer) {
 			break
 		}
 	}
+	info := &GameMsg.SyncPlayer{}
+	info.CrystalList = append(info.CrystalList, msg.CrystalList...)
+	//msg.CrystalList
+	data, _ := proto.Marshal(info)
+
+	Log.Debug("OnSyncPlayer",
+		zap.Int("crystal_cnt", len(info.CrystalList)),
+		zap.Int("data_size", len(data)))
+	//  {"crystal_cnt": 1051, "data_size": 63581}
+	//	{"crystal_cnt": 1051, "data_size": 39938}
+	//  {"crystal_cnt": 1151, "data_size": 43738}
+	//  {"crystal_cnt": 1251, "data_size": 47538}
+	//  {"crystal_cnt": 1351, "data_size": 51338}
+	//  {"crystal_cnt": 1451, "data_size": 55138}
+	//  {"crystal_cnt": 1551, "data_size": 58938}
+	//  {"crystal_cnt": 1651, "data_size": 62738}
 }
 
 func OnSyncMainlineTaskRs(r *Robot, msg *GameMsg.SyncMainTask) {
@@ -288,8 +304,8 @@ func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
 	//r.GetLootWall()
 	//r.ClearLootWall()
 	//r.GetLootWall()
-	//r.ModifyNickname()
-	r.ModifyHeadImage()
+	r.ModifyNickname()
+	//r.ModifyHeadImage()
 	//r.HeroQualityUp()
 	//r.InitPlayerName()
 	//fmt.Println(r.Account, JsonString(msg))

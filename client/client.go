@@ -136,6 +136,9 @@ func (r *Client) ReadMsg() error {
 	//fmt.Printf("MsgLen: %d\n", msgLen)
 
 	fmt.Printf("\u001B[32m< %-30s| %v\u001B[0m\n", msgId, JsonString(msg))
+	if msgId == GameMsg.MsgId_S2C_SyncPlayer {
+		println(msgLen)
+	}
 	if code := fetchReturnCode(msg); code != GameMsg.ReturnCode_OK {
 		Log.Debug("Request failed", zap.Any("ReturnCode", code))
 	}
