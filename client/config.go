@@ -1,7 +1,7 @@
 package client
 
 const (
-	RobotAccount  = "x31"
+	RobotAccount  = "x35"
 	RobotPassword = "x"
 	ServerAddr    = "172.16.1.218:3563"
 	//ServerAddr = "172.16.4.118:3563"

@@ -87,6 +87,14 @@ func init() {
 		GameMsg.MsgId_S2C_OATaskRewardRs:             &GameMsg.OATaskRewardRs{},
 		GameMsg.MsgId_C2S_OATreasureBoxRewardReq:     &GameMsg.OATreasureBoxRewardReq{},
 		GameMsg.MsgId_S2C_OATreasureBoxRewardRs:      &GameMsg.OATreasureBoxRewardRs{},
+		GameMsg.MsgId_C2S_GetRewardStage:             &GameMsg.GetRewardStage{},
+		GameMsg.MsgId_S2C_GetRewardStageRs:           &GameMsg.GetRewardStageRs{},
+		GameMsg.MsgId_C2S_GetTaskReward:              &GameMsg.GetTaskReward{},
+		GameMsg.MsgId_S2C_GetTaskRewardRs:            &GameMsg.GetTaskRewardRs{},
+		GameMsg.MsgId_C2S_UseItem:                    &GameMsg.UseItem{},
+		GameMsg.MsgId_S2C_UseItemRs:                  &GameMsg.UseItemRs{},
+		GameMsg.MsgId_C2S_QuestionnaireReq:           &GameMsg.QuestionnaireReq{},
+		GameMsg.MsgId_S2C_QuestionnaireRs:            &GameMsg.QuestionnaireRs{},
 	}
 
 	for id, v := range msgId {

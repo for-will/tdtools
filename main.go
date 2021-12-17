@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"robot/client"
 	"sync"
+	"time"
 )
 
 func main() {
@@ -11,6 +13,7 @@ func main() {
 	//client.UpdateDb()
 	//fmt.Println(f())
 	//
+	rand.Seed(time.Now().UnixNano())
 	newRobot()
 	//Benchmark()
 }

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
+	"math/rand"
 	"reflect"
 	"robot/GameMsg"
+	"robot/js"
+	"strconv"
 	"time"
 )
 
@@ -78,11 +81,11 @@ func (r *Robot) Explore() {
 func (r *Robot) UnlockCard() {
 
 	//var cardId int32 = 1005
-	r.SendMsg(&GameMsg.CardUnLock{CardId: NewInt32(1005)})
+	r.SendMsg(&GameMsg.CardUnLock{CardId: NewInt32(1022)})
 }
 
 func (r *Robot) HeroQualityUp() {
-	r.SendMsg(&GameMsg.HeroQualityUp{HeroSn: NewInt32(1632454723)})
+	r.SendMsg(&GameMsg.HeroQualityUp{HeroSn: 1639376076})
 }
 
 func (r *Robot) GetCrystalBackpack() {
@@ -92,14 +95,14 @@ func (r *Robot) GetCrystalBackpack() {
 
 func (r *Robot) EquipCrystal() {
 	r.SendMsg(&GameMsg.EquipCrystal{
-		Sn:     NewInt32(2),
-		HeroSn: NewInt32(1624860736),
-		Slot:   NewInt32(0),
+		Sn:     NewInt32(11239),
+		HeroSn: NewInt32(1639376076),
+		Slot:   NewInt32(1),
 	})
 }
 
 func (r *Robot) UpgradePlayerTalent() {
-	r.SendMsg(&GameMsg.UpgradePlayerTalent{Id: NewInt32(1)})
+	r.SendMsg(&GameMsg.UpgradePlayerTalent{Id: 5})
 }
 
 func (r *Robot) HeroTalentInfo() {
@@ -162,7 +165,7 @@ func (r *Robot) LootMissionList() {
 }
 
 func (r *Robot) RewardLootMission() {
-	r.SendMsg(&GameMsg.RewardLootMission{Id: NewInt32(100103)})
+	r.SendMsg(&GameMsg.RewardLootMission{Id: NewInt32(30201)})
 }
 
 func (r *Robot) GetLootWall() {
@@ -176,12 +179,12 @@ func (r *Robot) ClearLootWall() {
 func (r *Robot) PlaceLoot() {
 	req := &GameMsg.PlaceLoot{}
 	req.List = append(req.List, &GameMsg.LootItem{
-		LootMissionId: NewInt32(100103),
+		LootMissionId: NewInt32(30201),
 		PsX:           NewInt32(3),
 		PsY:           NewInt32(40),
 	})
 	req.List = append(req.List, &GameMsg.LootItem{
-		LootMissionId: NewInt32(100102),
+		LootMissionId: NewInt32(30103),
 		PsX:           NewInt32(30),
 		PsY:           NewInt32(40),
 	})
@@ -190,7 +193,7 @@ func (r *Robot) PlaceLoot() {
 
 func (r *Robot) ModifyNickname() {
 	r.SendMsg(&GameMsg.ModifyPlayerName{
-		Name: NewString("x-1"),
+		Name: NewString("aa" + strconv.Itoa(rand.Intn(100000))),
 	})
 }
 
@@ -202,15 +205,15 @@ func (r *Robot) ModifyHeadImage() {
 
 func (r *Robot) InitPlayerName() {
 	r.SendMsg(&GameMsg.InitPlayerName{
-		Name: "x3",
+		Name: "N1638240472",
 	})
 }
 
 func (r *Robot) OverStage() {
 	r.SendMsg(&GameMsg.OverStage{
-		StageId: 1010001,
+		StageId: 1010003,
 		IsWin:   true,
-		Param:   0,
+		Param:   20,
 		KillNum: 11,
 		//EnemyList: nil,
 	})
@@ -222,8 +225,8 @@ func (r *Robot) StoreInfoReq() {
 
 func (r *Robot) StorePurchaseReq() {
 	r.SendMsg(&GameMsg.StorePurchaseReq{
-		Id:  6,
-		Cnt: 2,
+		Id:  5,
+		Cnt: 1,
 	})
 }
 
@@ -243,13 +246,46 @@ func (r *Robot) OATaskRewardReq() {
 	})
 }
 
+func (r *Robot) GetRewardStage() {
+	r.SendMsg(&GameMsg.GetRewardStage{
+		Id:        3,
+		ChapterId: 1,
+	})
+}
+
+func (r *Robot) GetTaskReward() {
+	r.SendMsg(&GameMsg.GetTaskReward{
+		Id: []int32{10101},
+	})
+}
+
+func (r *Robot) UseItem() {
+	r.SendMsg(&GameMsg.UseItem{
+		Id:  1001,
+		Cnt: 1,
+	})
+}
+
+func (r *Robot) QuestionnaireReq() {
+	r.SendMsg(&GameMsg.QuestionnaireReq{
+		Action: "",
+		Data: js.MinifyJson(&struct {
+			Id string `json:"surveyId"`
+		}{
+			Id: "cev4f3",
+		}),
+	})
+}
+
 func OnConnected(r *Robot) {
 	r.Login(r.Account, r.Password)
+	//r.OpeningActivitiesReq()
 	//r.Login("11", "11")
 }
 
 func OnAccountCheckRs(r *Robot, msg *GameMsg.AccountCheckRs) {
 	//r.Explore()
+	//r.OpeningActivitiesReq()
 }
 
 func OnSyncPlayer(r *Robot, msg *GameMsg.SyncPlayer) {
@@ -262,14 +298,15 @@ func OnSyncPlayer(r *Robot, msg *GameMsg.SyncPlayer) {
 			break
 		}
 	}
-	info := &GameMsg.SyncPlayer{}
-	info.CrystalList = append(info.CrystalList, msg.CrystalList...)
+	//info := &GameMsg.SyncPlayer{}
+	//info.CrystalList = append(info.CrystalList, msg.CrystalList...)
 	//msg.CrystalList
-	data, _ := proto.Marshal(info)
+	//data, _ := proto.Marshal(info)
 
-	Log.Debug("OnSyncPlayer",
-		zap.Int("crystal_cnt", len(info.CrystalList)),
-		zap.Int("data_size", len(data)))
+	//Log.Debug("OnSyncPlayer",
+	//	zap.Int("crystal_cnt", len(info.CrystalList)),
+	//	zap.Int("data_size", len(data)))
+
 	//  {"crystal_cnt": 1051, "data_size": 63581}
 	//	{"crystal_cnt": 1051, "data_size": 39938}
 	//  {"crystal_cnt": 1151, "data_size": 43738}
@@ -294,27 +331,7 @@ func OnCrystalBackPackRs(r *Robot, msg *GameMsg.CrystalBackPackRs) {
 }
 
 func OnSyncPlayerTalentList(r *Robot, msg *GameMsg.SyncPlayerTalentList) {
-	//r.HeroTalentInfo()
-	//r.UpgradePlayerTalent()
-	//r.Explore()
-	//r.LogInstall()
-	//r.UnlockCard()
-	//r.LootMissionList()
-	//r.PlaceLoot()
-	//r.GetLootWall()
-	//r.ClearLootWall()
-	//r.GetLootWall()
-	r.ModifyNickname()
-	//r.ModifyHeadImage()
-	//r.HeroQualityUp()
-	//r.InitPlayerName()
-	//fmt.Println(r.Account, JsonString(msg))
-	//r.OverStage()
-	//r.StoreInfoReq()
-	//r.OpeningActivitiesReq()
-	//r.OALoginRewardReq()
-	//r.OATaskRewardReq()
-	//r.OpeningActivitiesReq()
+
 }
 
 func OnStoreInfoRs(r *Robot, msg *GameMsg.StoreInfoRs) {
@@ -334,7 +351,6 @@ func OnHeroTalentInfoRs(r *Robot, msg *GameMsg.HeroTalentInfoRs) {
 	//r.UpgradeHeroTalent()
 	//r.ResetHeroTalentPage()
 	//r.ModifyNickname()
-
 }
 
 func OnLootMissionListRs(r *Robot, msg *GameMsg.LootMissionListRs) {
@@ -350,18 +366,30 @@ func OnExploreRs(r *Robot, msg *GameMsg.ExploreRs) {
 	}
 }
 
-//
-//func NewInt32(v int32) *int32 {
-//	return &v
-//}
-//
-//func NewInt64(v int64) *int64 {
-//	return &v
-//}
-//
-//func NewString(v string) *string {
-//	return &v
-//}
+func OnShowWebViewRs(r *Robot, msg *GameMsg.ShowWebViewRs) {
+
+}
+
+func OnSyncHeroValidTalentPage(r *Robot, msg *GameMsg.SyncHeroValidTalentPage) {
+
+	OnLoginComplete(r)
+}
+
+func OnLoginComplete(r *Robot) {
+	//r.QuestionnaireReq()
+	//r.RewardLootMission()
+	//r.OverStage()
+	//r.UnlockCard()
+	//r.GetLootWall()
+	//r.StorePurchaseReq()
+	//r.RewardLootMission()
+	//r.EquipCrystal()
+	//r.PlaceLoot()
+	//r.OALoginRewardReq()
+	//r.OATaskRewardReq()
+	r.Explore()
+	//r.UnlockHeroTalentPage()
+}
 
 func NewInt32(v int32) int32 {
 	return v
@@ -376,13 +404,15 @@ func NewString(v string) string {
 }
 
 var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
-	NetworkConnected:                       OnConnected,
-	GameMsg.MsgId_S2C_SyncMainlineTask:     OnSyncMainlineTaskRs,
-	GameMsg.MsgId_S2C_AccountCheckRs:       OnAccountCheckRs,
-	GameMsg.MsgId_S2C_SyncPlayer:           OnSyncPlayer,
-	GameMsg.MsgId_S2C_CrystalBackPackRs:    OnCrystalBackPackRs,
-	GameMsg.MsgId_S2C_SyncPlayerTalentList: OnSyncPlayerTalentList,
-	GameMsg.MsgId_S2C_HeroTalentInfoRs:     OnHeroTalentInfoRs,
-	GameMsg.MsgId_S2C_StoreInfoRs:          OnStoreInfoRs,
-	GameMsg.MsgId_S2C_ExploreRs:            OnExploreRs,
+	NetworkConnected:                          OnConnected,
+	GameMsg.MsgId_S2C_SyncMainlineTask:        OnSyncMainlineTaskRs,
+	GameMsg.MsgId_S2C_AccountCheckRs:          OnAccountCheckRs,
+	GameMsg.MsgId_S2C_SyncPlayer:              OnSyncPlayer,
+	GameMsg.MsgId_S2C_CrystalBackPackRs:       OnCrystalBackPackRs,
+	GameMsg.MsgId_S2C_SyncPlayerTalentList:    OnSyncPlayerTalentList,
+	GameMsg.MsgId_S2C_HeroTalentInfoRs:        OnHeroTalentInfoRs,
+	GameMsg.MsgId_S2C_StoreInfoRs:             OnStoreInfoRs,
+	GameMsg.MsgId_S2C_ExploreRs:               OnExploreRs,
+	GameMsg.MsgId_S2C_ShowWebViewRs:           OnShowWebViewRs,
+	GameMsg.MsgId_S2C_SyncHeroValidTalentPage: OnSyncHeroValidTalentPage,
 }

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"log"
@@ -10,6 +9,7 @@ import (
 	"os/signal"
 	"reflect"
 	"robot/GameMsg"
+	"robot/js"
 	"sync"
 )
 
@@ -28,6 +28,7 @@ func (r *Client) Init() {
 	r.C = conn
 
 	r.msgHandler(NetworkConnected, nil)
+	log.SetFlags(0)
 }
 
 func (r *Client) Run() {
@@ -91,15 +92,12 @@ func (r *Client) writeMsgLoop() {
 		ByteOrder.PutUint32(m[4:], uint32(id))
 		copy(m[8:], _msg)
 
+		log.Printf("\x1b[40m> %-30s| %s\x1b[0m\n", id, JsonString(msg))
 		// 发送消息
 		//todo: handle error
 		if _, err := r.C.Write(m); err != nil {
 			log.Fatalf("conn.Write error: %v", err)
 		}
-
-		fmt.Printf("\u001B[33m> %-30s| %s\u001B[0m\n", id, JsonString(msg))
-
-		//Log.Debugw("send message", zap.Any("MsgID", id.String()), zap.String("message", JsonString(msg)))
 	}
 }
 
@@ -135,12 +133,13 @@ func (r *Client) ReadMsg() error {
 
 	//fmt.Printf("MsgLen: %d\n", msgLen)
 
-	fmt.Printf("\u001B[32m< %-30s| %v\u001B[0m\n", msgId, JsonString(msg))
-	if msgId == GameMsg.MsgId_S2C_SyncPlayer {
-		println(msgLen)
-	}
+	//if msgId == GameMsg.MsgId_S2C_SyncPlayer {
+	//	println(msgLen)
+	//}
 	if code := fetchReturnCode(msg); code != GameMsg.ReturnCode_OK {
-		Log.Debug("Request failed", zap.Any("ReturnCode", code))
+		log.Printf("\x1b[31m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
+	} else {
+		log.Printf("\x1b[32m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
 	}
 
 	r.msgHandler(msgId, msg)
