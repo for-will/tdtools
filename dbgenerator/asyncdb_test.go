@@ -6,7 +6,7 @@ import (
 )
 
 func Test_parsePackage(t *testing.T) {
-	pkg := parsePackage([]string{"D:/work/P/Server/LeafServer/src/server/db/player_base.go"}, nil)
+	pkg := parsePackage([]string{"D:/work/P/Server/LeafServer/src/server/db/openingactivity.go"}, nil)
 	decls := parseFuncDecls(pkg.Syntax[0])
 	t.Log(js.IdentJson(decls))
 	//for i := range pkg.GoFiles {
