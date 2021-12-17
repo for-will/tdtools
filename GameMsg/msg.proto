@@ -116,16 +116,16 @@ enum ReturnCode {
 
 	// 商店购买
 	SP_InvalidGoods                = 191; // 无效的商品id
-	SP_CntExceeded                 = 102; // 购买数量超过上限
-	SP_CurrencyShortage            = 103; // 货币不足
+	SP_CntExceeded                 = 192; // 购买数量超过上限
+	SP_CurrencyShortage            = 193; // 货币不足
 
 	// 开服7日活动
-	OpeningActivityOutdated        = 104;
-	OpeningActivityInvalidId       = 105;
-	OpeningActivityUnfinished      = 106;
-	OpeningActivityRewarded        = 107; // 已领取
-	OpeningActivityConfigMiss      = 108; // 未找到配置文件
-	OpeningActivityPointsDemanded  = 109; // 活跃点不足
+	OpeningActivityOutdated        = 194;
+	OpeningActivityInvalidId       = 195;
+	OpeningActivityUnfinished      = 196;
+	OpeningActivityRewarded        = 197; // 已领取
+	OpeningActivityConfigMiss      = 198; // 未找到配置文件
+	OpeningActivityPointsDemanded  = 199; // 活跃点不足
 }
 
 // 水晶 (装备) 属性
