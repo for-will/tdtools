@@ -29,14 +29,14 @@ func main() {
 		return nil
 	}
 
-	var genSql = func(name string, gen func(model *Model)) {
+	var genFunc = func(name string, gen func(model *Model)) {
 		if m := getModel(name); m != nil {
 			gen(m)
 		}
 	}
 
 	// LootMission
-	genSql("LootMission", func(model *Model) {
+	genFunc("LootMission", func(model *Model) {
 		LoadLootMissions := model.DbSelect().
 			Where(model.FieldEqualCond("PlayerSn")).
 			GenFixedQueryFunc("LoadLootMissions")
@@ -44,7 +44,7 @@ func main() {
 	})
 
 	// Crystal
-	genSql("Crystal", func(model *Model) {
+	genFunc("Crystal", func(model *Model) {
 		GetPlayerCrystals := model.DbSelect().
 			Where(model.FieldEqualCond("PlayerId")).
 			GenFixedQueryFunc("GetPlayerCrystals")
@@ -61,6 +61,5 @@ func main() {
 
 		DeleteCrystals := model.Where(model.FieldInCond("Id")).GenDeleteFunc("DeleteCrystals")
 		editFunction(reloadPackage(), "DeleteCrystals", DeleteCrystals)
-		//log.Println(DeleteCrystals)
 	})
 }
