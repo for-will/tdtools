@@ -1,14 +1,17 @@
 package main
 
 import (
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
+	"log"
 	"testing"
 )
 
 func Test_loadPackage(t *testing.T) {
 	//pkg := loadPackage("D:/work/P/Server/LeafServer/src/server/db/lootmission.go")
 	//pkg := loadPackage("D:\\work\\P\\robot\\db")
-	pkg := loadPackage("D:\\work\\P\\Server\\LeafServer\\src\\server\\db\\",
+	pkg := loadPackage("D:/work/P/Server/LeafServer/src/server/db/",
 		"lootmission.go", "crystal.go")
 	t.Log("Syntax Size:", len(pkg.Syntax))
 	for _, syntax := range pkg.Syntax {
@@ -42,3 +45,31 @@ func Test_extractFunc(t *testing.T) {
 		}
 	}
 }
+
+func TestMysqlQuery(t *testing.T) {
+
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err2 := db.Query("SELECT id, card_sn FROM hero_talent_page WHERE id IN (?)",
+		"'2',1")
+	if rows != nil {
+		defer rows.Close()
+	}
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+
+	for rows.Next() {
+		var id, cardSn int32
+		if err3 := rows.Scan(&id, &cardSn); err3 != nil {
+			log.Printf("scan error: %v", err3)
+		} else {
+			log.Printf("id = %d, card_sn = %d", id, cardSn)
+		}
+	}
+}
+
+const dataSourceName = "game:game123@tcp(127.0.0.1:3306)/game?charset=utf8mb4&parseTime=True&loc=Local"

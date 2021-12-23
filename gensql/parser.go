@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"go/ast"
 	"go/format"
@@ -11,34 +10,6 @@ import (
 	"log"
 	"regexp"
 )
-
-const dataSourceName = "game:game123@tcp(127.0.0.1:3306)/game?charset=utf8mb4&parseTime=True&loc=Local"
-
-func main() {
-	db, err := sql.Open("mysql", dataSourceName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	rows, err2 := db.Query("SELECT id, card_sn FROM hero_talent_page WHERE id IN (?)",
-		"'2',1")
-	if rows != nil {
-		defer rows.Close()
-	}
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-
-	for rows.Next() {
-		var id, cardSn int32
-		if err3 := rows.Scan(&id, &cardSn); err3 != nil {
-			log.Printf("scan error: %v", err3)
-		} else {
-			log.Printf("id = %d, card_sn = %d", id, cardSn)
-		}
-	}
-
-}
 
 func loadPackage(dir string, patterns ...string) *packages.Package {
 	cfg := &packages.Config{
@@ -89,11 +60,14 @@ func parseModel(file *ast.File) []*Model {
 func extractStructFields(fl *ast.FieldList) []*ModelField {
 	var fields []*ModelField
 	for _, field := range fl.List {
-		typ, ok := field.Type.(*ast.Ident)
-		if !ok {
+		//typ, ok := field.Type.(*ast.Ident)
+		//if !ok {
+		//	continue
+		//}
+		typeName := typeExprName(field.Type)
+		if typeName == "" {
 			continue
 		}
-		typeName := typ.Name
 
 		for _, name := range field.Names {
 			fields = append(fields, &ModelField{
@@ -144,5 +118,22 @@ func extractTag(meta string) string {
 	if len(matches) > 0 {
 		return matches[0][1]
 	}
+	return ""
+}
+
+func typeExprName(Type ast.Expr) string {
+	if ident, ok := Type.(*ast.Ident); ok && ident != nil {
+		return ident.Name
+	}
+	if array, ok := Type.(*ast.ArrayType); ok && array != nil {
+		return "[]" + typeExprName(array.Elt)
+	}
+	if star, ok := Type.(*ast.StarExpr); ok && star != nil {
+		return "*" + typeExprName(star.X)
+	}
+	if sel, ok := Type.(*ast.SelectorExpr); ok && sel != nil {
+		return typeExprName(sel.X) + "." + sel.Sel.Name
+	}
+	log.Fatalf("typeExprName: %+v", Type)
 	return ""
 }

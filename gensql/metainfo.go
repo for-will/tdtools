@@ -12,7 +12,6 @@ type Model struct {
 	SelectFields []*ModelField
 	Sql          string
 	Conditions   []Conditioner
-	//FuncIn       []Argument
 }
 
 type ModelField struct {
@@ -48,6 +47,15 @@ func (m *Model) SqlQuery() string {
 	return out
 }
 
+func (m *Model) CondBuild() string {
+
+	var sb strings.Builder
+	for _, cond := range m.Conditions {
+		sb.WriteString(cond.Condition())
+	}
+	return sb.String()
+}
+
 func (m *Model) DbSelect() *Model {
 
 	var sb strings.Builder
@@ -81,6 +89,42 @@ func (m *Model) DbInsert() (insert string, place string) {
 	sb.WriteString(" VALUES ")
 
 	return sb.String(), "(?" + strings.Repeat(", ?", len(m.Fields)-2) + ")"
+}
+
+func (m *Model) DbUpdate(columns ...string) (sql string, args string) {
+
+	var sb strings.Builder
+	sb.WriteString("UPDATE ")
+	sb.WriteString(m.DbTableName())
+	sb.WriteString(" SET ")
+	for i, col := range columns {
+		if i != 0 {
+			sb.WriteString(", ")
+			args += ", "
+		}
+		field := m.GetField(col)
+		if field == nil {
+			log.Fatalf("DbUpdate %s GetField(%s) nil", m.Name, col)
+			return "", ""
+		}
+		sb.WriteString(snakeCase(field.Name) + "=?")
+		args += "obj." + field.Name
+	}
+	sb.WriteString(" WHERE id=?")
+	args += ", obj.Id"
+
+	return sb.String(), args
+}
+
+func (m *Model) DbDelete() (sql string) {
+
+	var sb strings.Builder
+	sb.WriteString("DELETE FROM ")
+	sb.WriteString(m.DbTableName())
+	if len(m.Conditions) > 0 {
+		sb.WriteString(" WHERE ")
+	}
+	return sb.String()
 }
 
 func (m *Model) Where(conds ...Conditioner) *Model {
@@ -173,23 +217,22 @@ func (m *Model) GenFixedQueryFunc(funcName string) string {
 
 func (m *Model) GenCreateFunc() string {
 
-	text := `
-//{{.FUNC}} +async
-func (conn *DbConnect) {{.FUNC}}(ojb *{{.STRUCT}}) *{{.STRUCT}} {
+	text := `func (conn *DbConnect) {{.FUNC}}(obj *{{.STRUCT}}) *{{.STRUCT}} {
 
-	res, err := conn.db.Exec("{{.SQL}}", {{.ARGS}})
+	res, err1 := conn.db.Exec("{{.SQL}}", 
+		{{.ARGS}})
 
-	if err != nil {
-		log.Error("{{.FUNC}} (%+v) err:%v", obj, err)
+	if err1 != nil {
+		log.Error("{{.FUNC}} (%+v) err:%v", obj, err1)
 		return nil
 	}
 
-	if id, err := res.LastInsertId(); err != nil {
-		log.Error("{{.FUNC}} (%+v) err:%v", obj, err)
+	if id, err2 := res.LastInsertId(); err2 != nil {
+		log.Error("{{.FUNC}} (%+v) err:%v", obj, err2)
 		return nil
 	} else {
-		crystal.Id = int32(id)
-		return crystal
+		obj.Id = int32(id)
+		return obj
 	}
 }
 `
@@ -220,18 +263,16 @@ func (conn *DbConnect) {{.FUNC}}(ojb *{{.STRUCT}}) *{{.STRUCT}} {
 
 func (m *Model) GenBatchInsertFunc() string {
 
-	text := `
-//{{.FUNC}} +async
-func (conn *DbConnect) {{.FUNC}}(ojbList []*{{.STRUCT}}) ([]*{{.STRUCT}}, error) {
+	text := `func (conn *DbConnect) {{.FUNC}}(objList []*{{.STRUCT}}) ([]*{{.STRUCT}}, error) {
 
-	if len(ojbList) == 0 {
+	if len(objList) == 0 {
 		return nil, nil
 	}
 
 	var sqlSb strings.Builder
-	var sqlArgs = make([]interface{}, 0, {{.FILED_CNT}}*len(ojbList))
+	var sqlArgs = make([]interface{}, 0, {{.FIELD_CNT}}*len(objList))
 	sqlSb.WriteString("{{.SQL}}")
-	for i, obj := range ojbList {
+	for i, obj := range objList {
 		if i != 0 {
 			sqlSb.WriteString(", ")
 		}
@@ -239,23 +280,24 @@ func (conn *DbConnect) {{.FUNC}}(ojbList []*{{.STRUCT}}) ([]*{{.STRUCT}}, error)
 		sqlArgs = append(sqlArgs, {{.ARGS}})
 	}
 
-	result, err := conn.db.Exec(sqlSb.String(), sqlArgs...)
+	result, err1 := conn.db.Exec(sqlSb.String(), sqlArgs...)
 
-	if err != nil {
+	if err1 != nil {
 		log.Error("{{.FUNC}} exec %s, %+v error: %v",
-			sqlSb.String(), sqlArgs, err)
-		return nil, err
+			sqlSb.String(), sqlArgs, err1)
+		return nil, err1
 	}
 
-	if id, err := result.LastInsertId(); err != nil {
-		log.Error("{{.FUNC}} get last insert id error: %+v", err)
-		return nil, err
+	if id, err2 := result.LastInsertId(); err2 != nil {
+		log.Error("{{.FUNC}} get last insert id error: %+v", err2)
+		return nil, err2
 	} else {
 		for i, obj := range objList {
 			obj.Id = int32(i) + int32(id)
 		}
 	}
 	return objList, nil
+}
 `
 	tpl := template.New("GenBatchInsertFunc:" + m.Name)
 	tpl.Parse(text)
@@ -272,21 +314,107 @@ func (conn *DbConnect) {{.FUNC}}(ojbList []*{{.STRUCT}}) ([]*{{.STRUCT}}, error)
 		SQL          string
 		PLACEHOLDERS string
 		ARGS         string
-		FILED_CNT    int
+		FIELD_CNT    int
 	}{
 		STRUCT:       m.Name,
 		FUNC:         "BatchInsert" + m.Name,
 		SQL:          insert,
 		PLACEHOLDERS: place,
 		ARGS:         strings.Join(args, ", "),
-		FILED_CNT:    len(m.Fields) - 1,
+		FIELD_CNT:    len(m.Fields) - 1,
 	})
 	return sb.String()
 }
 
-func (m *Model) BuildContactQueryFunc(funcName string) string {
+func (m *Model) GenUpdateFunc(funcName string, columns ...string) string {
+	if len(columns) == 0 {
+		log.Fatal("GenUpdateFunc columns nil.")
+		return ""
+	}
 
-	return ""
+	if funcName == "" {
+		funcName = "Update" + m.Name
+	}
+
+	text := `func (conn *DbConnect) {{.FUNC}}(obj *{{.STRUCT}}) bool {
+
+	result, err1 := conn.db.Exec("{{.SQL}}", 
+		{{.ARGS}})
+
+	if err1 != nil {
+		log.Error("{{.FUNC}} (%+v) failed:%v", obj, err1)
+		return false
+	}
+
+	if r, err2 := result.RowsAffected(); err2 != nil || r != 1 {
+		log.Error("{{.FUNC}} (%+v) rows_affected=%d, err:%v", obj, r, err2)
+		return false
+	}
+	return true
+}
+`
+	tpl := template.New("GenUpdateFunc:" + m.Name)
+	tpl.Parse(text)
+
+	var sb = &strings.Builder{}
+	sql, args := m.DbUpdate(columns...)
+	tpl.Execute(sb, &struct {
+		STRUCT string
+		FUNC   string
+		SQL    string
+		ARGS   string
+	}{
+		STRUCT: m.Name,
+		FUNC:   funcName,
+		SQL:    sql,
+		ARGS:   args,
+	})
+	return sb.String()
+}
+
+func (m *Model) GenDeleteFunc(funcName string) string {
+
+	text := `func (conn *DbConnect) {{.FUNC}}({{.IN}}) bool {
+
+	var args []interface{}
+	var sqlSb strings.Builder
+	sqlSb.WriteString("{{.SQL}}")
+	{{.COND_BUILD}}
+	result, err1 := conn.db.Exec(sqlSb.String(), args...)
+	if err1 != nil {
+		log.Error("{{.FUNC}}({{.DUMP_FMT}}) failed: %v", {{.ARGS}}, err1)
+		return false
+	}
+
+	if r, err2 := result.RowsAffected(); err2 != nil || r == 0 {
+		log.Error("{{.FUNC}}({{.DUMP_FMT}}) rows_affected=%d, err:%v", {{.ARGS}}, r, err2)
+		return false
+	}
+	return true
+}
+`
+	tpl := template.New(funcName)
+	tpl.Parse(text)
+
+	var sb = &strings.Builder{}
+	tpl.Execute(sb, &struct {
+		STRUCT     string
+		FUNC       string
+		IN         string
+		SQL        string
+		COND_BUILD string
+		ARGS       string
+		DUMP_FMT   string
+	}{
+		STRUCT:     m.Name,
+		FUNC:       funcName,
+		IN:         m.FuncIn(),
+		SQL:        m.DbDelete(),
+		COND_BUILD: m.CondBuild(),
+		ARGS:       m.FuncArgs(),
+		DUMP_FMT:   m.FuncDumpFmt(),
+	})
+	return sb.String()
 }
 
 func (m *Model) FuncIn() string {
