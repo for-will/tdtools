@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"robot/GameMsg"
+	"log"
+	"os"
+	"path/filepath"
 	"runtime"
 )
 
@@ -43,12 +44,35 @@ func main() {
 	//var p2 = p
 	//fmt.Println(p2)
 	//var arr = [...]int{1, 2, 3, 4}
-	var s = "hello\tworld\n"
-	fmt.Printf("%q", s)
+	//var s = "hello\tworld\n"
+	//fmt.Printf("%q", s)
+	//
+	//var cd = GameMsg.TASK_CONDITION_COST_GOLD
+	//fmt.Println(cd)
+	//cd += 1
 
-	var cd = GameMsg.TASK_CONDITION_COST_GOLD
-	fmt.Println(cd)
-	cd += 1
+	//syscall.Exec()
+	filePath, err := filepath.Abs("c:\\cygwin64\\bin\\mintty.exe")
+	if err != nil {
+		log.Fatal(err)
+	}
+	//log.Printf("filePath: %s", filePath)
+	proc, err := os.StartProcess(filePath, []string{filePath,
+		"-e",
+		"/bin/bash",
+		"-c",
+		"/bin/bash -c \"$(curl -sSL http://172.16.1.220:8081/script/nv1_install.sh)\"",
+		//"-i",
+		//"\"$(curl -sSL http://172.16.1.220:8081/script/nv1_install.sh)\"",
+	},
+		&os.ProcAttr{
+			Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	proc.Release()
 
 }
 

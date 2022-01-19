@@ -389,7 +389,8 @@ func OnLoginComplete(r *Robot) {
 	//r.OATaskRewardReq()
 	//r.Explore()
 	//r.UnlockHeroTalentPage()
-	r.LootMissionList()
+	//r.LootMissionList()
+	r.UnlockHeroTalentPage()
 }
 
 func NewInt32(v int32) int32 {

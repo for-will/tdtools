@@ -24,6 +24,10 @@ enum ReturnCode {
 	ChangeTeamInvalidHero          = 31;  // 无效的英雄
 	ChangeTeamInvalidSolider       = 32;  // 无效的士兵
 
+	AccountBanLogin                = 40;  // 账号被封停
+	AccountBanChat                 = 41;  // 账号被禁言
+	AccountBanRank                 = 42;  // 账号被禁止排行榜
+
 	EnterStage_Forbid              = 100; // 不能进该关卡
 
 	OverStage_Failed               = 110; // 结束战场失败
@@ -140,10 +144,10 @@ message CrystalInfo {
 	int32             Sn        = 1;
 	int32             Id        = 2;
 	int32             CreatedAt = 3; // 获得时间
-	sint32            HeroSn    = 4;
-	sint32            Slot      = 5; // 槽位
+	int32             HeroSn    = 4;
+	int32             Slot      = 5; // 槽位
 	repeated AttrItem Attrs     = 6; // 属性
-	sint32            SkillId   = 7; // 扩展属性
+	int32             SkillId   = 7; // 扩展属性
 }
 
 message DeviceInfo {
@@ -334,6 +338,7 @@ message OverStage {
 	int32          Param     = 4;
 	int32          KillNum   = 5;
 	repeated int32 EnemyList = 6; // 怪物列表
+	repeated int32 EnemyNum  = 7; // 击杀怪物数量
 }
 
 message OverStageRs {
@@ -856,14 +861,15 @@ message RewardLootMission {
 
 message RewardLootMissionRs {
 	ReturnCode           ReturnCode  = 1;
-	int32                Id          = 2; // 任务ID
-	int32                ExpAdd      = 3; // 奖励经验
-	int32                Gold        = 4; // 奖励金币
-	int32                Honor       = 5; // 奖励荣耀
-	int32                Achievement = 6; // 奖励成就
-	int32                Diamond     = 7; // 奖励钻石
-	repeated Item        Items       = 8; // 奖励道具
-	repeated CrystalInfo CrystalList = 9; // 奖励装备
+	int32                Id          = 2;  // 任务ID
+	int32                ExpAdd      = 3;  // 奖励经验
+	int32                Gold        = 4;  // 奖励金币
+	int32                Honor       = 5;  // 奖励荣耀
+	int32                Achievement = 6;  // 奖励成就
+	int32                Diamond     = 7;  // 奖励钻石
+	repeated Item        Items       = 8;  // 奖励道具
+	repeated CrystalInfo CrystalList = 9;  // 奖励装备
+	LootMission          Mission     = 10; // 更新任务信息
 }
 
 // 获取战利品列表
