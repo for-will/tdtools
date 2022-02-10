@@ -14,6 +14,7 @@ import (
 )
 
 type Client struct {
+	ServerAddr string
 	C          net.Conn
 	sendQ      chan proto.Message
 	msgHandler func(GameMsg.MsgId, proto.Message)
@@ -21,7 +22,7 @@ type Client struct {
 
 func (r *Client) Init() {
 	r.sendQ = make(chan proto.Message, 10)
-	conn, err := net.Dial("tcp", ServerAddr)
+	conn, err := net.Dial("tcp", r.ServerAddr)
 	if err != nil {
 		Log.Fatal("client init fail", zap.Error(err))
 	}

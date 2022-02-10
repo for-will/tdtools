@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"math/rand"
+	"os"
 	"reflect"
 	"robot/GameMsg"
 	"robot/js"
@@ -14,11 +15,20 @@ import (
 
 type Robot struct {
 	*Client
+	ServerAddr  string
 	MsgHandler  map[GameMsg.MsgId]interface{}
 	ValidCardSn int32
 	SyncPlayer  *GameMsg.SyncPlayer
 	Account     string
 	Password    string
+
+	PendingExplore int32
+	ExploreAreaId  int32
+	ExploreTimes   int32
+
+	OverStages []int32
+	KillNum    int32
+	Stars      int32
 }
 
 const (
@@ -28,6 +38,7 @@ const (
 func (r *Robot) Start() {
 
 	r.Client = &Client{
+		ServerAddr: r.ServerAddr,
 		msgHandler: func(id GameMsg.MsgId, message proto.Message) {
 			r.OnMessage(id, message)
 		},
@@ -75,6 +86,13 @@ func (r *Robot) Explore() {
 	r.SendMsg(&GameMsg.Explore{
 		Area:  NewInt32(area),
 		Times: GameMsg.ExploreTimes_Ten,
+	})
+}
+
+func (r *Robot) ExploreArea(area int32, times int32) {
+	r.SendMsg(&GameMsg.Explore{
+		Area:  area,
+		Times: GameMsg.ExploreTimes(times),
 	})
 }
 
@@ -216,6 +234,15 @@ func (r *Robot) OverStage() {
 		Param:   20,
 		KillNum: 11,
 		//EnemyList: nil,
+	})
+}
+
+func (r *Robot) ReqOverStage(stageId int32, stars int32, killNum int32) {
+	r.SendMsg(&GameMsg.OverStage{
+		StageId: stageId,
+		IsWin:   true,
+		Param:   stars,
+		KillNum: killNum,
 	})
 }
 
@@ -363,6 +390,27 @@ func OnExploreRs(r *Robot, msg *GameMsg.ExploreRs) {
 	for _, card := range msg.Cards {
 		r.ValidCardSn = card.Sn
 		r.HeroTalentInfo()
+	}
+}
+
+func TestOnExploreRs(r *Robot, msg *GameMsg.ExploreRs) {
+
+	r.PendingExplore--
+
+	if r.PendingExplore > 0 {
+		r.ExploreArea(r.ExploreAreaId, r.ExploreTimes)
+	} else {
+		os.Exit(0)
+	}
+}
+
+func OnRobotAutoOverStage(r *Robot, msg *GameMsg.OverStageRs) {
+	r.OverStages = r.OverStages[1:]
+	if len(r.OverStages) > 0 {
+		r.ReqOverStage(r.OverStages[0], r.Stars, r.KillNum)
+	}else{
+		Log.Info("robot exit 0.")
+		os.Exit(0)
 	}
 }
 

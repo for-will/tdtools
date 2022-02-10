@@ -29,9 +29,9 @@ func main() {
 	GenAsync(dir)
 }
 
-func GenAsync(dir string) {
 	var funcDecls []*FuncDecl
 	pkg := parsePackage([]string{dir}, nil)
+	func GenAsync(dir string) {
 	for _, file := range pkg.Syntax {
 		funcDecls = append(funcDecls, parseFuncDecls(file)...)
 	}
