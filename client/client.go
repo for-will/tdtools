@@ -13,7 +13,8 @@ import (
 )
 
 type Client struct {
-	ServerAddr string
+	ServerTCP  string
+	ServerWS   string
 	C          Connect
 	sendQ      chan proto.Message
 	msgHandler func(GameMsg.MsgId, proto.Message)
@@ -21,13 +22,15 @@ type Client struct {
 
 func (r *Client) Init() {
 	r.sendQ = make(chan proto.Message, 10)
-	//conn, err := net.Dial("tcp", r.ServerAddr)
-	//if err != nil {
-	//	Log.Fatal("client init fail", zap.Error(err))
-	//}
-	//r.C = conn
-	//r.C = &WsConn{conn: NewWs()}
-	r.C = NewTcpConn(r.ServerAddr)
+
+	if r.ServerTCP != "" {
+
+		r.C = NewTcpConn(r.ServerTCP)
+	} else if r.ServerWS != "" {
+		r.C = NewWsConn(r.ServerWS)
+	}else {
+		log.Fatal("Server addr invalid")
+	}
 
 	r.msgHandler(NetworkConnected, nil)
 	log.SetFlags(0)
@@ -35,7 +38,6 @@ func (r *Client) Init() {
 
 func (r *Client) Run() {
 	wg := &sync.WaitGroup{}
-	//closeSign := make(chan struct{})
 
 	wg.Add(1)
 	go func() {
@@ -83,14 +85,6 @@ func (r *Client) writeMsgLoop() {
 			continue
 		}
 		_msg, _ := proto.Marshal(msg)
-		//msgLen := 4 + len(_msg)
-		//m := make([]byte, 4+msgLen)
-		//
-		//ByteOrder.PutUint32(m, uint32(msgLen))
-		//ByteOrder.PutUint32(m[4:], uint32(id))
-		//copy(m[8:], _msg)
-
-		//msgLen := len(_msg)
 		m := make([]byte, 4+len(_msg))
 
 		ByteOrder.PutUint32(m, uint32(id))
@@ -104,19 +98,6 @@ func (r *Client) writeMsgLoop() {
 }
 
 func (r *Client) ReadMsg() error {
-	//data := make([]byte, 4)
-	//_, err := r.C.Read(data)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//msgLen := ByteOrder.Uint32(data)
-	//
-	//data = make([]byte, msgLen)
-	//_, err = r.C.Read(data)
-	//if err != nil {
-	//	return err
-	//}
 
 	data := r.C.ReadMsg()
 

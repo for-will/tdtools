@@ -43,10 +43,10 @@ func (w *WsConn) Close() {
 //	defer con.Close()
 //}
 
-func NewWs() *websocket.Conn {
-	con, err := websocket.Dial("ws://172.16.1.218:3653/", "", "http://localhost/")
+func NewWsConn(url string) *WsConn {
+	con, err := websocket.Dial(url, "", "http://localhost/")
 	if err != nil {
 		log.Fatal(err)
 	}
-	return con
+	return &WsConn{conn: con}
 }

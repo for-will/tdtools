@@ -38,7 +38,7 @@ const (
 func (r *Robot) Start() {
 
 	r.Client = &Client{
-		ServerAddr: r.ServerAddr,
+		ServerTCP: r.ServerAddr,
 		msgHandler: func(id GameMsg.MsgId, message proto.Message) {
 			r.OnMessage(id, message)
 		},
