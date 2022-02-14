@@ -4,7 +4,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"log"
-	"net"
 	"os"
 	"os/signal"
 	"reflect"
@@ -15,18 +14,20 @@ import (
 
 type Client struct {
 	ServerAddr string
-	C          net.Conn
+	C          Connect
 	sendQ      chan proto.Message
 	msgHandler func(GameMsg.MsgId, proto.Message)
 }
 
 func (r *Client) Init() {
 	r.sendQ = make(chan proto.Message, 10)
-	conn, err := net.Dial("tcp", r.ServerAddr)
-	if err != nil {
-		Log.Fatal("client init fail", zap.Error(err))
-	}
-	r.C = conn
+	//conn, err := net.Dial("tcp", r.ServerAddr)
+	//if err != nil {
+	//	Log.Fatal("client init fail", zap.Error(err))
+	//}
+	//r.C = conn
+	//r.C = &WsConn{conn: NewWs()}
+	r.C = NewTcpConn(r.ServerAddr)
 
 	r.msgHandler(NetworkConnected, nil)
 	log.SetFlags(0)
@@ -61,10 +62,7 @@ func (r *Client) Run() {
 	//<-time.After(20 * time.Second)
 	s := <-signalCh
 	Log.Info("received signal", zap.Any("signal", s))
-	if err := r.C.Close(); err != nil {
-		log.Fatalf("conn.Close error: %v", err)
-	}
-	//close(closeSign)
+	r.C.Close()
 	close(r.sendQ)
 	close(signalCh)
 
@@ -85,37 +83,42 @@ func (r *Client) writeMsgLoop() {
 			continue
 		}
 		_msg, _ := proto.Marshal(msg)
-		msgLen := 4 + len(_msg)
-		m := make([]byte, 4+msgLen)
+		//msgLen := 4 + len(_msg)
+		//m := make([]byte, 4+msgLen)
+		//
+		//ByteOrder.PutUint32(m, uint32(msgLen))
+		//ByteOrder.PutUint32(m[4:], uint32(id))
+		//copy(m[8:], _msg)
 
-		// 默认使用大端序
-		ByteOrder.PutUint32(m, uint32(msgLen))
-		ByteOrder.PutUint32(m[4:], uint32(id))
-		copy(m[8:], _msg)
+		//msgLen := len(_msg)
+		m := make([]byte, 4+len(_msg))
+
+		ByteOrder.PutUint32(m, uint32(id))
+		copy(m[4:], _msg)
 
 		log.Printf("\x1b[40m> %-30s| %s\x1b[0m\n", id, JsonString(msg))
 		// 发送消息
 		//todo: handle error
-		if _, err := r.C.Write(m); err != nil {
-			log.Fatalf("conn.Write error: %v", err)
-		}
+		r.C.WriteMsg(m)
 	}
 }
 
 func (r *Client) ReadMsg() error {
-	data := make([]byte, 4)
-	_, err := r.C.Read(data)
-	if err != nil {
-		return err
-	}
+	//data := make([]byte, 4)
+	//_, err := r.C.Read(data)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//msgLen := ByteOrder.Uint32(data)
+	//
+	//data = make([]byte, msgLen)
+	//_, err = r.C.Read(data)
+	//if err != nil {
+	//	return err
+	//}
 
-	msgLen := ByteOrder.Uint32(data)
-
-	data = make([]byte, msgLen)
-	_, err = r.C.Read(data)
-	if err != nil {
-		return err
-	}
+	data := r.C.ReadMsg()
 
 	id := ByteOrder.Uint32(data)
 	msgId := GameMsg.MsgId(id)
@@ -126,17 +129,11 @@ func (r *Client) ReadMsg() error {
 	}
 	msg := reflect.New(typ.Elem()).Interface().(proto.Message)
 
-	if err := proto.Unmarshal(data[4:msgLen], msg); err != nil {
+	if err := proto.Unmarshal(data[4:], msg); err != nil {
 		//log.Fatalf("proto.Unmarshal %+v msgLen:%v error:%v", msgId, msgLen, err)
 		Log.Fatal("proto.Unmarshal", zap.Int32("msg_id", int32(msgId)),
-			zap.Uint32("msg_len", msgLen), zap.Error(err))
+			zap.Int("msg_len", len(data)), zap.Error(err))
 	}
-
-	//fmt.Printf("MsgLen: %d\n", msgLen)
-
-	//if msgId == GameMsg.MsgId_S2C_SyncPlayer {
-	//	println(msgLen)
-	//}
 	if code := fetchReturnCode(msg); code != GameMsg.ReturnCode_OK {
 		log.Printf("\x1b[31m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
 	} else {
