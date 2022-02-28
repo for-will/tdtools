@@ -7,7 +7,7 @@ import (
 
 type Connect interface {
 	WriteMsg(b []byte)
-	ReadMsg() []byte
+	ReadMsg() ([]byte, error)
 	Close()
 }
 
@@ -22,13 +22,14 @@ func (w *WsConn) WriteMsg(b []byte) {
 	}
 }
 
-func (w *WsConn) ReadMsg() []byte {
+func (w *WsConn) ReadMsg() ([]byte, error) {
 	var b = make([]byte, 16*1024)
 	n, err := w.conn.Read(b)
 	if err != nil {
-		log.Fatalf("WsConn ReadMsg err: %v", err)
+		//log.Fatalf("WsConn ReadMsg err: %v", err)
+		return nil, err
 	}
-	return b[:n]
+	return b[:n], nil
 }
 
 func (w *WsConn) Close() {

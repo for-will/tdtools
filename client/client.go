@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"reflect"
 	"robot/GameMsg"
-	"robot/js"
 	"sync"
 )
 
@@ -28,7 +27,7 @@ func (r *Client) Init() {
 		r.C = NewTcpConn(r.ServerTCP)
 	} else if r.ServerWS != "" {
 		r.C = NewWsConn(r.ServerWS)
-	}else {
+	} else {
 		log.Fatal("Server addr invalid")
 	}
 
@@ -90,7 +89,8 @@ func (r *Client) writeMsgLoop() {
 		ByteOrder.PutUint32(m, uint32(id))
 		copy(m[4:], _msg)
 
-		log.Printf("\x1b[40m> %-30s| %s\x1b[0m\n", id, JsonString(msg))
+		//log.Printf("\x1b[40m> %-30s| %s\x1b[0m\n", id, Msg2Json(msg))
+		LogSndMsg(id, msg)
 		// 发送消息
 		//todo: handle error
 		r.C.WriteMsg(m)
@@ -99,7 +99,10 @@ func (r *Client) writeMsgLoop() {
 
 func (r *Client) ReadMsg() error {
 
-	data := r.C.ReadMsg()
+	data, err := r.C.ReadMsg()
+	if err != nil {
+		return err
+	}
 
 	id := ByteOrder.Uint32(data)
 	msgId := GameMsg.MsgId(id)
@@ -116,9 +119,11 @@ func (r *Client) ReadMsg() error {
 			zap.Int("msg_len", len(data)), zap.Error(err))
 	}
 	if code := fetchReturnCode(msg); code != GameMsg.ReturnCode_OK {
-		log.Printf("\x1b[31m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
+		//log.Printf("\x1b[31m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
+		LogErrMsg(msgId, msg)
 	} else {
-		log.Printf("\x1b[32m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
+		//log.Printf("\x1b[32m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
+		LogRcvMsg(msgId, msg)
 	}
 
 	r.msgHandler(msgId, msg)

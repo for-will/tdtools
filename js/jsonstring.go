@@ -17,6 +17,8 @@ func MinifyJson(d interface{}) string {
 }
 
 func PbMinifyJson(m proto.Message) string {
-	jsb, _ := protojson.MarshalOptions{}.Marshal(m)
+	jsb, _ := protojson.MarshalOptions{
+		EmitUnpopulated: true,
+	}.Marshal(m)
 	return string(jsb)
 }

@@ -22,11 +22,11 @@ func (tc *TcpConn) WriteMsg(b []byte) {
 	}
 }
 
-func (tc *TcpConn) ReadMsg() []byte {
+func (tc *TcpConn) ReadMsg() ([]byte, error) {
 	data := make([]byte, 4)
 	_, err := tc.conn.Read(data)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	msgLen := ByteOrder.Uint32(data)
@@ -34,9 +34,9 @@ func (tc *TcpConn) ReadMsg() []byte {
 	data = make([]byte, msgLen)
 	_, err = tc.conn.Read(data)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return data
+	return data, nil
 }
 
 func (tc *TcpConn) Close() {

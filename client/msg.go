@@ -3,6 +3,8 @@ package client
 import (
 	"encoding/binary"
 	jsoniter "github.com/json-iterator/go"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"reflect"
 	"robot/GameMsg"
 )
@@ -107,6 +109,11 @@ func init() {
 func JsonString(v interface{}) string {
 	s, _ := jsoniter.MarshalToString(v)
 	return s
+}
+
+func Msg2Json(v proto.Message) string {
+	b, _ := protojson.Marshal(v)
+	return string(b)
 }
 
 func NewRetCode(code GameMsg.ReturnCode) GameMsg.ReturnCode {

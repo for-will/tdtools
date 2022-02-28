@@ -82,9 +82,9 @@ func (r *Robot) Login(account string, password string) {
 }
 
 func (r *Robot) Explore() {
-	var area int32 = 5
+
 	r.SendMsg(&GameMsg.Explore{
-		Area:  NewInt32(area),
+		Area:  6,
 		Times: GameMsg.ExploreTimes_Ten,
 	})
 }
@@ -229,10 +229,10 @@ func (r *Robot) InitPlayerName() {
 
 func (r *Robot) OverStage() {
 	r.SendMsg(&GameMsg.OverStage{
-		StageId: 1010003,
-		IsWin:   true,
-		Param:   20,
-		KillNum: 11,
+		StageId: 128,
+		//IsWin:   true,
+		//Param:   3,
+		//KillNum: 10,
 		//EnemyList: nil,
 	})
 }
@@ -408,7 +408,7 @@ func OnRobotAutoOverStage(r *Robot, msg *GameMsg.OverStageRs) {
 	r.OverStages = r.OverStages[1:]
 	if len(r.OverStages) > 0 {
 		r.ReqOverStage(r.OverStages[0], r.Stars, r.KillNum)
-	}else{
+	} else {
 		Log.Info("robot exit 0.")
 		os.Exit(0)
 	}
@@ -435,10 +435,10 @@ func OnLoginComplete(r *Robot) {
 	//r.PlaceLoot()
 	//r.OALoginRewardReq()
 	//r.OATaskRewardReq()
-	//r.Explore()
+	r.Explore()
 	//r.UnlockHeroTalentPage()
 	//r.LootMissionList()
-	r.UnlockHeroTalentPage()
+	//r.UnlockHeroTalentPage()
 }
 
 func NewInt32(v int32) int32 {
