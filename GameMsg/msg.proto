@@ -469,6 +469,20 @@ message GetTaskRewardRs {
 	repeated CrystalInfo CrystalList = 9; // 奖励装备
 }
 
+// 领取任务活跃度宝箱奖励
+message GetTaskPointBoxReward {
+	int32 Id = 1;
+}
+
+message GetTaskPointBoxRewardRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                Id          = 2;
+	bool                 Rewarded    = 3;
+	repeated Item        Items       = 4; // 奖励道具
+	repeated CrystalInfo CrystalList = 5; // 奖励装备
+	repeated SyncCard    Cards       = 6; // 英雄
+}
+
 // 使用道具
 message UseItem {
 	int32 Id  = 1; // 道具ID
@@ -723,6 +737,11 @@ message ChatPrivateListRs {
 	repeated ChatPlayerState PlayerList = 1;
 }
 
+// 撤回玩家发言
+message RevokeChatMsg {
+	int32 PlayerSn = 1;
+}
+
 // 用户安装客户端
 message LogInstallReq {
 	int64  InstallTime = 1;
@@ -896,6 +915,95 @@ message ClearLootWall {
 
 message ClearLootWallRs {
 	ReturnCode ReturnCode = 1;
+}
+
+// 赏金任务
+message SeasonTask {
+	enum State {
+		Processing = 0; // 未完成
+		Finished   = 1; // 待领取
+		Rewarded   = 2; // 已领取
+	}
+
+	enum TaskType {
+		TaskType_ZERO = 0;
+		Day           = 1; // 每日任务
+		Week          = 2; // 每周任务
+		Season        = 3; // 赛季任务
+	}
+
+	int32    TaskId   = 1;
+	TaskType Typ      = 2;
+	State    Status   = 3;
+	int32    Progress = 4; // 当前完成数量
+	int32    Looped   = 5;
+}
+
+message SeasonLv {
+	int32 Lv              = 1; // 等级
+	bool  BaseRewarded    = 2; // 已领取普通奖励
+	bool  PremiumRewarded = 3; // 已领取进阶奖励
+}
+
+message SeasonInfo {
+	int32             SeasonId      = 1; // 赛季ID
+	int32             SeasonExp     = 3; // 赛季总共获得经验
+	int32             TodayExp      = 4; // 今日获得经验
+	int32             Premium       = 5; // 0:未购买进阶 1：已购买普通赏金 2：已购买至尊豪华赏金
+	int32             DayTimeOut    = 6; // 每日任务下次更新时间
+	int32             WeekTimeOut   = 7; // 每周任务下次更新时间
+	int32             SeasonTimeOut = 8; // 赛季结束时间
+	repeated SeasonLv SeasonRewards = 9; // 等级奖励信息
+}
+
+// 获取赏金任务赛季信息
+message SeasonReq {
+
+}
+
+message SeasonRs {
+	ReturnCode          ReturnCode = 1;
+	bool                SeasonOn   = 2; // false:赛季已结束
+	SeasonInfo          Info       = 3;
+	repeated SeasonTask Tasks      = 4;
+}
+
+// 获取赏金任务奖励
+message SeasonTaskRewardReq {
+	repeated int32 TaskIds = 1;
+}
+
+message SeasonTaskRewardRs {
+	ReturnCode           ReturnCode   = 1;
+	repeated int32       TaskIds      = 2; // 任务ID
+	int32                SeasonExpAdd = 3; // 奖励赛季经验
+	int32                SeasonExp    = 4; // 赛季总共获得经验
+	int32                TodayExp     = 5; // 今日获得经验
+	repeated Item        Items        = 6; // 奖励道具
+	repeated CrystalInfo CrystalList  = 7; // 奖励装备
+	repeated SeasonTask  UpdatedTasks = 8; // 更新任务信息
+}
+
+message RewardSeasonLv {
+	int32 Lv      = 1;
+	bool  Premium = 2; //true:领取进阶奖励 fasle:领取普通奖励
+}
+
+// 领取赏金等级奖励
+message SeasonLvRewardReq {
+	repeated RewardSeasonLv LvList = 1;
+}
+
+message SeasonLvRewardRs {
+	ReturnCode           ReturnCode  = 1;
+	repeated SeasonLv    UpdatedLv   = 2; // 等级奖励信息
+	repeated Item        Items       = 3; // 奖励道具
+	repeated CrystalInfo CrystalList = 4; // 奖励装备
+}
+
+// 赏金任务更新
+message SeasonTaskSync {
+	repeated SeasonTask UpdatedTasks = 1; // 有变化的任务
 }
 
 // 重命名玩家名字
@@ -1176,4 +1284,34 @@ message GMTReq {
 
 message GMTRs {
 	string GMTokenJson = 1;
+}
+
+// 体力值
+message Strength {
+	int32 CurrValue = 1; // 当前体力值
+	int32 MaxValue  = 2; // 体力值上限
+	int32 Countdown = 3; // 倒计时（秒）
+}
+
+// 累充列表
+message AccumulateList {
+
+}
+
+// 累充列表Rs
+message AccumulateListRs {
+	ReturnCode     ReturnCode   = 1;
+	int32          TotalDiamond = 2; // 累充钻石
+	repeated int32 List         = 3; // 已领取id列表
+}
+
+// 累充领取奖励
+message AccumulateReceive {
+	int32 Id = 1; // 领取的id
+}
+
+// 累充领取奖励Rs
+message AccumulateReceiveRs {
+	ReturnCode ReturnCode = 1;
+	int32      Id         = 2; // 领取的id
 }

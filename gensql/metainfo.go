@@ -86,34 +86,41 @@ func (m *Model) DbInsert() (insert string, place string) {
 		}
 		sb.WriteString(snakeCase(field.Name))
 	}
+	sb.WriteString(")")
 	sb.WriteString(" VALUES ")
 
 	return sb.String(), "(?" + strings.Repeat(", ?", len(m.Fields)-2) + ")"
 }
 
-func (m *Model) DbUpdate(columns ...string) (sql string, args string) {
+func (m *Model) DbUpdate(columns ...string) (sql string, args string, argsIn string) {
 
 	var sb strings.Builder
 	sb.WriteString("UPDATE ")
 	sb.WriteString(m.DbTableName())
 	sb.WriteString(" SET ")
+
+
+	argsIn = "Id int32"
 	for i, col := range columns {
 		if i != 0 {
 			sb.WriteString(", ")
 			args += ", "
 		}
+		argsIn += ", "
+
 		field := m.GetField(col)
 		if field == nil {
 			log.Fatalf("DbUpdate %s GetField(%s) nil", m.Name, col)
-			return "", ""
+			return "", "", ""
 		}
 		sb.WriteString(snakeCase(field.Name) + "=?")
-		args += "obj." + field.Name
+		args += field.Name
+		argsIn += field.Name + " " + field.Type
 	}
 	sb.WriteString(" WHERE id=?")
-	args += ", obj.Id"
+	args += ", Id"
 
-	return sb.String(), args
+	return sb.String(), args, argsIn
 }
 
 func (m *Model) DbDelete() (sql string) {
@@ -336,18 +343,20 @@ func (m *Model) GenUpdateFunc(funcName string, columns ...string) string {
 		funcName = "Update" + m.Name
 	}
 
-	text := `func (conn *DbConnect) {{.FUNC}}(obj *{{.STRUCT}}) bool {
+	text := `func (conn *DbConnect) {{.FUNC}}({{.FUNC_ARGS}}) bool {
 
 	result, err1 := conn.db.Exec("{{.SQL}}", 
 		{{.ARGS}})
 
 	if err1 != nil {
-		log.Error("{{.FUNC}} (%+v) failed:%v", obj, err1)
+		log.Error("{{.FUNC}} ({{.SQL_FMT}}) failed:%v", 
+			{{.ARGS}}, err1)
 		return false
 	}
 
 	if r, err2 := result.RowsAffected(); err2 != nil || r != 1 {
-		log.Error("{{.FUNC}} (%+v) rows_affected=%d, err:%v", obj, r, err2)
+		log.Error("{{.FUNC}} ({{.SQL_FMT}}) rows_affected=%d, err:%v",
+			{{.ARGS}}, r, err2)
 		return false
 	}
 	return true
@@ -357,17 +366,21 @@ func (m *Model) GenUpdateFunc(funcName string, columns ...string) string {
 	tpl.Parse(text)
 
 	var sb = &strings.Builder{}
-	sql, args := m.DbUpdate(columns...)
+	sql, args, argsIn := m.DbUpdate(columns...)
 	tpl.Execute(sb, &struct {
-		STRUCT string
-		FUNC   string
-		SQL    string
-		ARGS   string
+		STRUCT    string
+		FUNC      string
+		SQL       string
+		ARGS      string
+		FUNC_ARGS string
+		SQL_FMT   string
 	}{
-		STRUCT: m.Name,
-		FUNC:   funcName,
-		SQL:    sql,
-		ARGS:   args,
+		STRUCT:    m.Name,
+		FUNC:      funcName,
+		SQL:       sql,
+		ARGS:      args,
+		FUNC_ARGS: argsIn,
+		SQL_FMT: strings.Replace(sql, "?", "'%v'", -1),
 	})
 	return sb.String()
 }

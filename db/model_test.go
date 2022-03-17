@@ -42,7 +42,6 @@ func GenModelAutoFile(file string, pkg string, models ...interface{}) {
 
 import (
 	"database/sql"
-	"strings"
 )`)
 
 	for _, m := range models {
@@ -67,11 +66,11 @@ import (
 		sb.WriteString("\n")
 		sb.WriteString(model.BuildCreateTableFunc())
 		sb.WriteString("\n")
-		sb.WriteString(model.BuildSaveFunc())
-		sb.WriteString("\n")
-		sb.WriteString(model.BuildFindOneFunc())
-		sb.WriteString("\n")
-		sb.WriteString(model.BuildFindFunc())
+		//sb.WriteString(model.BuildSaveFunc())
+		//sb.WriteString("\n")
+		//sb.WriteString(model.BuildFindOneFunc())
+		//sb.WriteString("\n")
+		//sb.WriteString(model.BuildFindFunc())
 
 		if UserAddFunc != nil {
 			UserAddFunc(model, sb)
@@ -113,6 +112,25 @@ func TestBana(t *testing.T) {
 			},
 		},
 	)
+}
+
+func TestSeasonTask(t *testing.T) {
+
+	GenModelAutoFile("season_task_out.go", "db",
+		&DbAutoModel{
+			Model: &_SeasonTask{},
+			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
+				sb.WriteString("\n")
+				sb.WriteString(model.BuildUpdateFunc("UpdateSeasonTask", "State", "Progress", "Loop"))
+			},
+		},
+		&DbAutoModel{
+			Model: &_SeasonPlayer{},
+			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
+				sb.WriteString("\n")
+			},
+		},
+		)
 }
 
 func TestTimeType(t *testing.T) {

@@ -35,6 +35,8 @@ func LogRcvMsg(id GameMsg.MsgId, msg proto.Message) {
 		GameMsg.MsgId_S2C_SyncMainlineTask,
 		GameMsg.MsgId_S2C_SyncPlayerTalentList,
 		GameMsg.MsgId_S2C_ShowWebViewRs,
+		GameMsg.MsgId_S2C_TaskInfo,
+		GameMsg.MsgId_S2C_PlayerOffline,
 		GameMsg.MsgId_S2C_SyncHeroValidTalentPage:
 		doLogMessage(id, msg, ColorNotify, "<")
 	default:

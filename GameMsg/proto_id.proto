@@ -195,4 +195,28 @@ enum MsgId {
 	S2C_GMTRs                      = 129;
 	C2S_VersionContrastReq         = 130; // 获取版本号
 	S2C_VersionContrastRs          = 131;
+
+	C2S_GetTaskPointBoxReward      = 132; // 领取任务活跃度宝箱奖励
+	S2C_GetTaskPointBoxRewardRs    = 133;
+
+	// 撤回玩家发言
+	S2C_RevokeChatMsg              = 134;
+
+	// 体力值
+	S2C_Strength                   = 135;
+	// 累充列表
+	C2S_AccumulateList             = 136;
+	S2C_AccumulateListRs           = 137;
+	// 领取累充奖励
+	C2S_AccumulateReceive          = 138;
+	S2C_AccumulateReceiveRs        = 139;
+
+	// 赏金任务
+	C2S_SeasonReq                  = 140; // 任务信息
+	S2C_SeasonRs                   = 141;
+	C2S_SeasonTaskRewardReq        = 142; // 领取任务奖励
+	S2C_SeasonTaskRewardRs         = 143;
+	C2S_SeasonLvRewardReq          = 144; // 领取等级奖励
+	S2C_SeasonLvRewardRs           = 145;
+	S2C_SeasonTaskSync             = 146; // 任务状态更新
 }

@@ -36,8 +36,6 @@ func NewTblStorePurchase(db *sql.DB) {
 	}
 }
 
-//go:generate asyncdb
-//SaveStorePurchase save stor purchase
 func SaveStorePurchase(db *sql.DB, obj *StorePurchase) error {
 
 	LogSql("INSERT INTO store_purchase(player_sn, goods_id, purchased, fresh_time) VALUE ('%v', '%v', '%v', '%v')",

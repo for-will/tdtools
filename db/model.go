@@ -53,3 +53,24 @@ type _ActivityTreasureBox struct {
 	BoxId    int32 `db:"unique:udx_activity_treasure_player_box"`
 	Status   int32
 }
+
+type _SeasonTask struct {
+	Id       int32 `db:"primary_key"`
+	PlayerSn int32 `db:"unique:udx_season_player_task"`
+	TaskId   int32 `db:"unique:udx_season_player_task"`
+	Status   int32
+	Progress int32
+	Looped   int32
+}
+
+type _SeasonPlayer struct {
+	Id            int32 `db:"primary_key"`
+	PlayerSn      int32 `db:"unique:udx_season_player"`
+	SeasonId      int32
+	Premium       int32
+	SeasonExp     int32
+	TodayExp      int32
+	DayTimeOut    time.Time `db:"type:timestamp"`
+	WeekTimeOut   time.Time `db:"type:timestamp"`
+	SeasonTimeOut time.Time `db:"type:timestamp"`
+}

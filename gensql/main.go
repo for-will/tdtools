@@ -10,7 +10,7 @@ func main() {
 
 	var reloadPackage = func() *packages.Package {
 		return loadPackage("D:/work/P/Server/LeafServer/src/server/db/",
-			"lootmission.go", "crystal.go")
+			"lootmission.go", "crystal.go", "season_task.go", "season_player.go")
 	}
 	pkg := reloadPackage()
 
@@ -35,31 +35,60 @@ func main() {
 		}
 	}
 
-	// LootMission
-	genFunc("LootMission", func(model *Model) {
-		LoadLootMissions := model.DbSelect().
-			Where(model.FieldEqualCond("PlayerSn")).
-			GenFixedQueryFunc("LoadLootMissions")
-		editFunction(pkg, "LoadLootMissions", LoadLootMissions)
-	})
+	//LootMission
+	//genFunc("LootMission", func(model *Model) {
+	//	LoadLootMissions := model.DbSelect().
+	//		Where(model.FieldEqualCond("PlayerSn")).
+	//		GenFixedQueryFunc("LoadLootMissions")
+	//	editFunction(pkg, "LoadLootMissions", LoadLootMissions)
+	//})
 
 	// Crystal
-	genFunc("Crystal", func(model *Model) {
-		GetPlayerCrystals := model.DbSelect().
-			Where(model.FieldEqualCond("PlayerId")).
-			GenFixedQueryFunc("GetPlayerCrystals")
-		editFunction(reloadPackage(), "GetPlayerCrystals", GetPlayerCrystals)
+	//genFunc("Crystal", func(model *Model) {
+	//	GetPlayerCrystals := model.DbSelect().
+	//		Where(model.FieldEqualCond("PlayerId")).
+	//		GenFixedQueryFunc("GetPlayerCrystals")
+	//	editFunction(reloadPackage(), "GetPlayerCrystals", GetPlayerCrystals)
+	//
+	//	BatchInsertCrystal := model.GenBatchInsertFunc()
+	//	editFunction(reloadPackage(), "BatchInsertCrystal", BatchInsertCrystal)
+	//
+	//	CreateCrystal := model.GenCreateFunc()
+	//	editFunction(reloadPackage(), "CreateCrystal", CreateCrystal)
+	//
+	//	UpdateCrystal := model.GenUpdateFunc("UpdateCrystal", "Locked", "Lv", "Expr")
+	//	editFunction(reloadPackage(), "UpdateCrystal", UpdateCrystal)
+	//
+	//	DeleteCrystals := model.Where(model.FieldInCond("Id")).GenDeleteFunc("DeleteCrystals")
+	//	editFunction(reloadPackage(), "DeleteCrystals", DeleteCrystals)
+	//})
 
-		BatchInsertCrystal := model.GenBatchInsertFunc()
-		editFunction(reloadPackage(), "BatchInsertCrystal", BatchInsertCrystal)
+	//SeasonTask
+	genFunc("SeasonTask", func(model *Model) {
+		LoadSeasonTasks := model.DbSelect().
+			Where(model.FieldEqualCond("PlayerSn")).
+			GenFixedQueryFunc("LoadSeasonTasks")
+		editFunction(pkg, "LoadSeasonTasks", LoadSeasonTasks)
 
-		CreateCrystal := model.GenCreateFunc()
-		editFunction(reloadPackage(), "CreateCrystal", CreateCrystal)
+		BatchInsertSeasonTask := model.GenBatchInsertFunc()
+		editFunction(reloadPackage(), "BatchInsertSeasonTask", BatchInsertSeasonTask)
 
-		UpdateCrystal := model.GenUpdateFunc("UpdateCrystal", "Locked", "Lv", "Expr")
-		editFunction(reloadPackage(), "UpdateCrystal", UpdateCrystal)
+		//UpdateSeasonTaskProgress := model.GenUpdateFunc("UpdateSeasonTaskProgress", "Progress", "Status")
+		//editFunction(reloadPackage(), "UpdateSeasonTaskProgress", UpdateSeasonTaskProgress)
+	})
 
-		DeleteCrystals := model.Where(model.FieldInCond("Id")).GenDeleteFunc("DeleteCrystals")
-		editFunction(reloadPackage(), "DeleteCrystals", DeleteCrystals)
+	// SeasonPlayer
+	genFunc("SeasonPlayer", func(model *Model) {
+		LoadSeasonPlayer := model.DbSelect().
+			Where(model.FieldEqualCond("PlayerSn")).
+			GenFixedQueryFunc("LoadSeasonPlayer")
+		editFunction(pkg, "LoadSeasonPlayer", LoadSeasonPlayer)
+
+		CreateSeasonPlayer := model.GenCreateFunc()
+		editFunction(reloadPackage(), "CreateSeasonPlayer", CreateSeasonPlayer)
+
+		UpdateSeasonPlayer := model.GenUpdateFunc("UpdateSeasonPlayer",
+			"SeasonId", "Premium", "SeasonExp", "TodayExp", "DayTimeOut", "WeekTimeOut", "SeasonTimeOut")
+		editFunction(reloadPackage(), "UpdateSeasonPlayer", UpdateSeasonPlayer)
 	})
 }
