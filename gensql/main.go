@@ -10,7 +10,7 @@ func main() {
 
 	var reloadPackage = func() *packages.Package {
 		return loadPackage("D:/work/P/Server/LeafServer/src/server/db/",
-			"lootmission.go", "crystal.go", "season_task.go", "season_player.go")
+			"lootmission.go", "crystal.go", "season_task.go", "season_player.go", "season_reward.go")
 	}
 	pkg := reloadPackage()
 
@@ -95,5 +95,21 @@ func main() {
 		UpdateSeasonPlayerFields := model.GenUpdateFunc("UpdateSeasonPlayerFields",
 			"SeasonId", "Premium", "SeasonExp", "TodayExp", "DayTimeOut", "WeekTimeOut", "SeasonTimeOut")
 		editFunction(reloadPackage(), "UpdateSeasonPlayerFields", UpdateSeasonPlayerFields)
+	})
+
+	// SeasonReward
+	genFunc("SeasonReward", func(model *Model) {
+		var Func string
+		Func = model.DbSelect().
+			Where(model.FieldEqualCond("PlayerSn")).
+			GenFixedQueryFunc("LoadSeasonReward")
+		editFunction(pkg, "LoadSeasonReward", Func)
+
+		Func = model.GenBatchInsertFunc()
+		editFunction(reloadPackage(), "BatchInsertSeasonReward", Func)
+
+		Func = model.GenUpdateFunc("UpdateSeasonReward",
+			"Base", "Premium")
+		editFunction(reloadPackage(), "UpdateSeasonReward", Func)
 	})
 }

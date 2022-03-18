@@ -1,12 +1,70 @@
 package db
 
 import (
+	"fmt"
 	db "github.com/myPuffer/gotosql"
+	"io/ioutil"
+	"os/exec"
+	"strings"
 	"time"
 )
 
 var LogSql = db.LogSql
 var LogError = db.LogError
+
+type AutoModel struct {
+	Model   interface{}
+	UserAdd func(model *db.TableModel, sb *strings.Builder)
+}
+
+func GenModelAutoFile(file string, pkg string, models ...interface{}) {
+	var sb = &strings.Builder{}
+	sb.WriteString("//\n")
+	sb.WriteString("// Code generated auto. DO NOT EDIT.\n\n")
+	sb.WriteString("package " + pkg)
+	sb.WriteString(`
+
+import (
+	"database/sql"
+)`)
+
+	for _, m := range models {
+
+		var model *db.TableModel
+		var UserAddFunc func(model *db.TableModel, sb *strings.Builder)
+		if a, ok := m.(*AutoModel); ok {
+			model = db.Model(a.Model)
+			UserAddFunc = a.UserAdd
+		} else {
+			model = db.Model(m)
+		}
+
+		model.ModName = strings.TrimLeft(model.ModName, "_")
+		model.TblName = strings.TrimLeft(model.TblName, "_")
+		//model := db.Model(m)
+		//model.LogSql = "log.Debug"
+		//model.LogError = "log.Error"
+
+		sb.WriteString("\n")
+		sb.WriteString(model.TypeStruct())
+		sb.WriteString("\n")
+		sb.WriteString(model.BuildCreateTableFunc())
+		sb.WriteString("\n")
+		//sb.WriteString(model.BuildSaveFunc())
+		//sb.WriteString("\n")
+		//sb.WriteString(model.BuildFindOneFunc())
+		//sb.WriteString("\n")
+		//sb.WriteString(model.BuildFindFunc())
+
+		if UserAddFunc != nil {
+			UserAddFunc(model, sb)
+		}
+	}
+	ioutil.WriteFile(file, []byte(sb.String()), 0664)
+
+	info, err := exec.Command("go", "fmt", file).Output()
+	fmt.Println(string(info), err)
+}
 
 type RewardTask struct {
 	ReturnCode  *int32 `db:"index"`
@@ -52,26 +110,4 @@ type _ActivityTreasureBox struct {
 	PlayerSn int32 `db:"unique:udx_activity_treasure_player_box"`
 	BoxId    int32 `db:"unique:udx_activity_treasure_player_box"`
 	Status   int32
-}
-
-type _SeasonTask struct {
-	Id       int32 `db:"primary_key"`
-	PlayerSn int32 `db:"unique:udx_season_player_task"`
-	TaskId   int32 `db:"unique:udx_season_player_task"`
-	Status   int32
-	Progress int32
-	Looped   int32
-}
-
-type _SeasonPlayer struct {
-	Id            int32 `db:"primary_key"`
-	PlayerSn      int32 `db:"unique:udx_season_player"`
-	SeasonId      int32
-	Premium       int32
-	SeasonExp     int32
-	TodayExp      int32
-	DayTimeOut    time.Time `db:"type:timestamp,default:current_timestamp()"`
-	WeekTimeOut   time.Time `db:"type:timestamp,default:current_timestamp()"`
-	SeasonTimeOut time.Time `db:"type:timestamp,default:current_timestamp()"`
-	Settled       bool
 }

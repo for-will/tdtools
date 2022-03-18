@@ -2,11 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/myPuffer/gotosql"
-	"io/ioutil"
-	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
@@ -27,84 +24,26 @@ func openDb() *sql.DB {
 	return db
 }
 
-func TestCreateTable(t *testing.T) {
 
-	//db2.GenModelAutoFile("model_sql_auto.go", &TestTableTask{})
-	NewTableTestTableTask(_db)
-}
-
-func GenModelAutoFile(file string, pkg string, models ...interface{}) {
-	var sb = &strings.Builder{}
-	sb.WriteString("//\n")
-	sb.WriteString("// Code generated auto. DO NOT EDIT.\n\n")
-	sb.WriteString("package " + pkg)
-	sb.WriteString(`
-
-import (
-	"database/sql"
-)`)
-
-	for _, m := range models {
-
-		var model *db.TableModel
-		var UserAddFunc func(model *db.TableModel, sb *strings.Builder)
-		if a, ok := m.(*DbAutoModel); ok {
-			model = db.Model(a.Model)
-			UserAddFunc = a.UserAdd
-		} else {
-			model = db.Model(m)
-		}
-
-		model.ModName = strings.TrimLeft(model.ModName, "_")
-		model.TblName = strings.TrimLeft(model.TblName, "_")
-		//model := db.Model(m)
-		//model.LogSql = "log.Debug"
-		//model.LogError = "log.Error"
-
-		sb.WriteString("\n")
-		sb.WriteString(model.TypeStruct())
-		sb.WriteString("\n")
-		sb.WriteString(model.BuildCreateTableFunc())
-		sb.WriteString("\n")
-		//sb.WriteString(model.BuildSaveFunc())
-		//sb.WriteString("\n")
-		//sb.WriteString(model.BuildFindOneFunc())
-		//sb.WriteString("\n")
-		//sb.WriteString(model.BuildFindFunc())
-
-		if UserAddFunc != nil {
-			UserAddFunc(model, sb)
-		}
-	}
-	ioutil.WriteFile(file, []byte(sb.String()), 0664)
-
-	info, err := exec.Command("go", "fmt", file).Output()
-	fmt.Println(string(info), err)
-}
-
-type DbAutoModel struct {
-	Model   interface{}
-	UserAdd func(model *db.TableModel, sb *strings.Builder)
-}
 
 func TestBana(t *testing.T) {
 
 	GenModelAutoFile("store.go", "db",
-		&DbAutoModel{
+		&AutoModel{
 			Model: &_StorePurchase{},
 			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
 				sb.WriteString("\n")
 				sb.WriteString(model.BuildUpdateFunc("UpdateStorePurchased", "Purchased", "FreshTime"))
 			},
 		},
-		&DbAutoModel{
+		&AutoModel{
 			Model: &_OpeningActivity{},
 			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
 				sb.WriteString("\n")
 				sb.WriteString(model.BuildUpdateFunc("UpdateOpeningActivity", "Progress", "State"))
 			},
 		},
-		&DbAutoModel{
+		&AutoModel{
 			Model: &_ActivityTreasureBox{},
 			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
 				sb.WriteString("\n")
@@ -112,25 +51,6 @@ func TestBana(t *testing.T) {
 			},
 		},
 	)
-}
-
-func TestSeasonTask(t *testing.T) {
-
-	GenModelAutoFile("season_task_out.go", "db",
-		&DbAutoModel{
-			Model: &_SeasonTask{},
-			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
-				sb.WriteString("\n")
-				sb.WriteString(model.BuildUpdateFunc("UpdateSeasonTask", "State", "Progress", "Loop"))
-			},
-		},
-		&DbAutoModel{
-			Model: &_SeasonPlayer{},
-			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
-				sb.WriteString("\n")
-			},
-		},
-		)
 }
 
 func TestTimeType(t *testing.T) {

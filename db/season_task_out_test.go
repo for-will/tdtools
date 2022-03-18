@@ -16,3 +16,7 @@ func openGameDB() *sql.DB {
 func TestNewTblSeasonPlayer(t *testing.T) {
 	NewTblSeasonPlayer(openGameDB())
 }
+
+func TestNewTblSeasonReward(t *testing.T) {
+	NewTblSeasonReward(openGameDB())
+}

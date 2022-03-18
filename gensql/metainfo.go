@@ -289,8 +289,8 @@ func (m *Model) GenBatchInsertFunc() string {
 	result, err1 := conn.db.Exec(sqlSb.String(), sqlArgs...)
 
 	if err1 != nil {
-		log.Error("{{.FUNC}} exec %s, %+v error: %v",
-			sqlSb.String(), sqlArgs, err1)
+		log.Error(strings.Replace(sqlSb.String(), "?", "'%v'", -1), sqlArgs...)
+		log.Error("{{.FUNC}} exec error: %v", err1)
 		return nil, err1
 	}
 

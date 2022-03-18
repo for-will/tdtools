@@ -88,3 +88,30 @@ func NewTblSeasonPlayer(db *sql.DB) {
 		LogError("%+v", err)
 	}
 }
+
+type SeasonReward struct {
+	Id       int32
+	PlayerSn int32
+	Lv       int32
+	Base     bool
+	Premium  bool
+}
+
+func NewTblSeasonReward(db *sql.DB) {
+
+	querySql := `create or replace table season_reward
+(
+    id        int  not null auto_increment
+        primary key,
+    player_sn int  not null,
+    lv        int  not null,
+    base      bool not null,
+    premium   bool not null,
+	unique index udx_season_reward_player_lv(player_sn, lv) using btree
+)`
+	LogSql(querySql)
+	_, err := db.Exec(querySql)
+	if err != nil {
+		LogError("%+v", err)
+	}
+}
