@@ -23,7 +23,7 @@ func init() {
 
 const (
 	ColorRcvErr = "\u001B[31m"
-	ColorRcv    = "\u001B[7;36m"
+	ColorRcv    = "\u001B[0;36m"
 	ColorNotify = "\u001B[33m"
 	ColorSnd    = "\u001B[7;32m"
 )

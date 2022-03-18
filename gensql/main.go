@@ -73,8 +73,13 @@ func main() {
 		BatchInsertSeasonTask := model.GenBatchInsertFunc()
 		editFunction(reloadPackage(), "BatchInsertSeasonTask", BatchInsertSeasonTask)
 
-		//UpdateSeasonTaskProgress := model.GenUpdateFunc("UpdateSeasonTaskProgress", "Progress", "Status")
-		//editFunction(reloadPackage(), "UpdateSeasonTaskProgress", UpdateSeasonTaskProgress)
+		UpdateSeasonTaskProgress := model.GenUpdateFunc("UpdateSeasonTaskProgress", "Progress", "Status", "Looped")
+		editFunction(reloadPackage(), "UpdateSeasonTaskProgress", UpdateSeasonTaskProgress)
+
+		var Func string
+		Func = model.Where(&FieldEqual{Field: model.GetField("PlayerSn")}).
+			GenUpdateFunc("ResetSeasonTask", "Progress", "Status", "Looped")
+		editFunction(reloadPackage(), "ResetSeasonTask", Func)
 	})
 
 	// SeasonPlayer
@@ -87,8 +92,8 @@ func main() {
 		CreateSeasonPlayer := model.GenCreateFunc()
 		editFunction(reloadPackage(), "CreateSeasonPlayer", CreateSeasonPlayer)
 
-		UpdateSeasonPlayer := model.GenUpdateFunc("UpdateSeasonPlayer",
+		UpdateSeasonPlayerFields := model.GenUpdateFunc("UpdateSeasonPlayerFields",
 			"SeasonId", "Premium", "SeasonExp", "TodayExp", "DayTimeOut", "WeekTimeOut", "SeasonTimeOut")
-		editFunction(reloadPackage(), "UpdateSeasonPlayer", UpdateSeasonPlayer)
+		editFunction(reloadPackage(), "UpdateSeasonPlayerFields", UpdateSeasonPlayerFields)
 	})
 }

@@ -99,7 +99,6 @@ func (m *Model) DbUpdate(columns ...string) (sql string, args string, argsIn str
 	sb.WriteString(m.DbTableName())
 	sb.WriteString(" SET ")
 
-
 	argsIn = "Id int32"
 	for i, col := range columns {
 		if i != 0 {
@@ -380,7 +379,7 @@ func (m *Model) GenUpdateFunc(funcName string, columns ...string) string {
 		SQL:       sql,
 		ARGS:      args,
 		FUNC_ARGS: argsIn,
-		SQL_FMT: strings.Replace(sql, "?", "'%v'", -1),
+		SQL_FMT:   strings.Replace(sql, "?", "'%v'", -1),
 	})
 	return sb.String()
 }

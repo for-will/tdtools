@@ -70,7 +70,8 @@ type _SeasonPlayer struct {
 	Premium       int32
 	SeasonExp     int32
 	TodayExp      int32
-	DayTimeOut    time.Time `db:"type:timestamp"`
-	WeekTimeOut   time.Time `db:"type:timestamp"`
-	SeasonTimeOut time.Time `db:"type:timestamp"`
+	DayTimeOut    time.Time `db:"type:timestamp,default:current_timestamp()"`
+	WeekTimeOut   time.Time `db:"type:timestamp,default:current_timestamp()"`
+	SeasonTimeOut time.Time `db:"type:timestamp,default:current_timestamp()"`
+	Settled       bool
 }

@@ -62,6 +62,7 @@ type SeasonPlayer struct {
 	DayTimeOut    time.Time
 	WeekTimeOut   time.Time
 	SeasonTimeOut time.Time
+	Settled       bool
 }
 
 func NewTblSeasonPlayer(db *sql.DB) {
@@ -75,9 +76,10 @@ func NewTblSeasonPlayer(db *sql.DB) {
     premium         int       not null,
     season_exp      int       not null,
     today_exp       int       not null,
-    day_time_out    timestamp not null,
-    week_time_out   timestamp not null,
-    season_time_out timestamp not null,
+    day_time_out    timestamp not null default current_timestamp(),
+    week_time_out   timestamp not null default current_timestamp(),
+    season_time_out timestamp not null default current_timestamp(),
+    settled         bool      not null,
 	unique index udx_season_player(player_sn) using btree
 )`
 	LogSql(querySql)

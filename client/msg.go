@@ -97,6 +97,13 @@ func init() {
 		GameMsg.MsgId_S2C_UseItemRs:                  &GameMsg.UseItemRs{},
 		GameMsg.MsgId_C2S_QuestionnaireReq:           &GameMsg.QuestionnaireReq{},
 		GameMsg.MsgId_S2C_QuestionnaireRs:            &GameMsg.QuestionnaireRs{},
+		GameMsg.MsgId_C2S_SeasonReq:                  &GameMsg.SeasonReq{},
+		GameMsg.MsgId_S2C_SeasonRs:                   &GameMsg.SeasonRs{},
+		GameMsg.MsgId_C2S_SeasonTaskRewardReq:        &GameMsg.SeasonTaskRewardReq{},
+		GameMsg.MsgId_S2C_SeasonTaskRewardRs:         &GameMsg.SeasonTaskRewardRs{},
+		GameMsg.MsgId_C2S_SeasonLvRewardReq:          &GameMsg.SeasonLvRewardReq{},
+		GameMsg.MsgId_S2C_SeasonLvRewardRs:           &GameMsg.SeasonLvRewardRs{},
+		GameMsg.MsgId_S2C_SeasonTaskSync:             &GameMsg.SeasonTaskSync{},
 	}
 
 	for id, v := range msgId {
