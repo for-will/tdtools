@@ -130,6 +130,9 @@ enum ReturnCode {
 	OpeningActivityRewarded        = 197; // 已领取
 	OpeningActivityConfigMiss      = 198; // 未找到配置文件
 	OpeningActivityPointsDemanded  = 199; // 活跃点不足
+
+	// 赏金任务
+	SeasonTimeOut                  = 210; // 赛季已经结束
 }
 
 // 水晶 (装备) 属性
@@ -204,6 +207,7 @@ message SdkLoginRs {
 	int32      SubCode         = 3;
 	string     UnisdkLoginJson = 4;
 	string     LoginSessionId  = 5; // 游戏服务器返回的LoginSessionId，用于断线重连
+	int32      Aid             = 6;
 }
 
 // 断线重连
@@ -497,6 +501,7 @@ message UseItemRs {
 	int32                Diamond     = 5; // 奖励钻石
 	repeated Item        Items       = 6; // 奖励道具
 	repeated CrystalInfo CrystalList = 7; // 奖励装备
+	repeated SyncCard    Cards       = 8; // 奖励英雄
 }
 
 message HeartBeat {

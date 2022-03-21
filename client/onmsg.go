@@ -144,17 +144,23 @@ func OnLoginComplete(r *Robot) {
 	r.SeasonReq()
 }
 
-func NewInt32(v int32) int32 {
+//func NewVariant(v int32) int32 {
+//	return v
+//}
+
+//func NewVariant(v int64) int64 {
+//	return v
+//}
+
+func NewVariant[T any](v T) T {
 	return v
 }
 
-func NewInt64(v int64) int64 {
-	return v
-}
 
-func NewString(v string) string {
-	return v
-}
+
+//func NewVar[T any](v T) T {
+//	return v
+//}
 
 var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
 	NetworkConnected:                          OnConnected,

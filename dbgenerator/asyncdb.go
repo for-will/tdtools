@@ -279,7 +279,10 @@ func typeExprName(Type ast.Expr) string {
 	if star, ok := Type.(*ast.StarExpr); ok && star != nil {
 		return "*" + typeExprName(star.X)
 	}
+	if sel, ok := Type.(*ast.SelectorExpr); ok && sel != nil {
+		return typeExprName(sel.X) + "." + typeExprName(sel.Sel)
+	}
 
-	log.Fatalf("typeExprName: %+v", Type)
+	log.Fatalf("typeExprName: unknown %#v => %+v", Type, Type)
 	return ""
 }

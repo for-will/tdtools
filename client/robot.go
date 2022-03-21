@@ -74,8 +74,8 @@ func (r *Robot) OnMessage(id GameMsg.MsgId, msg interface{}) {
 
 func (r *Robot) Login(account string, password string) {
 	r.SendMsg(&GameMsg.AccountCheck{
-		Account:  NewString(account),
-		Password: NewString(password),
+		Account:  NewVariant(account),
+		Password: NewVariant(password),
 	})
 }
 
@@ -97,7 +97,7 @@ func (r *Robot) ExploreArea(area int32, times int32) {
 func (r *Robot) UnlockCard() {
 
 	//var cardId int32 = 1005
-	r.SendMsg(&GameMsg.CardUnLock{CardId: NewInt32(1022)})
+	r.SendMsg(&GameMsg.CardUnLock{CardId: NewVariant[int32](1022)})
 }
 
 func (r *Robot) HeroQualityUp() {
@@ -111,9 +111,9 @@ func (r *Robot) GetCrystalBackpack() {
 
 func (r *Robot) EquipCrystal() {
 	r.SendMsg(&GameMsg.EquipCrystal{
-		Sn:     NewInt32(11239),
-		HeroSn: NewInt32(1639376076),
-		Slot:   NewInt32(1),
+		Sn:     NewVariant(int32(11239)),
+		HeroSn: NewVariant(int32(1639376076)),
+		Slot:   NewVariant(int32(1)),
 	})
 }
 
@@ -122,57 +122,57 @@ func (r *Robot) UpgradePlayerTalent() {
 }
 
 func (r *Robot) HeroTalentInfo() {
-	r.SendMsg(&GameMsg.HeroTalentInfo{CardSn: NewInt32(r.ValidCardSn)})
+	r.SendMsg(&GameMsg.HeroTalentInfo{CardSn: NewVariant(r.ValidCardSn)})
 }
 
 func (r *Robot) UnlockHeroTalentPage() {
 	r.SendMsg(&GameMsg.UnlockHeroTalentPage{
-		CardSn: NewInt32(r.ValidCardSn),
-		Page:   NewInt32(3),
+		CardSn: NewVariant(r.ValidCardSn),
+		Page:   NewVariant(int32(3)),
 	})
 }
 
 func (r *Robot) ModifyHeroTalentPageName() {
 	r.SendMsg(&GameMsg.ModifyHeroTalentPageName{
-		CardSn: NewInt32(r.ValidCardSn),
-		Page:   NewInt32(2),
-		Name:   NewString(ModifyHeroTalentPageName),
+		CardSn: NewVariant(r.ValidCardSn),
+		Page:   NewVariant(int32(2)),
+		Name:   NewVariant(ModifyHeroTalentPageName),
 	})
 }
 
 func (r *Robot) SwitchHeroTalentPage() {
 	r.SendMsg(&GameMsg.SwitchHeroTalentPage{
-		CardSn: NewInt32(r.ValidCardSn),
-		Page:   NewInt32(2),
+		CardSn: NewVariant(r.ValidCardSn),
+		Page:   NewVariant(int32(2)),
 	})
 }
 
 func (r *Robot) UpgradeHeroTalent() {
 	r.SendMsg(&GameMsg.UpgradeHeroTalent{
-		CardSn:   NewInt32(r.ValidCardSn),
-		Page:     NewInt32(1),
-		TalentId: NewInt32(UpgradeHeroTalent),
+		CardSn:   NewVariant(r.ValidCardSn),
+		Page:     NewVariant(int32(1)),
+		TalentId: NewVariant(int32(UpgradeHeroTalent)),
 	})
 }
 
 func (r *Robot) ResetHeroTalentPage() {
 	r.SendMsg(&GameMsg.ResetHeroTalentPage{
-		CardSn: NewInt32(r.ValidCardSn),
-		Page:   NewInt32(1),
+		CardSn: NewVariant(r.ValidCardSn),
+		Page:   NewVariant(int32(1)),
 	})
 }
 
 func (r *Robot) LogInstall() {
 	r.SendMsg(&GameMsg.LogInstallReq{
-		InstallTime: NewInt64(time.Now().Unix()),
-		Ip:          NewString("127.0.0.1"),
-		DeviceModel: NewString("iphone"),
-		OsName:      NewString("ios6"),
-		OsVer:       NewString("1.2.3"),
-		MacAddr:     NewString("[::1]"),
-		Udid:        NewString("123456"),
-		AppChannel:  NewString("appstore"),
-		AppVer:      NewString("2.3.1"),
+		InstallTime: NewVariant(time.Now().Unix()),
+		Ip:          NewVariant("127.0.0.1"),
+		DeviceModel: NewVariant[string]("iphone"),
+		OsName:      NewVariant("ios6"),
+		OsVer:       NewVariant("1.2.3"),
+		MacAddr:     NewVariant("[::1]"),
+		Udid:        NewVariant("123456"),
+		AppChannel:  NewVariant("appstore"),
+		AppVer:      NewVariant("2.3.1"),
 	})
 }
 
@@ -181,7 +181,7 @@ func (r *Robot) LootMissionList() {
 }
 
 func (r *Robot) RewardLootMission() {
-	r.SendMsg(&GameMsg.RewardLootMission{Id: NewInt32(30201)})
+	r.SendMsg(&GameMsg.RewardLootMission{Id: NewVariant(int32(30201))})
 }
 
 func (r *Robot) GetLootWall() {
@@ -195,27 +195,27 @@ func (r *Robot) ClearLootWall() {
 func (r *Robot) PlaceLoot() {
 	req := &GameMsg.PlaceLoot{}
 	req.List = append(req.List, &GameMsg.LootItem{
-		LootMissionId: NewInt32(30201),
-		PsX:           NewInt32(3),
-		PsY:           NewInt32(40),
+		LootMissionId: NewVariant(int32(30201)),
+		PsX:           NewVariant(int32(3)),
+		PsY:           NewVariant(int32(40)),
 	})
 	req.List = append(req.List, &GameMsg.LootItem{
-		LootMissionId: NewInt32(30103),
-		PsX:           NewInt32(30),
-		PsY:           NewInt32(40),
+		LootMissionId: NewVariant(int32(30103)),
+		PsX:           NewVariant(int32(30)),
+		PsY:           NewVariant(int32(40)),
 	})
 	r.SendMsg(req)
 }
 
 func (r *Robot) ModifyNickname() {
 	r.SendMsg(&GameMsg.ModifyPlayerName{
-		Name: NewString("aa" + strconv.Itoa(rand.Intn(100000))),
+		Name: NewVariant("aa" + strconv.Itoa(rand.Intn(100000))),
 	})
 }
 
 func (r *Robot) ModifyHeadImage() {
 	r.SendMsg(&GameMsg.ModifyPlayerIcon{
-		Icon: NewInt32(12),
+		Icon: NewVariant(int32(12)),
 	})
 }
 
@@ -261,7 +261,7 @@ func (r *Robot) OpeningActivitiesReq() {
 
 func (r *Robot) OALoginRewardReq() {
 	r.SendMsg(&GameMsg.OALoginRewardReq{
-		ActivityId: NewInt32(1),
+		ActivityId: NewVariant(int32(1)),
 	})
 }
 
