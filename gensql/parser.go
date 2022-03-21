@@ -8,7 +8,8 @@ import (
 	"golang.org/x/tools/go/packages"
 	"io/ioutil"
 	"log"
-	"regexp"
+	"reflect"
+	"strings"
 )
 
 func loadPackage(dir string, patterns ...string) *packages.Package {
@@ -73,7 +74,7 @@ func extractStructFields(fl *ast.FieldList) []*ModelField {
 			fields = append(fields, &ModelField{
 				Name: name.Name,
 				Type: typeName,
-				//JsonTag: extractJsonTag(field.Tag.Value),
+				Tag:  extractTag(field.Tag),
 			})
 		}
 	}
@@ -112,13 +113,13 @@ func editFunction(pkg *packages.Package, funcName string, funcText string) bool 
 	return false
 }
 
-func extractTag(meta string) string {
-	re := regexp.MustCompile(`json:"(\w+)"`)
-	matches := re.FindAllStringSubmatch(meta, -1)
-	if len(matches) > 0 {
-		return matches[0][1]
+func extractTag(Tag *ast.BasicLit) reflect.StructTag {
+	if Tag == nil {
+		return ""
 	}
-	return ""
+
+	return reflect.StructTag(strings.Trim(Tag.Value, "`"))
+
 }
 
 func typeExprName(Type ast.Expr) string {

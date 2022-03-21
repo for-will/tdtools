@@ -84,10 +84,16 @@ func main() {
 
 	// SeasonPlayer
 	genFunc("SeasonPlayer", func(model *Model) {
+
+		var Func string
+
+		Func = model.GenNewTblFunc()
+		editFunction(reloadPackage(), "NewTblSeasonPlayer", Func)
+
 		LoadSeasonPlayer := model.DbSelect().
 			Where(model.FieldEqualCond("PlayerSn")).
 			GenFixedQueryFunc("LoadSeasonPlayer")
-		editFunction(pkg, "LoadSeasonPlayer", LoadSeasonPlayer)
+		editFunction(reloadPackage(), "LoadSeasonPlayer", LoadSeasonPlayer)
 
 		CreateSeasonPlayer := model.GenCreateFunc()
 		editFunction(reloadPackage(), "CreateSeasonPlayer", CreateSeasonPlayer)

@@ -71,8 +71,8 @@ func (m *Model) DbCreateTbl() (sql string) {
 		if len(snakeCase(col.Name)) > nameLen {
 			nameLen = len(snakeCase(col.Name))
 		}
-		if len(col.Type) > typeLen {
-			typeLen = len(col.Type)
+		if len(col.SqlType()) > typeLen {
+			typeLen = len(col.SqlType())
 		}
 	}
 
@@ -82,46 +82,48 @@ func (m *Model) DbCreateTbl() (sql string) {
 	sb.WriteString(fmt.Sprintf("CREATE OR REPLACE TABLE %s\n(\n", m.DbTableName()))
 	format := fmt.Sprintf("    %%-%ds %%-%ds", nameLen, typeLen)
 	for i, col := range m.Fields {
-		sb.WriteString(fmt.Sprintf(format, snakeCase(col.Name), col.Type))
+		sb.WriteString(fmt.Sprintf(format, snakeCase(col.Name), col.SqlType()))
 		if col.Name == "Id" {
 			sb.WriteString(" not null auto_increment\n")
 			sb.WriteString("        primary key")
 		} else {
 			sb.WriteString(" not null")
 		}
-		//if col.Default != "" {
-		//	sb.WriteString(" default ")
-		//	sb.WriteString(col.Default)
-		//}
+		if col.SqlDefault() != "" {
+			sb.WriteString(" default ")
+			sb.WriteString(col.SqlDefault())
+		}
 		if i != len(m.Fields)-1 {
 			sb.WriteString(",\n")
 		}
 	}
-	//
-	//if len(tm.Indies) == 0 {
-	//	sb.WriteString("\n")
-	//}
-	//
-	//// Generate sql for create index
-	//for _, v := range tm.Indies {
-	//	sb.WriteString(",\n")
-	//	if v.Unique {
-	//		sb.WriteString("\tunique index ")
-	//	} else {
-	//		sb.WriteString("\tindex ")
-	//	}
-	//	sb.WriteString(v.Index)
-	//	sb.WriteString("(")
-	//	for i, col := range v.Keys {
-	//		if i != 0 {
-	//			sb.WriteString(", ")
-	//		}
-	//		sb.WriteString(col.KeyName)
-	//	}
-	//	sb.WriteString(") using btree")
-	//}
-	//
-	//sb.WriteString("\n)")
-	//
+
+	indies := modelIndies(m)
+
+	if len(indies) == 0 {
+		sb.WriteString("\n")
+	}
+
+	// Generate sql for create index
+	for _, v := range indies {
+		sb.WriteString(",\n")
+		if v.Unique {
+			sb.WriteString("\tunique index ")
+		} else {
+			sb.WriteString("\tindex ")
+		}
+		sb.WriteString(v.Index)
+		sb.WriteString("(")
+		for i, col := range v.Keys {
+			if i != 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(col.KeyName)
+		}
+		sb.WriteString(") using btree")
+	}
+
+	sb.WriteString("\n)")
+
 	return sb.String()
 }

@@ -14,12 +14,6 @@ type Model struct {
 	Conditions   []Conditioner
 }
 
-type ModelField struct {
-	Name string
-	Type string
-	Tag  string
-}
-
 func (m *Model) clone() *Model {
 
 	cloneModel := *m
@@ -73,6 +67,7 @@ func (m *Model) DbSelect() *Model {
 	tx.Sql = sb.String()
 	return tx
 }
+
 //
 //func (m *Model) DbInsert() (insert string, place string) {
 //
@@ -217,6 +212,39 @@ func (m *Model) GenFixedQueryFunc(funcName string) string {
 		ARGS:      m.FuncArgs(),
 		SCAN_LIST: m.FuncScanList(),
 		DUMP_FMT:  m.FuncDumpFmt(),
+	})
+	return sb.String()
+}
+
+func (m *Model) GenNewTblFunc() string {
+
+	text := `func NewTbl{{.ModName}}(db *sql.DB) {
+
+	querySql := ` + "`{{.QuerySql}}`" + `
+	LogSql(querySql)
+	_, err := db.Exec(querySql)
+	if err != nil {
+		LogError("%+v", err)
+	}
+}
+`
+	tpl := template.New("GenNewTblFunc:" + m.Name)
+	tpl.Parse(text)
+
+	var args []string
+	for _, field := range m.Fields[1:] {
+		args = append(args, "obj."+field.Name)
+	}
+	var sb = &strings.Builder{}
+	tpl.Execute(sb, &struct {
+		ModName  string
+		QuerySql string
+		IN       string
+		SQL      string
+		ARGS     string
+	}{
+		ModName:  m.Name,
+		QuerySql: m.DbCreateTbl(),
 	})
 	return sb.String()
 }
