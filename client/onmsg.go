@@ -141,7 +141,8 @@ func OnLoginComplete(r *Robot) {
 	//r.UnlockHeroTalentPage()
 	//r.LootMissionList()
 	//r.UnlockHeroTalentPage()
-	r.SeasonReq()
+	//r.SeasonReq()
+	r.SeasonLvRewardReq()
 }
 
 //func NewVariant(v int32) int32 {
@@ -152,9 +153,9 @@ func OnLoginComplete(r *Robot) {
 //	return v
 //}
 
-func NewVariant[T any](v T) T {
-	return v
-}
+//func NewVariant[T any](v T) T {
+//	return v
+//}
 
 
 

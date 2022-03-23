@@ -133,6 +133,10 @@ enum ReturnCode {
 
 	// 赏金任务
 	SeasonTimeOut                  = 210; // 赛季已经结束
+	SeasonBuyLvInvalid             = 211; // 无效的等级
+	SeasonBuyLvPayFailed           = 212; // 购买等级支付失败
+	SeasonBuyPassTypeErr           = 213; // 无效的通行证类型
+	SeasonBuyPassPayFailed         = 214; // 购买通行证支付失败
 }
 
 // 水晶 (装备) 属性
@@ -950,15 +954,21 @@ message SeasonLv {
 	bool  PremiumRewarded = 3; // 已领取进阶奖励
 }
 
+enum SeasonPassType {
+	None    = 0; // 0：未购买进阶
+	Base    = 1; // 1：已购买普通赏金
+	Premium = 2; // 2：已购买至尊豪华赏金
+}
+
 message SeasonInfo {
 	int32             SeasonId      = 1; // 赛季ID
-	int32             SeasonExp     = 3; // 赛季总共获得经验
-	int32             TodayExp      = 4; // 今日获得经验
-	int32             Premium       = 5; // 0:未购买进阶 1：已购买普通赏金 2：已购买至尊豪华赏金
-	int32             DayTimeOut    = 6; // 每日任务下次更新时间
-	int32             WeekTimeOut   = 7; // 每周任务下次更新时间
-	int32             SeasonTimeOut = 8; // 赛季结束时间
-	repeated SeasonLv SeasonRewards = 9; // 等级奖励信息
+	int32             SeasonExp     = 2; // 赛季总共获得经验
+	int32             TodayExp      = 3; // 今日获得经验
+	SeasonPassType    SeasonPass    = 4; // 是否购买进阶通行证
+	int32             DayTimeOut    = 5; // 每日任务下次更新时间
+	int32             WeekTimeOut   = 6; // 每周任务下次更新时间
+	int32             SeasonTimeOut = 7; // 赛季结束时间
+	repeated SeasonLv SeasonRewards = 8; // 等级奖励信息
 }
 
 // 获取赏金任务赛季信息
@@ -1009,6 +1019,26 @@ message SeasonLvRewardRs {
 // 赏金任务更新
 message SeasonTaskSync {
 	repeated SeasonTask UpdatedTasks = 1; // 有变化的任务
+}
+
+// 购买等级经验
+message BuySeasonLvExpReq {
+	int32 Level = 1; // 将等级提升至
+}
+
+message BuySeasonLvExpRs {
+	ReturnCode ReturnCode = 1;
+	SeasonInfo Info       = 2;
+}
+
+// 购买赛季通行证
+message BuySeasonPassReq {
+	SeasonPassType BuyType = 1;
+}
+
+message BuySeasonPassRs {
+	ReturnCode ReturnCode = 1;
+	SeasonInfo Info       = 2;
 }
 
 // 重命名玩家名字

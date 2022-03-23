@@ -22,9 +22,9 @@ func init() {
 }
 
 const (
-	ColorRcvErr = "\u001B[31m"
-	ColorRcv    = "\u001B[0;36m"
-	ColorNotify = "\u001B[33m"
+	ColorRcvErr = "\u001B[7;31m"
+	ColorRcv    = "\u001B[7;36m"
+	ColorNotify = "\u001B[7;33m"
 	ColorSnd    = "\u001B[7;32m"
 )
 
@@ -55,5 +55,5 @@ func LogSndMsg(id GameMsg.MsgId, msg proto.Message) {
 }
 
 func doLogMessage(id GameMsg.MsgId, msg proto.Message, a string, tag string) {
-	log.Printf("%s%s %-30s| %v\u001B[0m\n", a, tag, id, js.PbMinifyJson(msg))
+	log.Printf("%s%s %-30s|\u001B[0m %s\n", a, tag, id, js.PbMinifyJson(msg))
 }

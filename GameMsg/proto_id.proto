@@ -219,4 +219,8 @@ enum MsgId {
 	C2S_SeasonLvRewardReq          = 144; // 领取等级奖励
 	S2C_SeasonLvRewardRs           = 145;
 	S2C_SeasonTaskSync             = 146; // 任务状态更新
+	C2S_BuySeasonLvExpReq          = 147; // 购买等级经验
+	S2C_BuySeasonLvExpRs           = 148;
+	C2S_BuySeasonPassReq           = 149; // 购买赛季通行证
+	S2C_BuySeasonPassRs            = 150;
 }
