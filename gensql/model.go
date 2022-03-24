@@ -128,9 +128,12 @@ func (m *Model) DbSelect() *Model {
 //	return sb.String()
 //}
 
-func (m *Model) Where(conds ...Conditioner) *Model {
+func (m *Model) Where(cond ...string) *Model {
 	tx := m.clone()
-	tx.Conditions = append(tx.Conditions, conds...)
+	for _, s := range cond {
+		tx.Conditions = append(tx.Conditions, m.ParseCondition(s))
+	}
+	//tx.Conditions = append(tx.Conditions, cond...)
 	return tx
 }
 

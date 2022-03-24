@@ -57,8 +57,7 @@ func (g *GameSql) BuildSeasonTask() {
 	g.Init("SeasonTask", GameDbDir, SeasonTaskGoFileName)
 
 	g.GenerateMethod("LoadSeasonTasks", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where(model.FieldEqualCond("PlayerSn")).
-			GenFixedQueryFunc(MethodName)
+		return model.DbSelect().Where("PlayerSn=?").GenFixedQueryFunc(MethodName)
 	})
 
 	g.GenerateMethod("BatchInsertSeasonTask", func(model *Model, MethodName string) string {
@@ -70,7 +69,7 @@ func (g *GameSql) BuildSeasonTask() {
 	})
 
 	g.GenerateMethod("ResetSeasonTask", func(model *Model, MethodName string) string {
-		return model.Where(&FieldEqual{Field: model.GetField("PlayerSn")}).
+		return model.Where("PlayerSn").
 			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
 	})
 }
@@ -79,8 +78,7 @@ func (g *GameSql) BuildLootMission() {
 	g.Init("LootMission", GameDbDir, LootMissionGoFileName)
 
 	g.GenerateMethod("LoadLootMissions", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where(model.FieldEqualCond("PlayerSn")).
-			GenFixedQueryFunc(MethodName)
+		return model.DbSelect().Where("PlayerSn").GenFixedQueryFunc(MethodName)
 	})
 }
 
@@ -88,7 +86,7 @@ func (g *GameSql) BuildCrystal() {
 	g.Init("Crystal", GameDbDir, CrystalGoFileName)
 
 	g.GenerateMethod("GetPlayerCrystals", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where(model.FieldEqualCond("PlayerId")).
+		return model.DbSelect().Where("PlayerId").
 			GenFixedQueryFunc(MethodName)
 	})
 
@@ -105,7 +103,7 @@ func (g *GameSql) BuildCrystal() {
 	})
 
 	g.GenerateMethod("DeleteCrystals", func(model *Model, MethodName string) string {
-		return model.Where(model.FieldInCond("Id")).GenDeleteFunc(MethodName)
+		return model.Where("Id IN (?)").GenDeleteFunc(MethodName)
 	})
 }
 
@@ -117,7 +115,7 @@ func (g *GameSql) BuildSeasonPlayer() {
 	})
 
 	g.GenerateMethod("LoadSeasonPlayer", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where(model.FieldEqualCond("PlayerSn")).
+		return model.DbSelect().Where("PlayerSn").
 			GenFixedQueryFunc(MethodName)
 	})
 
@@ -135,7 +133,7 @@ func (g GameSql) BuildSeasonReward() {
 	g.Init("SeasonReward", GameDbDir, SeasonRewardGoFileName)
 
 	g.GenerateMethod("LoadSeasonReward", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where(model.FieldEqualCond("PlayerSn")).
+		return model.DbSelect().Where("PlayerSn").
 			GenFixedQueryFunc(MethodName)
 	})
 
