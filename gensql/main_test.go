@@ -18,8 +18,7 @@ func Test_loadPackage(t *testing.T) {
 		decls := parseModel(syntax)
 		for _, decl := range decls {
 			if decl.Name == "LootMission" {
-				LoadLootMissions := decl.DbSelect().
-					Where(decl.FieldEqualCond("PlayerSn")).
+				LoadLootMissions := decl.DbSelect().Where("PlayerSn").
 					GenFixedQueryFunc("LoadLootMissions")
 				t.Log(LoadLootMissions)
 				editFunction(pkg, "LoadLootMissions", LoadLootMissions)

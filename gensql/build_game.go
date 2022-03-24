@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/tools/go/packages"
 	"log"
@@ -48,6 +49,7 @@ func (g *GameSql) GetModel(name string) *Model {
 }
 
 func (g *GameSql) GenerateMethod(MethodName string, Generator func(model *Model, MethodName string) string) {
+	log.Output(2, fmt.Sprintf("GenerateMethod: %s", MethodName))
 	MethodSrc := Generator(g.OnModel, MethodName)
 	editFunction(g.ReloadPackage(), MethodName, MethodSrc)
 }
@@ -57,7 +59,7 @@ func (g *GameSql) BuildSeasonTask() {
 	g.Init("SeasonTask", GameDbDir, SeasonTaskGoFileName)
 
 	g.GenerateMethod("LoadSeasonTasks", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where("PlayerSn=?").GenFixedQueryFunc(MethodName)
+		return model.DbSelect().Where("PlayerSn").GenFixedQueryFunc(MethodName)
 	})
 
 	g.GenerateMethod("BatchInsertSeasonTask", func(model *Model, MethodName string) string {
@@ -70,6 +72,11 @@ func (g *GameSql) BuildSeasonTask() {
 
 	g.GenerateMethod("ResetSeasonTask", func(model *Model, MethodName string) string {
 		return model.Where("PlayerSn").
+			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
+	})
+
+	g.GenerateMethod("ResetPlayerSeasonTasks", func(model *Model, MethodName string) string {
+		return model.Where("Id=?").
 			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
 	})
 }

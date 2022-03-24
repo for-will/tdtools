@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 )
 
 func main() {
@@ -12,4 +13,8 @@ func main() {
 	game.BuildSeasonTask()
 	game.BuildSeasonPlayer()
 	game.BuildSeasonReward()
+}
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }

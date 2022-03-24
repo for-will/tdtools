@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"regexp"
 	"strings"
 	"text/template"
 )
@@ -14,6 +16,7 @@ type Conditioner interface {
 
 type FieldEqual struct {
 	Field *ModelField
+	Val   string
 }
 
 func (fe *FieldEqual) Condition() string {
@@ -75,4 +78,47 @@ func (in *FieldIn) Condition() string {
 
 func PrivateFieldCase(s string) string {
 	return strings.ToLower(s[:1]) + s[1:]
+}
+
+func (m *Model) ParseCondition(s string) Conditioner {
+
+	if X, Y, ok := MatchEqualCond(s); ok {
+		return &FieldEqual{
+			Field: m.GetField(X),
+			Val:   Y,
+		}
+	}
+	if X, ok := MatchFieldInCond(s); ok {
+		return &FieldIn{
+			Field: m.GetField(X),
+		}
+	}
+	log.Fatalf("ParseCondition %v", s)
+	return nil
+}
+
+// MatchEqualCond 'key=?'
+func MatchEqualCond(s string) (X string, Y string, Ok bool) {
+	re := regexp.MustCompile(`^(\w+)(?:\s*=\s*(\w+|\?))?$`)
+	matches := re.FindAllStringSubmatch(s, -1)
+	if len(matches) == 1 {
+		X, Y = matches[0][1], matches[0][2]
+		if Y == "" {
+			Y = "?"
+		}
+		return X, Y, true
+	}
+
+	return "", "", false
+}
+
+//MatchFieldInCond 'key IN (?)'
+func MatchFieldInCond(s string) (X string, Ok bool) {
+	re := regexp.MustCompile(`^(\w+)\s* IN \s*\(\?\)$`)
+	matches := re.FindAllStringSubmatch(s, -1)
+	if len(matches) == 1 {
+		return matches[0][1], true
+	}
+
+	return "", false
 }
