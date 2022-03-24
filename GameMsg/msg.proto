@@ -999,14 +999,9 @@ message SeasonTaskRewardRs {
 	repeated SeasonTask  UpdatedTasks = 8; // 更新任务信息
 }
 
-message RewardSeasonLv {
-	int32 Lv      = 1;
-	bool  Premium = 2; //true:领取进阶奖励 fasle:领取普通奖励
-}
-
 // 领取赏金等级奖励
 message SeasonLvRewardReq {
-	repeated RewardSeasonLv LvList = 1;
+	repeated int32 LvList = 1;
 }
 
 message SeasonLvRewardRs {

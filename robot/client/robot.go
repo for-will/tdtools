@@ -308,9 +308,6 @@ func (r *Robot) SeasonReq() {
 
 func (r *Robot) SeasonLvRewardReq() {
 	req := &GameMsg.SeasonLvRewardReq{}
-	req.LvList = append(req.LvList, &GameMsg.RewardSeasonLv{
-		Lv:      3,
-		Premium: false,
-	})
+	req.LvList = append(req.LvList, 3)
 	r.SendMsg(req)
 }
