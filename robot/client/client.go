@@ -13,9 +13,9 @@ import (
 
 type Client struct {
 	ServerTCP  string
-	ServerWS   string
-	C          Connect
-	sendQ      chan proto.Message
+	ServerWS string
+	C        Connect
+	sendQ    chan proto.Message
 	msgHandler func(GameMsg.MsgId, proto.Message)
 }
 

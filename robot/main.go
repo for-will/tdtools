@@ -8,7 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"robot/GameMsg"
-	"robot/client"
+	"robot/robot/client"
 	"sync"
 	"time"
 )
