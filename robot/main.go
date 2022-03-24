@@ -5,10 +5,10 @@ import (
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"log"
+	"market/GameMsg"
+	"market/robot/client"
 	"math/rand"
 	"os"
-	"robot/GameMsg"
-	"robot/robot/client"
 	"sync"
 	"time"
 )

@@ -4,18 +4,18 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"log"
+	"market/GameMsg"
 	"os"
 	"os/signal"
 	"reflect"
-	"robot/GameMsg"
 	"sync"
 )
 
 type Client struct {
 	ServerTCP  string
-	ServerWS string
-	C        Connect
-	sendQ    chan proto.Message
+	ServerWS   string
+	C          Connect
+	sendQ      chan proto.Message
 	msgHandler func(GameMsg.MsgId, proto.Message)
 }
 

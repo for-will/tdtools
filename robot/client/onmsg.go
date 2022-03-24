@@ -2,8 +2,8 @@ package client
 
 import (
 	"go.uber.org/zap"
+	"market/GameMsg"
 	"os"
-	"robot/GameMsg"
 )
 
 func OnConnected(r *Robot) {
@@ -156,8 +156,6 @@ func OnLoginComplete(r *Robot) {
 //func NewVariant[T any](v T) T {
 //	return v
 //}
-
-
 
 //func NewVar[T any](v T) T {
 //	return v

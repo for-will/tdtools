@@ -1,4 +1,4 @@
-module robot
+module market
 
 go 1.16
 
