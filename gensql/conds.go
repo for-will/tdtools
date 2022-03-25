@@ -88,6 +88,9 @@ func (in *FieldIn) Condition() string {
 	var sb = &strings.Builder{}
 
 	text := `
+	if len({{.LIST}}) == 0 {
+		return false
+	}
 	SQL.WriteString(" {{.COLUMN}} IN (")
 	SQL.WriteString(strings.Repeat("?, ", len({{.LIST}})-1))
 	SQL.WriteString("?)")

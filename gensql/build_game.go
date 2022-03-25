@@ -54,33 +54,6 @@ func (g *GameSql) GenerateMethod(MethodName string, Generator func(model *Model,
 	editFunction(g.ReloadPackage(), MethodName, MethodSrc)
 }
 
-func (g *GameSql) BuildSeasonTask() {
-
-	g.Init("SeasonTask", GameDbDir, SeasonTaskGoFileName)
-
-	g.GenerateMethod("LoadSeasonTasks", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where("PlayerSn").GenFixedQueryFunc(MethodName)
-	})
-
-	g.GenerateMethod("BatchInsertSeasonTask", func(model *Model, MethodName string) string {
-		return model.GenBatchInsertFunc()
-	})
-
-	g.GenerateMethod("UpdateSeasonTaskProgress", func(model *Model, MethodName string) string {
-		return model.GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
-	})
-
-	g.GenerateMethod("ResetSeasonTask", func(model *Model, MethodName string) string {
-		return model.Where("PlayerSn").
-			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
-	})
-
-	g.GenerateMethod("ResetPlayerSeasonTasks", func(model *Model, MethodName string) string {
-		return model.Where("TaskId=?", "Id IN (?)").
-			GenBatchUpdateFunc(MethodName, "Progress", "Status", "Looped")
-	})
-}
-
 func (g *GameSql) BuildLootMission() {
 	g.Init("LootMission", GameDbDir, LootMissionGoFileName)
 
@@ -131,8 +104,35 @@ func (g *GameSql) BuildSeasonPlayer() {
 	})
 
 	g.GenerateMethod("UpdateSeasonPlayerFields", func(model *Model, MethodName string) string {
-		return model.GenUpdateFunc(MethodName,
-			"SeasonId", "Premium", "SeasonExp", "TodayExp", "DayTimeOut", "WeekTimeOut", "SeasonTimeOut")
+		return model.GenUpdateFunc(MethodName, "SeasonId", "Premium", "SeasonExp",
+			"TodayExp", "DayTimeOut", "WeekTimeOut", "SeasonTimeOut", "Settled")
+	})
+}
+
+func (g *GameSql) BuildSeasonTask() {
+
+	g.Init("SeasonTask", GameDbDir, SeasonTaskGoFileName)
+
+	g.GenerateMethod("LoadSeasonTasks", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("BatchInsertSeasonTask", func(model *Model, MethodName string) string {
+		return model.GenBatchInsertFunc()
+	})
+
+	g.GenerateMethod("UpdateSeasonTaskProgress", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
+	})
+
+	g.GenerateMethod("ResetSeasonTask", func(model *Model, MethodName string) string {
+		return model.Where("PlayerSn").
+			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
+	})
+
+	g.GenerateMethod("ResetPlayerSeasonTasks", func(model *Model, MethodName string) string {
+		return model.Where("Id IN (?)").
+			GenBatchUpdateFunc(MethodName, "Progress", "Status", "Looped")
 	})
 }
 
