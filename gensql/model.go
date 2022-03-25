@@ -35,7 +35,7 @@ func (m *Model) SqlQuery() string {
 		out += " WHERE"
 		for _, cond := range m.Conditions {
 			out += " "
-			out += cond.Condition()
+			out += cond.SQL()
 		}
 	}
 	return out
@@ -43,11 +43,11 @@ func (m *Model) SqlQuery() string {
 
 func (m *Model) CondBuild() string {
 
-	var sb strings.Builder
+	var condList []string
 	for _, cond := range m.Conditions {
-		sb.WriteString(cond.Condition())
+		condList = append(condList, cond.Condition())
 	}
-	return sb.String()
+	return strings.Join(condList, "\n\tSQL.WriteString(\"AND\")")
 }
 
 func (m *Model) DbSelect() *Model {
@@ -396,7 +396,7 @@ func (m *Model) GenUpdateFunc(funcName string, columns ...string) string {
 	tpl.Parse(text)
 
 	var sb = &strings.Builder{}
-	sql, args, argsIn := m.DbUpdate(columns...)
+	sql, args, argsIn := m.SqlUpdateById(columns...)
 	tpl.Execute(sb, &struct {
 		STRUCT    string
 		FUNC      string
@@ -411,6 +411,63 @@ func (m *Model) GenUpdateFunc(funcName string, columns ...string) string {
 		ARGS:      args,
 		FUNC_ARGS: argsIn,
 		SQL_FMT:   strings.Replace(sql, "?", "'%v'", -1),
+	})
+	return sb.String()
+}
+
+func (m *Model) GenBatchUpdateFunc(funcName string, columns ...string) string {
+	if len(columns) == 0 {
+		log.Fatal("GenUpdateFunc columns nil.")
+		return ""
+	}
+
+	if funcName == "" {
+		funcName = "Update" + m.Name
+	}
+
+	text := `func (conn *DbConnect) {{.FUNC}}({{.FUNC_ARGS}}) bool {
+
+	SQL := strings.Builder{}
+	ARGS := []interface{}{ {{.ARGS}} }
+
+	SQL.WriteString("{{.SQL}}")
+
+	{{.WHERE}}
+
+	_, err1 := conn.db.Exec(SQL.String(), ARGS...)
+	if err1 != nil {
+		log.Error(strings.Replace(SQL.String(), "?", "'%v'", -1), ARGS...)
+		log.Error("{{.FUNC}} Exec SQL Error:%v", err1)
+		return false
+	}
+
+	return true
+}
+`
+	tpl := template.New("GenUpdateFunc:" + m.Name)
+	tpl.Parse(text)
+
+	var sb = &strings.Builder{}
+	sql, args, argsIn := m.SqlUpdate(columns...)
+
+	if in := m.FuncIn(); in != "" {
+		argsIn = in + ", " + argsIn
+	}
+
+	tpl.Execute(sb, &struct {
+		STRUCT    string
+		FUNC      string
+		SQL       string
+		ARGS      string
+		FUNC_ARGS string
+		WHERE     string
+	}{
+		STRUCT:    m.Name,
+		FUNC:      funcName,
+		SQL:       sql,
+		ARGS:      args,
+		FUNC_ARGS: argsIn,
+		WHERE:     m.CondBuild(),
 	})
 	return sb.String()
 }

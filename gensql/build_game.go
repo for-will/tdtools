@@ -76,8 +76,8 @@ func (g *GameSql) BuildSeasonTask() {
 	})
 
 	g.GenerateMethod("ResetPlayerSeasonTasks", func(model *Model, MethodName string) string {
-		return model.Where("Id=?").
-			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
+		return model.Where("TaskId=?", "Id IN (?)").
+			GenBatchUpdateFunc(MethodName, "Progress", "Status", "Looped")
 	})
 }
 

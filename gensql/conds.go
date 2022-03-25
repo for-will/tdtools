@@ -12,6 +12,7 @@ type Conditioner interface {
 	Argument() string
 	ArgumentName() string
 	Condition() string
+	SQL() string
 }
 
 type FieldEqual struct {
@@ -19,15 +20,46 @@ type FieldEqual struct {
 	Val   string
 }
 
+func (fe *FieldEqual) SQL() string {
+	return fmt.Sprintf("%s = ?", fe.Field.SqlName())
+}
+
 func (fe *FieldEqual) Condition() string {
-	return fmt.Sprintf("%s = ?", snakeCase(fe.Field.Name))
+	var sb = &strings.Builder{}
+
+	text := `
+	SQL.WriteString(" {{.COLUMN}}=?")	
+	ARGS = append(ARGS, {{.NAME}})
+`
+	if fe.Val == "" {
+		text = `
+	SQL.WriteString(" {{.COLUMN}}={{.VAL}}")
+`
+	}
+	tpl := template.New("FieldEqual")
+	tpl.Parse(text)
+
+	tpl.Execute(sb, struct {
+		COLUMN string
+		NAME   string
+		VAL    string
+	}{
+		COLUMN: fe.Field.SqlName(),
+		NAME:   fe.ArgumentName(),
+		VAL:    fe.Val,
+	})
+
+	return sb.String()
 }
 
 func (fe *FieldEqual) ArgumentName() string {
-	return PrivateFieldCase(fe.Field.Name)
+	return fe.Field.Name
 }
 
 func (fe *FieldEqual) Argument() string {
+	if fe.Val == "" {
+		return ""
+	}
 	return fe.ArgumentName() + " " + fe.Field.Type
 }
 
@@ -36,7 +68,7 @@ type FieldIn struct {
 }
 
 func (in *FieldIn) ArgumentName() string {
-	return strings.ToLower(in.Field.Name[:1]) + in.Field.Name[1:] + "List"
+	return in.Field.Name + "List"
 }
 
 func (in *FieldIn) ArgumentType() string {
@@ -47,20 +79,21 @@ func (in *FieldIn) Argument() string {
 	return in.ArgumentName() + " " + in.ArgumentType()
 }
 
+func (in *FieldIn) SQL() string {
+	return fmt.Sprintf("%s IN (%%s)", in.Field.SqlName())
+}
+
 func (in *FieldIn) Condition() string {
 
 	var sb = &strings.Builder{}
 
 	text := `
-	sqlSb.WriteString("{{.COLUMN}} IN(")
-	for i, v := range {{.LIST}} {
-		if i != 0 {
-			sqlSb.WriteString(", ")
-		}
-		sqlSb.WriteString("?")
-		args = append(args, v)
+	SQL.WriteString(" {{.COLUMN}} IN (")
+	SQL.WriteString(strings.Repeat("?, ", len({{.LIST}})-1))
+	SQL.WriteString("?)")
+	for _, v := range {{.LIST}} {
+		ARGS = append(ARGS, v)
 	}
-	sqlSb.WriteString(")")
 `
 	tpl := template.New("sqlIn")
 	tpl.Parse(text)
@@ -69,7 +102,7 @@ func (in *FieldIn) Condition() string {
 		COLUMN string
 		LIST   string
 	}{
-		COLUMN: snakeCase(in.Field.Name),
+		COLUMN: in.Field.SqlName(),
 		LIST:   in.ArgumentName(),
 	})
 
@@ -83,14 +116,22 @@ func PrivateFieldCase(s string) string {
 func (m *Model) ParseCondition(s string) Conditioner {
 
 	if X, Y, ok := MatchEqualCond(s); ok {
+		field := m.GetField(X)
+		if field == nil {
+			log.Fatalf("invalid cond '%s' get field '%s' nil", s, X)
+		}
 		return &FieldEqual{
-			Field: m.GetField(X),
+			Field: field,
 			Val:   Y,
 		}
 	}
 	if X, ok := MatchFieldInCond(s); ok {
+		field := m.GetField(X)
+		if field == nil {
+			log.Fatalf("invalid conditon '%s' get field '%s' nil", s, X)
+		}
 		return &FieldIn{
-			Field: m.GetField(X),
+			Field: field,
 		}
 	}
 	log.Fatalf("ParseCondition %v", s)

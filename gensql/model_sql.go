@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -24,35 +23,6 @@ func (m *Model) DbInsert() (insert string, place string) {
 	return sb.String(), "(?" + strings.Repeat(", ?", len(m.Fields)-2) + ")"
 }
 
-func (m *Model) DbUpdate(columns ...string) (sql string, args string, argsIn string) {
-
-	var sb strings.Builder
-	sb.WriteString("UPDATE ")
-	sb.WriteString(m.DbTableName())
-	sb.WriteString(" SET ")
-
-	argsIn = "Id int32"
-	for i, col := range columns {
-		if i != 0 {
-			sb.WriteString(", ")
-			args += ", "
-		}
-		argsIn += ", "
-
-		field := m.GetField(col)
-		if field == nil {
-			log.Fatalf("DbUpdate %s GetField(%s) nil", m.Name, col)
-			return "", "", ""
-		}
-		sb.WriteString(snakeCase(field.Name) + "=?")
-		args += field.Name
-		argsIn += field.Name + " " + field.Type
-	}
-	sb.WriteString(" WHERE id=?")
-	args += ", Id"
-
-	return sb.String(), args, argsIn
-}
 
 func (m *Model) DbDelete() (sql string) {
 
