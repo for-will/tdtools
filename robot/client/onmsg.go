@@ -137,13 +137,13 @@ func OnLoginComplete(r *Robot) {
 	//r.PlaceLoot()
 	//r.OALoginRewardReq()
 	//r.OATaskRewardReq()
-	//r.Explore()
+	r.Explore()
 	//r.UnlockHeroTalentPage()
 	//r.LootMissionList()
 	//r.UnlockHeroTalentPage()
 	//r.SeasonReq()
 	//r.SeasonLvRewardReq()
-	r.DailySignReq()
+	//r.DailySignReq()
 }
 
 //func NewVariant(v int32) int32 {

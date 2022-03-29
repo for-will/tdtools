@@ -6,6 +6,7 @@ import (
 	"log"
 	"market/GameMsg"
 	"market/js"
+	"os"
 )
 
 var Log *zap.Logger
@@ -20,14 +21,15 @@ func init() {
 	//zap.New()
 	Log = l
 
-	log.SetFlags(log.LstdFlags)
+	log.SetFlags(0)
+	log.SetOutput(os.Stdout)
 }
 
 const (
-	ColorRcvErr = "\u001B[7;31m"
-	ColorRcv    = "\u001B[7;36m"
-	ColorNotify = "\u001B[7;33m"
-	ColorSnd    = "\u001B[7;32m"
+	ColorRcvErr = "\u001B[1;31m"
+	ColorRcv    = "\u001B[2;36m"
+	ColorNotify = "\u001B[3;33m"
+	ColorSnd    = "\u001B[1;32m"
 )
 
 func LogRcvMsg(id GameMsg.MsgId, msg proto.Message) {
@@ -39,23 +41,29 @@ func LogRcvMsg(id GameMsg.MsgId, msg proto.Message) {
 		GameMsg.MsgId_S2C_ShowWebViewRs,
 		GameMsg.MsgId_S2C_TaskInfo,
 		GameMsg.MsgId_S2C_PlayerOffline,
+		GameMsg.MsgId_S2C_Strength,
 		GameMsg.MsgId_S2C_SyncHeroValidTalentPage:
-		doLogMessage(id, msg, ColorNotify, "<")
+		doLogMessage(id, msg, ColorNotify, "☀\t")
 	default:
-		doLogMessage(id, msg, ColorRcv, "<")
+		doLogMessage(id, msg, ColorRcv, "▼\t")
 
 	}
 
 }
 
 func LogErrMsg(id GameMsg.MsgId, msg proto.Message) {
-	doLogMessage(id, msg, ColorRcvErr, "<")
+	doLogMessage(id, msg, ColorRcvErr, "☢\t")
 }
 
 func LogSndMsg(id GameMsg.MsgId, msg proto.Message) {
-	doLogMessage(id, msg, ColorSnd, ">")
+	doLogMessage(id, msg, ColorSnd, "▲\t")
 }
 
 func doLogMessage(id GameMsg.MsgId, msg proto.Message, a string, tag string) {
-	log.Printf("%s%s %-30s|\u001B[0m %s\n", a, tag, id, js.PbMinifyJson(msg))
+	//log.SetFlags(log.LstdFlags)
+	//tag = "■"
+	tag = a + "\u001B[27m" + tag + "\u001B[0m"
+	log.Printf("%s %s%-27s\u001B[0m %s\n", tag, a, id, js.PbMinifyJson(msg))
 }
+
+//◀▶◁▷☀■□☢☠

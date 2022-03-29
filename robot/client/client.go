@@ -32,7 +32,7 @@ func (r *Client) Init() {
 	}
 
 	r.msgHandler(NetworkConnected, nil)
-	log.SetFlags(0)
+	//log.SetFlags(0)
 }
 
 func (r *Client) Run() {
@@ -119,10 +119,8 @@ func (r *Client) ReadMsg() error {
 			zap.Int("msg_len", len(data)), zap.Error(err))
 	}
 	if code := fetchReturnCode(msg); code != GameMsg.ReturnCode_OK {
-		//log.Printf("\x1b[31m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
 		LogErrMsg(msgId, msg)
 	} else {
-		//log.Printf("\x1b[32m< %-30s| %v\x1b[0m\n", msgId, js.PbMinifyJson(msg))
 		LogRcvMsg(msgId, msg)
 	}
 
@@ -130,14 +128,22 @@ func (r *Client) ReadMsg() error {
 	return nil
 }
 
+type ResponseMessage interface {
+	GetReturnCode() GameMsg.ReturnCode
+}
+
 func fetchReturnCode(msg interface{}) GameMsg.ReturnCode {
-	typ := reflect.TypeOf(msg).Elem()
-	val := reflect.ValueOf(msg).Elem()
-	ReturnCodeType := reflect.TypeOf(GameMsg.ReturnCode(0))
-	for i := 0; i < typ.NumField(); i++ {
-		if typ.Field(i).Type == ReturnCodeType {
-			return val.Field(i).Interface().(GameMsg.ReturnCode)
-		}
+	//typ := reflect.TypeOf(msg).Elem()
+	//val := reflect.ValueOf(msg).Elem()
+	//ReturnCodeType := reflect.TypeOf(GameMsg.ReturnCode(0))
+	//for i := 0; i < typ.NumField(); i++ {
+	//	if typ.Field(i).Type == ReturnCodeType {
+	//		return val.Field(i).Interface().(GameMsg.ReturnCode)
+	//	}
+	//}
+
+	if rsp, ok := msg.(ResponseMessage); ok {
+		return rsp.GetReturnCode()
 	}
 	return GameMsg.ReturnCode_OK
 }

@@ -1392,7 +1392,8 @@ message DailySignRs {
 	int32                Signed      = 2;
 	int32                NextDay     = 3;
 	int32                NextMonth   = 4;
-	repeated Item        Items       = 5; // 奖励道具
-	repeated CrystalInfo CrystalList = 6; // 奖励装备
-	repeated SyncCard    Cards       = 7; // 英雄
+	bool                 IsSign      = 5; //是否已签到
+	repeated Item        Items       = 6; // 奖励道具
+	repeated CrystalInfo CrystalList = 7; // 奖励装备
+	repeated SyncCard    Cards       = 8; // 英雄
 }
