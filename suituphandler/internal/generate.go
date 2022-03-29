@@ -1,44 +1,18 @@
-package main
+package internal
 
 import (
-	"flag"
 	"fmt"
 	"go/ast"
 	"go/format"
 	"golang.org/x/tools/go/packages"
-	"io/ioutil"
 	"log"
-	"path/filepath"
+	"market/GameMsg"
 	"reflect"
 	"regexp"
-	"robot/GameMsg"
 	"sort"
 	"strings"
 	"text/template"
 )
-
-var typeNames = flag.String("type", "", "comma-separated list of type names; must be set")
-
-func main() {
-	flag.Parse()
-	args := flag.Args()
-	var dir string
-	if len(args) != 0 {
-		dir = filepath.Dir(args[0])
-	} else {
-		dir = "."
-	}
-
-	out := GenHandlerWrap(dir)
-	if formatted, err := format.Source([]byte(out)); err == nil {
-		out = string(formatted)
-	}
-
-	err := ioutil.WriteFile("handler_wrap.go", []byte(out), 0644)
-	if err != nil {
-		panic(err)
-	}
-}
 
 func GenHandlerWrap(dir string) string {
 
@@ -123,35 +97,6 @@ func GenerateRegisterFunc(handlers []*FuncDecl) string {
 }
 
 func GenBindMsgId() string {
-	var msgs = map[GameMsg.MsgId]interface{}{
-		GameMsg.MsgId_C2S_QualityUp:         &GameMsg.HeroQualityUp{},
-		GameMsg.MsgId_S2C_QualityUpRs:       &GameMsg.HeroQualityUpRs{},
-		GameMsg.MsgId_S2C_SyncMainlineTask:  &GameMsg.SyncMainTask{},
-		GameMsg.MsgId_C2S_Relogin:           &GameMsg.ReLogin{},
-		GameMsg.MsgId_S2C_ReloginRs:         &GameMsg.ReLoginRs{},
-		GameMsg.MsgId_C2C_MailList:          &GameMsg.MailInfoReq{},
-		GameMsg.MsgId_S2C_MailListRs:        &GameMsg.MailInfoRes{},
-		GameMsg.MsgId_C2C_MailDelete:        &GameMsg.MailDeleteReq{},
-		GameMsg.MsgId_C2C_MailGetAward:      &GameMsg.MailGetAwardReq{},
-		GameMsg.MsgId_C2C_RankList:          &GameMsg.RankListReq{},
-		GameMsg.MsgId_S2C_RankListRs:        &GameMsg.RankListRes{},
-		GameMsg.MsgId_C2C_MailGetDesc:       &GameMsg.MailGetDescReq{},
-		GameMsg.MsgId_C2S_VersionInfoReqID:  &GameMsg.C2S_VersionInfoReq{},
-		GameMsg.MsgId_S2C_VersionInfoRspID:  &GameMsg.S2C_VersionInfoRsp{},
-		GameMsg.MsgId_C2S_MailHeadListReqID: &GameMsg.C2S_MailHeadListReq{},
-		GameMsg.MsgId_S2C_MailHeadListRspID: &GameMsg.S2C_MailHeadListRsp{},
-		GameMsg.MsgId_C2S_MailBodyReqID:     &GameMsg.C2S_MailBodyReq{},
-		GameMsg.MsgId_S2C_MailBodyRspID:     &GameMsg.S2C_MailBodyRsp{},
-		GameMsg.MsgId_C2S_MailStateReqID:    &GameMsg.C2S_MailStateReq{},
-		GameMsg.MsgId_S2C_MailStateRspID:    &GameMsg.S2C_MailStateRsp{},
-		GameMsg.MsgId_C2S_MailBoxStateReqID: &GameMsg.C2S_MailBoxStateReq{},
-		GameMsg.MsgId_S2C_MailBoxStateRspID: &GameMsg.S2C_MailBoxStateRsp{},
-		GameMsg.MsgId_C2S_MailDeleteReqID:   &GameMsg.MailDeleteReq{},
-		GameMsg.MsgId_S2C_MailDeleteRspID:   &GameMsg.MailDeleteRs{},
-		GameMsg.MsgId_C2S_MailGetAwardReqID: &GameMsg.MailGetAwardReq{},
-		GameMsg.MsgId_S2C_MailGetAwardRspID: &GameMsg.MailGetAwardRs{},
-	}
-
 	var msgIds []int32
 	for id := range GameMsg.MsgId_name {
 		msgIds = append(msgIds, id)
@@ -165,7 +110,7 @@ func GenBindMsgId() string {
 	for _, id := range msgIds {
 		idName := GameMsg.MsgId_name[id]
 		msgName := idName[4:]
-		if msg, ok := msgs[GameMsg.MsgId(id)]; ok {
+		if msg, ok := SpecialMsgId[GameMsg.MsgId(id)]; ok {
 			msgName = reflect.TypeOf(msg).Elem().Name()
 		}
 
@@ -175,6 +120,41 @@ func GenBindMsgId() string {
 	}
 	sb.WriteString("}")
 	return sb.String()
+}
+
+func GenMsgIdMap() []byte {
+	var msgIds []int32
+	for id := range GameMsg.MsgId_name {
+		msgIds = append(msgIds, id)
+	}
+	sort.Slice(msgIds, func(i, j int) bool {
+		return msgIds[i] < msgIds[j]
+	})
+
+	var sb strings.Builder
+	sb.WriteString(`package client
+
+import (
+	"market/GameMsg"
+)
+
+var MessageIdMap = map[GameMsg.MsgId]interface{}{
+`)
+	for _, id := range msgIds {
+		idName := GameMsg.MsgId_name[id]
+		msgName := idName[4:]
+		if msg, ok := SpecialMsgId[GameMsg.MsgId(id)]; ok {
+			msgName = reflect.TypeOf(msg).Elem().Name()
+		}
+		s := fmt.Sprintf("\tGameMsg.MsgId_%s:  (*GameMsg.%s)(nil),\n", idName, msgName)
+		sb.WriteString(s)
+	}
+	sb.WriteString("}")
+	out := sb.String()
+	if formatted, err := format.Source([]byte(out)); err == nil {
+		return formatted
+	}
+	return []byte(out)
 }
 
 type HandlerInfo struct {
@@ -268,7 +248,7 @@ func (fd *FuncDecl) IsLegalHandler() bool {
 	var reqCnt int
 	for _, field := range fd.In {
 		if field.PkgName == "GameMsg" {
-			if field.FieldType[0] != '*'{
+			if field.FieldType[0] != '*' {
 				return false
 			}
 			reqCnt++
@@ -345,6 +325,35 @@ func typeExprName(Type ast.Expr) (pkg, typ string) {
 		return p, p + "." + name
 	}
 
-	log.Printf("typeExprName: %#v", Type)
+	//log.Printf("typeExprName: %#v", Type)
 	return "", "interface{}"
+}
+
+var SpecialMsgId = map[GameMsg.MsgId]interface{}{
+	GameMsg.MsgId_C2S_QualityUp:         &GameMsg.HeroQualityUp{},
+	GameMsg.MsgId_S2C_QualityUpRs:       &GameMsg.HeroQualityUpRs{},
+	GameMsg.MsgId_S2C_SyncMainlineTask:  &GameMsg.SyncMainTask{},
+	GameMsg.MsgId_C2S_Relogin:           &GameMsg.ReLogin{},
+	GameMsg.MsgId_S2C_ReloginRs:         &GameMsg.ReLoginRs{},
+	GameMsg.MsgId_C2C_MailList:          &GameMsg.MailInfoReq{},
+	GameMsg.MsgId_S2C_MailListRs:        &GameMsg.MailInfoRes{},
+	GameMsg.MsgId_C2C_MailDelete:        &GameMsg.MailDeleteReq{},
+	GameMsg.MsgId_C2C_MailGetAward:      &GameMsg.MailGetAwardReq{},
+	GameMsg.MsgId_C2C_RankList:          &GameMsg.RankListReq{},
+	GameMsg.MsgId_S2C_RankListRs:        &GameMsg.RankListRes{},
+	GameMsg.MsgId_C2C_MailGetDesc:       &GameMsg.MailGetDescReq{},
+	GameMsg.MsgId_C2S_VersionInfoReqID:  &GameMsg.C2S_VersionInfoReq{},
+	GameMsg.MsgId_S2C_VersionInfoRspID:  &GameMsg.S2C_VersionInfoRsp{},
+	GameMsg.MsgId_C2S_MailHeadListReqID: &GameMsg.C2S_MailHeadListReq{},
+	GameMsg.MsgId_S2C_MailHeadListRspID: &GameMsg.S2C_MailHeadListRsp{},
+	GameMsg.MsgId_C2S_MailBodyReqID:     &GameMsg.C2S_MailBodyReq{},
+	GameMsg.MsgId_S2C_MailBodyRspID:     &GameMsg.S2C_MailBodyRsp{},
+	GameMsg.MsgId_C2S_MailStateReqID:    &GameMsg.C2S_MailStateReq{},
+	GameMsg.MsgId_S2C_MailStateRspID:    &GameMsg.S2C_MailStateRsp{},
+	GameMsg.MsgId_C2S_MailBoxStateReqID: &GameMsg.C2S_MailBoxStateReq{},
+	GameMsg.MsgId_S2C_MailBoxStateRspID: &GameMsg.S2C_MailBoxStateRsp{},
+	GameMsg.MsgId_C2S_MailDeleteReqID:   &GameMsg.MailDeleteReq{},
+	GameMsg.MsgId_S2C_MailDeleteRspID:   &GameMsg.MailDeleteRs{},
+	GameMsg.MsgId_C2S_MailGetAwardReqID: &GameMsg.MailGetAwardReq{},
+	GameMsg.MsgId_S2C_MailGetAwardRspID: &GameMsg.MailGetAwardRs{},
 }

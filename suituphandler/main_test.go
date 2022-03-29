@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"robot/js"
+	"market/js"
 	"testing"
 )
 
@@ -23,4 +23,14 @@ func init() {
 func TestGenHandlerWrap(t *testing.T) {
 	out := GenHandlerWrap("D:/work/P/Server/LeafServer/src/server/game/internal/lootmission.go")
 	println(out)
+}
+
+func TestGenBindMsgId(t *testing.T) {
+	t.Logf(GenBindMsgId())
+}
+
+func TestGenMsgIdMap(t *testing.T) {
+	out := GenMsgIdMap()
+
+	t.Log(string(out))
 }
