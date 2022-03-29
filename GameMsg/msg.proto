@@ -131,6 +131,12 @@ enum ReturnCode {
 	OpeningActivityConfigMiss      = 198; // 未找到配置文件
 	OpeningActivityPointsDemanded  = 199; // 活跃点不足
 
+	// 支付
+	PayInvalidGoods                = 200; // 无效的商品id
+	PaySoldOut                     = 201; // 商品已售罄
+	PayInvalidLv                   = 202; // 等级不够
+	PayInvalidCondition            = 203; // 未达到购买条件
+
 	// 赏金任务
 	SeasonTimeOut                  = 210; // 赛季已经结束
 	SeasonBuyLvInvalid             = 211; // 无效的等级
@@ -1344,4 +1350,49 @@ message AccumulateReceive {
 message AccumulateReceiveRs {
 	ReturnCode ReturnCode = 1;
 	int32      Id         = 2; // 领取的id
+}
+
+// 支付商品信息
+message PayGoodsInfo {
+	int32 Id        = 1;
+	int32 Cnt       = 2;
+	int32 Countdown = 3;
+}
+
+// 请求支付列表
+message PayListReq {
+
+}
+
+// 返回支付列表
+message PayListRs {
+	ReturnCode            ReturnCode         = 1;
+	int32                 LoopStoreCountdown = 2; // 循环商店倒计时
+	int32                 MonthCard          = 3; // 月卡剩余天数
+	repeated PayGoodsInfo GoodsList          = 4; // 商品列表
+	repeated int32        PayedList          = 5; // 已购买的商品ID
+	int32                 MonthCardStatus    = 6; // 月卡领取状态（0：未领取，1：已领取）
+}
+
+// 返回支付结果
+message PayResult {
+	ReturnCode           ReturnCode  = 1;
+	repeated Item        Items       = 2; // 道具
+	repeated CrystalInfo CrystalList = 3; // 装备
+	repeated SyncCard    Cards       = 4; // 英雄
+}
+
+// 每日签到
+message DailySignReq {
+
+}
+
+message DailySignRs {
+	ReturnCode           ReturnCode  = 1;
+	int32                Signed      = 2;
+	int32                NextDay     = 3;
+	int32                NextMonth   = 4;
+	repeated Item        Items       = 5; // 奖励道具
+	repeated CrystalInfo CrystalList = 6; // 奖励装备
+	repeated SyncCard    Cards       = 7; // 英雄
 }

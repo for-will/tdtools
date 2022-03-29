@@ -142,7 +142,8 @@ func OnLoginComplete(r *Robot) {
 	//r.LootMissionList()
 	//r.UnlockHeroTalentPage()
 	//r.SeasonReq()
-	r.SeasonLvRewardReq()
+	//r.SeasonLvRewardReq()
+	r.DailySignReq()
 }
 
 //func NewVariant(v int32) int32 {

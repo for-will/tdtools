@@ -3,13 +3,13 @@ package client
 import (
 	"github.com/myPuffer/gotosql"
 	"google.golang.org/protobuf/proto"
+	"market/GameMsg"
 	"reflect"
-	"robot/GameMsg"
 	"testing"
 )
 
 func TestReturnCode(t *testing.T) {
-	msg := &GameMsg.EquipCrystalRs{ReturnCode: NewRetCode(GameMsg.ReturnCode_EquipmentSysNotOpen)}
+	msg := &GameMsg.EquipCrystalRs{ReturnCode: GameMsg.ReturnCode_EquipmentSysNotOpen}
 
 	typ := reflect.TypeOf(msg).Elem()
 	val := reflect.ValueOf(msg).Elem()

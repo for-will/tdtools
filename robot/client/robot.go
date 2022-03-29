@@ -311,3 +311,7 @@ func (r *Robot) SeasonLvRewardReq() {
 	req.LvList = append(req.LvList, 3)
 	r.SendMsg(req)
 }
+
+func (r *Robot) DailySignReq() {
+	r.SendMsg(&GameMsg.DailySignReq{})
+}

@@ -15,4 +15,4 @@ require (
 	gorm.io/gorm v1.21.9
 )
 
-replace github.com/myPuffer/gotosql v0.1.0 => ../../../vmshares/local/gotosql
+//replace github.com/myPuffer/gotosql v0.1.0 => ../../../vmshares/local/gotosql

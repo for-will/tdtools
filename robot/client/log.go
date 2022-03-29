@@ -19,6 +19,8 @@ func init() {
 	//l.Info("hello info")
 	//zap.New()
 	Log = l
+
+	log.SetFlags(log.LstdFlags)
 }
 
 const (

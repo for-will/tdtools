@@ -223,4 +223,13 @@ enum MsgId {
 	S2C_BuySeasonLvExpRs           = 148;
 	C2S_BuySeasonPassReq           = 149; // 购买赛季通行证
 	S2C_BuySeasonPassRs            = 150;
+
+	// 支付
+	C2S_PayListReq                 = 151; // 请求支付列表
+	S2C_PayListRs                  = 152; // 返回支付列表
+	S2C_PayResult                  = 153; // 返回支付结果
+
+	// 签到
+	C2S_DailySignReq               = 160;
+	S2C_DailySignRs                = 161;
 }

@@ -21,6 +21,7 @@ const (
 	SeasonTaskGoFileName   = "season_task.go"
 	SeasonPlayerGoFileName = "season_player.go"
 	SeasonRewardGoFileName = "season_reward.go"
+	SingInGoFileName       = "signin.go"
 )
 
 func (g *GameSql) ReloadPackage() *packages.Package {
@@ -150,5 +151,26 @@ func (g GameSql) BuildSeasonReward() {
 
 	g.GenerateMethod("UpdateSeasonReward", func(model *Model, MethodName string) string {
 		return model.GenUpdateFunc(MethodName, "Base", "Premium")
+	})
+}
+
+func (g GameSql) BuildSignIn() {
+	g.Init("DailySignIn", GameDbDir, SingInGoFileName)
+
+	g.GenerateMethod("NewTblDailySignIn", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
+	g.GenerateMethod("LoadPlayerDailySign", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").
+			GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("CreateDailySignIn", func(model *Model, MethodName string) string {
+		return model.GenCreateFunc()
+	})
+
+	g.GenerateMethod("UpdateDailySignIn", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Signed", "NextDay", "NextMonth")
 	})
 }
