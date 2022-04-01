@@ -230,6 +230,6 @@ enum MsgId {
 	S2C_PayResult                  = 153; // 返回支付结果
 
 	// 签到
-	C2S_DailySignReq               = 160;
-	S2C_DailySignRs                = 161;
+	C2S_DailySignReq               = 154;
+	S2C_DailySignRs                = 155;
 }

@@ -223,6 +223,7 @@ func (m *Model) GenNewTblFunc() string {
 
 	text := `func NewTbl{{.ModName}}(db *sql.DB) {
 
+	db.Exec("DROP TABLE IF EXISTS {{.TableName}}")
 	querySql := ` + "`{{.QuerySql}}`" + `
 	LogSql(querySql)
 	_, err := db.Exec(querySql)
@@ -240,14 +241,16 @@ func (m *Model) GenNewTblFunc() string {
 	}
 	var sb = &strings.Builder{}
 	tpl.Execute(sb, &struct {
-		ModName  string
-		QuerySql string
-		IN       string
-		SQL      string
-		ARGS     string
+		ModName   string
+		TableName string
+		QuerySql  string
+		IN        string
+		SQL       string
+		ARGS      string
 	}{
-		ModName:  m.Name,
-		QuerySql: m.DbCreateTbl(),
+		ModName:   m.Name,
+		TableName: m.DbTableName(),
+		QuerySql:  m.DbCreateTbl(),
 	})
 	return sb.String()
 }

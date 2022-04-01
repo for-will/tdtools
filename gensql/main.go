@@ -13,6 +13,7 @@ func main() {
 	game.BuildSeasonTask()
 	game.BuildSeasonPlayer()
 	game.BuildSeasonReward()
+	game.BuildSignIn()
 }
 
 func init() {

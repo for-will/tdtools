@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+//CREATE USER 'game'@'%' IDENTIFIED BY 'game123';
+//create database game default charset utf8 collate utf8_general_ci;
+//grant all privileges on game.* to 'game'@'%' identified by 'game123';
+//flush privileges;
+
 var LogSql = db.LogSql
 var LogError = db.LogError
 
