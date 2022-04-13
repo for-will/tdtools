@@ -82,7 +82,7 @@ func (r *Robot) Login(account string, password string) {
 func (r *Robot) Explore() {
 
 	r.SendMsg(&GameMsg.Explore{
-		Area:  6,
+		Area:  5,
 		Times: GameMsg.ExploreTimes_Ten,
 	})
 }
@@ -305,6 +305,13 @@ func (r *Robot) QuestionnaireReq() {
 func (r *Robot) SeasonReq() {
 	r.SendMsg(&GameMsg.SeasonReq{})
 }
+
+func (r *Robot) SeasonTaskRewardReq() {
+	r.SendMsg(&GameMsg.SeasonTaskRewardReq{
+		TaskIds: []int32{1010},
+	})
+}
+
 
 func (r *Robot) SeasonLvRewardReq() {
 	req := &GameMsg.SeasonLvRewardReq{}

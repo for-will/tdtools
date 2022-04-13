@@ -114,6 +114,10 @@ func (g *GameSql) BuildSeasonTask() {
 
 	g.Init("SeasonTask", GameDbDir, SeasonTaskGoFileName)
 
+	g.GenerateMethod("NewTblSeasonTask", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
 	g.GenerateMethod("LoadSeasonTasks", func(model *Model, MethodName string) string {
 		return model.DbSelect().Where("PlayerSn").GenFixedQueryFunc(MethodName)
 	})
@@ -123,17 +127,17 @@ func (g *GameSql) BuildSeasonTask() {
 	})
 
 	g.GenerateMethod("UpdateSeasonTaskProgress", func(model *Model, MethodName string) string {
-		return model.GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
+		return model.GenUpdateFunc(MethodName, "Progress", "Status", "Looped", "Rewarded")
 	})
 
 	g.GenerateMethod("ResetSeasonTask", func(model *Model, MethodName string) string {
 		return model.Where("PlayerSn").
-			GenUpdateFunc(MethodName, "Progress", "Status", "Looped")
+			GenUpdateFunc(MethodName, "Progress", "Status", "Looped", "Rewarded")
 	})
 
 	g.GenerateMethod("ResetPlayerSeasonTasks", func(model *Model, MethodName string) string {
 		return model.Where("Id IN (?)").
-			GenBatchUpdateFunc(MethodName, "Progress", "Status", "Looped")
+			GenBatchUpdateFunc(MethodName, "Progress", "Status", "Looped", "Rewarded")
 	})
 }
 

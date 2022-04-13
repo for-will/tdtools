@@ -49,7 +49,7 @@ func (m *Model) DbCreateTbl() (sql string) {
 	var sb strings.Builder
 
 	// Sql for create table
-	sb.WriteString(fmt.Sprintf("CREATE OR REPLACE TABLE %s\n(\n", m.DbTableName()))
+	sb.WriteString(fmt.Sprintf("CREATE TABLE %s\n(\n", m.DbTableName()))
 	format := fmt.Sprintf("    %%-%ds %%-%ds", nameLen, typeLen)
 	for i, col := range m.Fields {
 		sb.WriteString(fmt.Sprintf(format, snakeCase(col.Name), col.SqlType()))

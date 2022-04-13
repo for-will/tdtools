@@ -26,10 +26,10 @@ func init() {
 }
 
 const (
-	ColorRcvErr = "\u001B[1;31m"
+	ColorRcvErr = "\u001B[38;5;162m"
 	ColorRcv    = "\u001B[2;36m"
 	ColorNotify = "\u001b[38;5;130m" //"\u001B[3;33m"
-	ColorSnd    = "\u001B[1;32m"
+	ColorSnd    = "\u001B[38;5;118m"
 )
 
 func LogRcvMsg(id GameMsg.MsgId, msg proto.Message) {
@@ -42,6 +42,7 @@ func LogRcvMsg(id GameMsg.MsgId, msg proto.Message) {
 		GameMsg.MsgId_S2C_TaskInfo,
 		GameMsg.MsgId_S2C_PlayerOffline,
 		GameMsg.MsgId_S2C_Strength,
+		GameMsg.MsgId_S2C_SeasonTaskSync,
 		GameMsg.MsgId_S2C_SyncHeroValidTalentPage:
 		doLogMessage(id, msg, ColorNotify, "☀\t")
 	default:
@@ -64,6 +65,7 @@ func doLogMessage(id GameMsg.MsgId, msg proto.Message, a string, tag string) {
 	//tag = "■"
 	tag = a + "\u001B[27m" + tag + "\u001B[0m"
 	log.Printf("%s %s%-27s\u001B[0m %s\n", tag, a, id, js.PbMinifyJson(msg))
+	//log.Printf("%s %s%-27s\u001B[0m %s\n", tag, a, id, js.MinifyJson(msg))
 }
 
 //◀▶◁▷☀■□☢☠
