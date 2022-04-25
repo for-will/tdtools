@@ -312,7 +312,6 @@ func (r *Robot) SeasonTaskRewardReq() {
 	})
 }
 
-
 func (r *Robot) SeasonLvRewardReq() {
 	req := &GameMsg.SeasonLvRewardReq{}
 	req.LvList = append(req.LvList, 3)
@@ -321,4 +320,13 @@ func (r *Robot) SeasonLvRewardReq() {
 
 func (r *Robot) DailySignReq() {
 	r.SendMsg(&GameMsg.DailySignReq{})
+}
+
+func (r *Robot) ReportReq() {
+	r.SendMsg(&GameMsg.ReportReq{
+		PlayerSn: 2,
+		Type:     []string{"有害信息", "广告拉人"},
+		Chat:     "马勒戈壁",
+		Chanel:   "世界",
+	})
 }

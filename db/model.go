@@ -51,7 +51,7 @@ import (
 		//model.LogError = "log.Error"
 
 		sb.WriteString("\n")
-		sb.WriteString(model.TypeStruct())
+		//sb.WriteString(model.TypeStruct())
 		sb.WriteString("\n")
 		sb.WriteString(model.BuildCreateTableFunc())
 		sb.WriteString("\n")

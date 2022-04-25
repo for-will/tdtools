@@ -161,4 +161,7 @@ var MessageIdMap = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_PayResult:                  (*GameMsg.PayResult)(nil),
 	GameMsg.MsgId_C2S_DailySignReq:               (*GameMsg.DailySignReq)(nil),
 	GameMsg.MsgId_S2C_DailySignRs:                (*GameMsg.DailySignRs)(nil),
+	GameMsg.MsgId_C2S_ReportReq:                  (*GameMsg.ReportReq)(nil),
+	GameMsg.MsgId_S2C_ReportRs:                   (*GameMsg.ReportRs)(nil),
+	GameMsg.MsgId_S2C_PopPayListRs:               (*GameMsg.PopPayListRs)(nil),
 }

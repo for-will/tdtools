@@ -143,6 +143,9 @@ enum ReturnCode {
 	SeasonBuyLvPayFailed           = 212; // 购买等级支付失败
 	SeasonBuyPassTypeErr           = 213; // 无效的通行证类型
 	SeasonBuyPassPayFailed         = 214; // 购买通行证支付失败
+
+	// 举报
+	ReportWait                     = 220; // 举报过于频繁
 }
 
 // 水晶 (装备) 属性
@@ -322,6 +325,7 @@ message SyncPlayer {
 	repeated Task        Tasks       = 8;   // 每日任务
 	repeated CrystalInfo CrystalList = 9;   // 装备列表
 	int32                LogintTime  = 10;  // 登录时间 秒
+	int32                ReportTime  = 11;  // 上次举报的时间 秒
 
 	// 客户端使用
 	int32                Version     = 100;
@@ -1382,6 +1386,11 @@ message PayResult {
 	repeated SyncCard    Cards       = 4; // 英雄
 }
 
+// 弹出支付礼包
+message PopPayListRs {
+	repeated PayGoodsInfo GoodsList = 1; // 商品列表
+}
+
 // 每日签到
 message DailySignReq {
 
@@ -1392,8 +1401,22 @@ message DailySignRs {
 	int32                Signed      = 2;
 	int32                NextDay     = 3;
 	int32                NextMonth   = 4;
-	bool                 IsSign      = 5; //是否已签到
+	bool                 IsSign      = 5; // 是否已签到
 	repeated Item        Items       = 6; // 奖励道具
 	repeated CrystalInfo CrystalList = 7; // 奖励装备
 	repeated SyncCard    Cards       = 8; // 英雄
+	int32                MonthCard   = 9;
+}
+
+// 举报
+message ReportReq {
+	int32           PlayerSn = 1; // 被举报者
+	repeated string Type     = 2; // 举报类型
+	string          Chat     = 3; // 聊天内容
+	string          Chanel   = 4; // 聊天频道
+}
+
+message ReportRs {
+	ReturnCode ReturnCode = 1;
+	int32      ReportTime = 2;
 }

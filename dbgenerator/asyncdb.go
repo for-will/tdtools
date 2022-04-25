@@ -45,6 +45,8 @@ func GenAsync(dir string) {
 	sb.WriteString(`
 import (
 	"github.com/name5566/leaf/log"
+	"server/conf"
+	"time"
 )
 `)
 

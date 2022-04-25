@@ -232,4 +232,11 @@ enum MsgId {
 	// 签到
 	C2S_DailySignReq               = 154;
 	S2C_DailySignRs                = 155;
+
+	// 举报
+	C2S_ReportReq                  = 156;
+	S2C_ReportRs                   = 157;
+
+	S2C_PopPayListRs               = 158; // 弹出支付礼包
+
 }

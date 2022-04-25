@@ -21,7 +21,7 @@ const (
 	SeasonTaskGoFileName   = "season_task.go"
 	SeasonPlayerGoFileName = "season_player.go"
 	SeasonRewardGoFileName = "season_reward.go"
-	SingInGoFileName       = "signin.go"
+	SignInGoFileName       = "signin.go"
 )
 
 func (g *GameSql) ReloadPackage() *packages.Package {
@@ -159,7 +159,7 @@ func (g GameSql) BuildSeasonReward() {
 }
 
 func (g GameSql) BuildSignIn() {
-	g.Init("DailySignIn", GameDbDir, SingInGoFileName)
+	g.Init("DailySignIn", GameDbDir, SignInGoFileName)
 
 	g.GenerateMethod("NewTblDailySignIn", func(model *Model, MethodName string) string {
 		return model.GenNewTblFunc()

@@ -6,6 +6,20 @@ import (
 	"os"
 )
 
+var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
+	NetworkConnected:                          OnConnected,
+	GameMsg.MsgId_S2C_SyncMainlineTask:        OnSyncMainlineTaskRs,
+	GameMsg.MsgId_S2C_AccountCheckRs:          OnAccountCheckRs,
+	GameMsg.MsgId_S2C_SyncPlayer:              OnSyncPlayer,
+	GameMsg.MsgId_S2C_CrystalBackPackRs:       OnCrystalBackPackRs,
+	GameMsg.MsgId_S2C_SyncPlayerTalentList:    OnSyncPlayerTalentList,
+	GameMsg.MsgId_S2C_HeroTalentInfoRs:        OnHeroTalentInfoRs,
+	GameMsg.MsgId_S2C_StoreInfoRs:             OnStoreInfoRs,
+	GameMsg.MsgId_S2C_ExploreRs:               OnExploreRs,
+	GameMsg.MsgId_S2C_ShowWebViewRs:           OnShowWebViewRs,
+	GameMsg.MsgId_S2C_SyncHeroValidTalentPage: OnSyncHeroValidTalentPage,
+}
+
 func OnConnected(r *Robot) {
 	r.Login(r.Account, r.Password)
 	//r.OpeningActivitiesReq()
@@ -141,39 +155,9 @@ func OnLoginComplete(r *Robot) {
 	//r.UnlockHeroTalentPage()
 	//r.LootMissionList()
 	//r.UnlockHeroTalentPage()
-	r.SeasonTaskRewardReq()
+	//r.SeasonTaskRewardReq()
 	//r.SeasonLvRewardReq()
 	//r.DailySignReq()
-	r.SeasonReq()
-
-}
-
-//func NewVariant(v int32) int32 {
-//	return v
-//}
-
-//func NewVariant(v int64) int64 {
-//	return v
-//}
-
-//func NewVariant[T any](v T) T {
-//	return v
-//}
-
-//func NewVar[T any](v T) T {
-//	return v
-//}
-
-var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
-	NetworkConnected:                          OnConnected,
-	GameMsg.MsgId_S2C_SyncMainlineTask:        OnSyncMainlineTaskRs,
-	GameMsg.MsgId_S2C_AccountCheckRs:          OnAccountCheckRs,
-	GameMsg.MsgId_S2C_SyncPlayer:              OnSyncPlayer,
-	GameMsg.MsgId_S2C_CrystalBackPackRs:       OnCrystalBackPackRs,
-	GameMsg.MsgId_S2C_SyncPlayerTalentList:    OnSyncPlayerTalentList,
-	GameMsg.MsgId_S2C_HeroTalentInfoRs:        OnHeroTalentInfoRs,
-	GameMsg.MsgId_S2C_StoreInfoRs:             OnStoreInfoRs,
-	GameMsg.MsgId_S2C_ExploreRs:               OnExploreRs,
-	GameMsg.MsgId_S2C_ShowWebViewRs:           OnShowWebViewRs,
-	GameMsg.MsgId_S2C_SyncHeroValidTalentPage: OnSyncHeroValidTalentPage,
+	//r.SeasonReq()
+	r.ReportReq()
 }
