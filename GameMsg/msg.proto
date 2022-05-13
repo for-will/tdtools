@@ -146,24 +146,37 @@ enum ReturnCode {
 
 	// 举报
 	ReportWait                     = 220; // 举报过于频繁
+
+	// 升级装备(水晶)
+	UpgradeEquipInvalidSn          = 230;
+	UpgradeEquipNoCfg              = 231;
+	UpgradeEquipLvMax              = 232;
+	UpgradeEquipReused             = 233;
+	UpgradeEquipLocked             = 234;
+	UpgradeEquipAssetDemand        = 235;
+
+	// 锁定装备(水晶)
+	LockEquipInvalidSn             = 240;
 }
 
-// 水晶 (装备) 属性
-message AttrItem {
-	int32 Type = 1; // 属性类型
-	int32 Lv   = 2; // 属性等级
-	int32 Idx  = 3; // 位置
+// 装备属性
+message EquipAttr {
+	int32 Id = 1; // 属性ID
+	int32 Lv = 2; // 等级
 }
 
-// 水晶
-message CrystalInfo {
-	int32             Sn        = 1;
-	int32             Id        = 2;
-	int32             CreatedAt = 3; // 获得时间
-	int32             HeroSn    = 4;
-	int32             Slot      = 5; // 槽位
-	repeated AttrItem Attrs     = 6; // 属性
-	int32             SkillId   = 7; // 扩展属性
+// 装备
+message EquipInfo {
+	int32              Sn         = 1;
+	int32              Id         = 2;
+	int32              Quality    = 3;  // 装备品质
+	int32              Lv         = 4;  // 装备等级
+	int32              Expr       = 5;
+	bool               Locked     = 6;  // 是否被锁定
+	int32              CreatedAt  = 7;  // 获得时间
+	int32              HeroSn     = 8;
+	EquipAttr          MajorAttr  = 9;  // 主属性
+	repeated EquipAttr MinorAttrs = 10; // 副属性
 }
 
 message DeviceInfo {
@@ -241,10 +254,13 @@ message CreatePlayerRs {
 }
 
 message SyncCard {
-	int32 Sn        = 1; // 唯一标识，同个ID可能有多个
-	int32 Id        = 2;
-	int32 Level     = 3;
-	int32 QualityId = 4; // 提升的品质id:QualityUpCfg中的id
+	int32 Sn          = 1; // 唯一标识，同个ID可能有多个
+	int32 Id          = 2;
+	int32 Level       = 3;
+	int32 QualityId   = 4; // 提升的品质id:QualityUpCfg中的id
+	int32 Exp         = 5; // 当前经验
+	int32 EnergySkill = 6; // 能量技能
+	int32 PhaseId     = 7; // 军衔id:PhaseUpCfg中的id
 }
 
 message TeamHero {
@@ -271,6 +287,11 @@ message StageReward {
 message SyncStage {
 	repeated StageItem   StageItems   = 1; // 己完成的关卡
 	repeated StageReward StageRewards = 2; // 已领取的宝箱
+}
+
+message StageInfo {
+	repeated int32 StageIds   = 1; // 己完成的关卡
+	repeated int32 StageDiffs = 2; // 关卡的难度
 }
 
 message SyncShip {
@@ -315,26 +336,27 @@ message SyncPlayerBase {
 }
 
 message SyncPlayer {
-	int32                PlayerSn    = 1;
-	repeated SyncCard    Cards       = 2;
-	repeated SyncTeam    Teams       = 3;
-	SyncStage            Stage       = 4;
-	SyncShip             Ship        = 5;   // 基地数据
-	SyncPlayerBase       Base        = 6;
-	repeated Item        Items       = 7;   // 道具
-	repeated Task        Tasks       = 8;   // 每日任务
-	repeated CrystalInfo CrystalList = 9;   // 装备列表
-	int32                LogintTime  = 10;  // 登录时间 秒
-	int32                ReportTime  = 11;  // 上次举报的时间 秒
+	int32              PlayerSn   = 1;
+	repeated SyncCard  Cards      = 2;
+	repeated SyncTeam  Teams      = 3;
+	SyncStage          Stage      = 4;
+	SyncShip           Ship       = 5;   // 基地数据
+	SyncPlayerBase     Base       = 6;
+	repeated Item      Items      = 7;   // 道具
+	repeated Task      Tasks      = 8;   // 每日任务
+	repeated EquipInfo EquipList  = 9;   // 装备列表
+	int32              LogintTime = 10;  // 登录时间 秒
+	int32              ReportTime = 11;  // 上次举报的时间 秒
+	StageInfo          StageData  = 12;  // 新版关卡数据
 
 	// 客户端使用
-	int32                Version     = 100;
+	int32              Version    = 100;
 }
 
 message UpdateInfo {
-	SyncPlayerBase       Base        = 1;
-	repeated Item        Items       = 2; // 道具
-	repeated CrystalInfo CrystalList = 3; // 装备列表
+	SyncPlayerBase     Base      = 1;
+	repeated Item      Items     = 2; // 道具
+	repeated EquipInfo EquipList = 3; // 装备列表
 }
 
 message EnterStage {
@@ -360,20 +382,20 @@ message OverStage {
 }
 
 message OverStageRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                StageId     = 2;
-	bool                 IsWin       = 3;
-	int32                Param       = 4;
-	int32                LvOld       = 5;  // 旧等级
-	int32                ExpOld      = 6;
-	int32                ExpAdd      = 7;  // 经验
-	int32                Gold        = 8;  // 奖励金币
-	int32                Honor       = 9;  // 奖励荣耀
-	int32                Achievement = 10; // 奖励成就
-	int32                Diamond     = 11; // 奖励钻石
-	repeated Item        Items       = 12; // 奖励道具
-	repeated CrystalInfo CrystalList = 13; // 奖励装备
-	int32                HeroCard    = 14; // 奖励英雄
+	ReturnCode         ReturnCode  = 1;
+	int32              StageId     = 2;
+	bool               IsWin       = 3;
+	int32              Param       = 4;
+	int32              LvOld       = 5;  // 旧等级
+	int32              ExpOld      = 6;
+	int32              ExpAdd      = 7;  // 经验
+	int32              Gold        = 8;  // 奖励金币
+	int32              Honor       = 9;  // 奖励荣耀
+	int32              Achievement = 10; // 奖励成就
+	int32              Diamond     = 11; // 奖励钻石
+	repeated Item      Items       = 12; // 奖励道具
+	repeated EquipInfo CrystalList = 13; // 奖励装备
+	int32              HeroCard    = 14; // 奖励英雄
 }
 
 // 领取关卡宝箱
@@ -384,17 +406,17 @@ message GetRewardStage {
 
 // 领取关卡宝箱
 message GetRewardStageRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                Id          = 2;
-	int32                ChapterId   = 3;
-	int32                Status      = 4;
-	int32                ExpAdd      = 5;  // 奖励经验
-	int32                Gold        = 6;  // 奖励金币
-	int32                Honor       = 7;  // 奖励荣耀
-	int32                Achievement = 8;  // 奖励成就
-	int32                Diamond     = 9;  // 奖励钻石
-	repeated Item        Items       = 10; // 奖励道具
-	repeated CrystalInfo CrystalList = 11; // 奖励装备
+	ReturnCode         ReturnCode  = 1;
+	int32              Id          = 2;
+	int32              ChapterId   = 3;
+	int32              Status      = 4;
+	int32              ExpAdd      = 5;  // 奖励经验
+	int32              Gold        = 6;  // 奖励金币
+	int32              Honor       = 7;  // 奖励荣耀
+	int32              Achievement = 8;  // 奖励成就
+	int32              Diamond     = 9;  // 奖励钻石
+	repeated Item      Items       = 10; // 奖励道具
+	repeated EquipInfo CrystalList = 11; // 奖励装备
 }
 
 message ChangeTeam {
@@ -476,15 +498,15 @@ message GetTaskReward {
 }
 
 message GetTaskRewardRs {
-	ReturnCode           ReturnCode  = 1;
-	repeated int32       Id          = 2; // 任务ID
-	int32                ExpAdd      = 3; // 奖励经验
-	int32                Gold        = 4; // 奖励金币
-	int32                Honor       = 5; // 奖励荣耀
-	int32                Achievement = 6; // 奖励成就
-	int32                Diamond     = 7; // 奖励钻石
-	repeated Item        Items       = 8; // 奖励道具
-	repeated CrystalInfo CrystalList = 9; // 奖励装备
+	ReturnCode         ReturnCode  = 1;
+	repeated int32     Id          = 2; // 任务ID
+	int32              ExpAdd      = 3; // 奖励经验
+	int32              Gold        = 4; // 奖励金币
+	int32              Honor       = 5; // 奖励荣耀
+	int32              Achievement = 6; // 奖励成就
+	int32              Diamond     = 7; // 奖励钻石
+	repeated Item      Items       = 8; // 奖励道具
+	repeated EquipInfo CrystalList = 9; // 奖励装备
 }
 
 // 领取任务活跃度宝箱奖励
@@ -493,12 +515,12 @@ message GetTaskPointBoxReward {
 }
 
 message GetTaskPointBoxRewardRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                Id          = 2;
-	bool                 Rewarded    = 3;
-	repeated Item        Items       = 4; // 奖励道具
-	repeated CrystalInfo CrystalList = 5; // 奖励装备
-	repeated SyncCard    Cards       = 6; // 英雄
+	ReturnCode         ReturnCode  = 1;
+	int32              Id          = 2;
+	bool               Rewarded    = 3;
+	repeated Item      Items       = 4; // 奖励道具
+	repeated EquipInfo CrystalList = 5; // 奖励装备
+	repeated SyncCard  Cards       = 6; // 英雄
 }
 
 // 使用道具
@@ -508,14 +530,14 @@ message UseItem {
 }
 
 message UseItemRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                Gold        = 2; // 奖励金币
-	int32                Honor       = 3; // 奖励荣耀
-	int32                Achievement = 4; // 奖励成就
-	int32                Diamond     = 5; // 奖励钻石
-	repeated Item        Items       = 6; // 奖励道具
-	repeated CrystalInfo CrystalList = 7; // 奖励装备
-	repeated SyncCard    Cards       = 8; // 奖励英雄
+	ReturnCode         ReturnCode  = 1;
+	int32              Gold        = 2; // 奖励金币
+	int32              Honor       = 3; // 奖励荣耀
+	int32              Achievement = 4; // 奖励成就
+	int32              Diamond     = 5; // 奖励钻石
+	repeated Item      Items       = 6; // 奖励道具
+	repeated EquipInfo CrystalList = 7; // 奖励装备
+	repeated SyncCard  Cards       = 8; // 奖励英雄
 }
 
 message HeartBeat {
@@ -540,10 +562,10 @@ message Explore {
 }
 
 message ExploreRs {
-	ReturnCode           ReturnCode  = 1;
-	repeated Item        Items       = 2; // 奖励道具
-	repeated CrystalInfo CrystalList = 3; // 道具-水晶
-	repeated SyncCard    Cards       = 4; // 英雄
+	ReturnCode         ReturnCode  = 1;
+	repeated Item      Items       = 2; // 奖励道具
+	repeated EquipInfo CrystalList = 3; // 道具-水晶
+	repeated SyncCard  Cards       = 4; // 英雄
 }
 
 // 酒馆-卡牌解锁
@@ -558,25 +580,26 @@ message CardUnLockRs {
 }
 
 // 水晶背包
-message CrystalBackPack {
+message EquipBackPack {
 }
 
-message CrystalBackPackRs {
-	repeated CrystalInfo CrystalList = 1;
+message EquipBackPackRs {
+	repeated EquipInfo EquipList = 1;
+}
+
+message EquipHero {
+	int32 EquipSn = 1;
+	int32 HeroSn  = 2;
 }
 
 // 装备水晶
-message EquipCrystal {
-	int32 Sn     = 1;
-	int32 HeroSn = 2;
-	int32 Slot   = 3;
+message SuitUpEquip {
+	repeated EquipHero Equips = 1;
 }
 
-message EquipCrystalRs {
-	ReturnCode ReturnCode = 1;
-	int32      Sn         = 2;
-	int32      HeroSn     = 3;
-	int32      Slot       = 4;
+message SuitUpEquipRs {
+	ReturnCode         ReturnCode = 1;
+	repeated EquipInfo Equips     = 2;
 }
 
 // 玩家天赋
@@ -898,16 +921,16 @@ message RewardLootMission {
 }
 
 message RewardLootMissionRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                Id          = 2;  // 任务ID
-	int32                ExpAdd      = 3;  // 奖励经验
-	int32                Gold        = 4;  // 奖励金币
-	int32                Honor       = 5;  // 奖励荣耀
-	int32                Achievement = 6;  // 奖励成就
-	int32                Diamond     = 7;  // 奖励钻石
-	repeated Item        Items       = 8;  // 奖励道具
-	repeated CrystalInfo CrystalList = 9;  // 奖励装备
-	LootMission          Mission     = 10; // 更新任务信息
+	ReturnCode         ReturnCode  = 1;
+	int32              Id          = 2;  // 任务ID
+	int32              ExpAdd      = 3;  // 奖励经验
+	int32              Gold        = 4;  // 奖励金币
+	int32              Honor       = 5;  // 奖励荣耀
+	int32              Achievement = 6;  // 奖励成就
+	int32              Diamond     = 7;  // 奖励钻石
+	repeated Item      Items       = 8;  // 奖励道具
+	repeated EquipInfo CrystalList = 9;  // 奖励装备
+	LootMission        Mission     = 10; // 更新任务信息
 }
 
 // 获取战利品列表
@@ -999,14 +1022,14 @@ message SeasonTaskRewardReq {
 }
 
 message SeasonTaskRewardRs {
-	ReturnCode           ReturnCode   = 1;
-	repeated int32       TaskIds      = 2; // 任务ID
-	int32                SeasonExpAdd = 3; // 奖励赛季经验
-	int32                SeasonExp    = 4; // 赛季总共获得经验
-	int32                TodayExp     = 5; // 今日获得经验
-	repeated Item        Items        = 6; // 奖励道具
-	repeated CrystalInfo CrystalList  = 7; // 奖励装备
-	repeated SeasonTask  UpdatedTasks = 8; // 更新任务信息
+	ReturnCode          ReturnCode   = 1;
+	repeated int32      TaskIds      = 2; // 任务ID
+	int32               SeasonExpAdd = 3; // 奖励赛季经验
+	int32               SeasonExp    = 4; // 赛季总共获得经验
+	int32               TodayExp     = 5; // 今日获得经验
+	repeated Item       Items        = 6; // 奖励道具
+	repeated EquipInfo  CrystalList  = 7; // 奖励装备
+	repeated SeasonTask UpdatedTasks = 8; // 更新任务信息
 }
 
 // 领取赏金等级奖励
@@ -1015,10 +1038,10 @@ message SeasonLvRewardReq {
 }
 
 message SeasonLvRewardRs {
-	ReturnCode           ReturnCode  = 1;
-	repeated SeasonLv    UpdatedLv   = 2; // 等级奖励信息
-	repeated Item        Items       = 3; // 奖励道具
-	repeated CrystalInfo CrystalList = 4; // 奖励装备
+	ReturnCode         ReturnCode  = 1;
+	repeated SeasonLv  UpdatedLv   = 2; // 等级奖励信息
+	repeated Item      Items       = 3; // 奖励道具
+	repeated EquipInfo CrystalList = 4; // 奖励装备
 }
 
 // 赏金任务更新
@@ -1273,11 +1296,11 @@ message OALoginRewardReq {
 }
 
 message OALoginRewardRs {
-	ReturnCode           ReturnCode  = 1;
-	OpeningActivity      Activity    = 2;
-	repeated Item        Items       = 3; // 奖励道具
-	repeated CrystalInfo CrystalList = 4; // 奖励装备
-	repeated SyncCard    Cards       = 5; // 英雄
+	ReturnCode         ReturnCode  = 1;
+	OpeningActivity    Activity    = 2;
+	repeated Item      Items       = 3; // 奖励道具
+	repeated EquipInfo CrystalList = 4; // 奖励装备
+	repeated SyncCard  Cards       = 5; // 英雄
 }
 
 message OATaskRewardReq {
@@ -1285,12 +1308,12 @@ message OATaskRewardReq {
 }
 
 message OATaskRewardRs {
-	ReturnCode           ReturnCode    = 1;
-	OpeningActivity      Activity      = 2;
-	repeated Item        Items         = 3; // 奖励道具
-	repeated CrystalInfo CrystalList   = 4; // 奖励装备
-	repeated SyncCard    Cards         = 5; // 英雄
-	int32                ActiviePoints = 6; // 当前活跃点数
+	ReturnCode         ReturnCode    = 1;
+	OpeningActivity    Activity      = 2;
+	repeated Item      Items         = 3; // 奖励道具
+	repeated EquipInfo CrystalList   = 4; // 奖励装备
+	repeated SyncCard  Cards         = 5; // 英雄
+	int32              ActiviePoints = 6; // 当前活跃点数
 }
 
 message OATreasureBoxRewardReq {
@@ -1298,12 +1321,12 @@ message OATreasureBoxRewardReq {
 }
 
 message OATreasureBoxRewardRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                Id          = 2;
-	bool                 Rewarded    = 3;
-	repeated Item        Items       = 4; // 奖励道具
-	repeated CrystalInfo CrystalList = 5; // 奖励装备
-	repeated SyncCard    Cards       = 6; // 英雄
+	ReturnCode         ReturnCode  = 1;
+	int32              Id          = 2;
+	bool               Rewarded    = 3;
+	repeated Item      Items       = 4; // 奖励道具
+	repeated EquipInfo CrystalList = 5; // 奖励装备
+	repeated SyncCard  Cards       = 6; // 英雄
 }
 
 // 请求版本号
@@ -1324,6 +1347,33 @@ message GMTReq {
 
 message GMTRs {
 	string GMTokenJson = 1;
+}
+
+// 装备(水晶)被销毁
+message SyncEquipDestroyed {
+	repeated int32 EquipsSn = 1; // 被销毁的装备sn
+}
+
+// 锁定/解锁装备(水晶)
+message LockUnlockEquipReq {
+	int32 EquipSn = 1;
+	bool  Lock    = 2;
+}
+
+message LockUnlockEquipRs {
+	ReturnCode ReturnCode = 1;
+	EquipInfo  Equip      = 2;
+}
+
+// 升级装备(水晶)
+message EquipLvUpReq {
+	int32          EquipSn   = 1;
+	repeated int32 UseEquips = 2; //升级材料
+}
+
+message EquipLvUpRs {
+	ReturnCode ReturnCode = 1;
+	EquipInfo  Equip      = 2;
 }
 
 // 体力值
@@ -1380,10 +1430,10 @@ message PayListRs {
 
 // 返回支付结果
 message PayResult {
-	ReturnCode           ReturnCode  = 1;
-	repeated Item        Items       = 2; // 道具
-	repeated CrystalInfo CrystalList = 3; // 装备
-	repeated SyncCard    Cards       = 4; // 英雄
+	ReturnCode         ReturnCode = 1;
+	repeated Item      Items      = 2; // 道具
+	repeated EquipInfo EquipList  = 3; // 装备
+	repeated SyncCard  Cards      = 4; // 英雄
 }
 
 // 弹出支付礼包
@@ -1397,15 +1447,15 @@ message DailySignReq {
 }
 
 message DailySignRs {
-	ReturnCode           ReturnCode  = 1;
-	int32                Signed      = 2;
-	int32                NextDay     = 3;
-	int32                NextMonth   = 4;
-	bool                 IsSign      = 5; // 是否已签到
-	repeated Item        Items       = 6; // 奖励道具
-	repeated CrystalInfo CrystalList = 7; // 奖励装备
-	repeated SyncCard    Cards       = 8; // 英雄
-	int32                MonthCard   = 9;
+	ReturnCode         ReturnCode = 1;
+	int32              Signed     = 2;
+	int32              NextDay    = 3;
+	int32              NextMonth  = 4;
+	bool               IsSign     = 5; // 是否已签到
+	repeated Item      Items      = 6; // 奖励道具
+	repeated EquipInfo EquipList  = 7; // 奖励装备
+	repeated SyncCard  Cards      = 8; // 英雄
+	int32              MonthCard  = 9; // 月卡剩余天数
 }
 
 // 举报
@@ -1419,4 +1469,43 @@ message ReportReq {
 message ReportRs {
 	ReturnCode ReturnCode = 1;
 	int32      ReportTime = 2;
+}
+
+// 英雄升级
+message HeroLvUp {
+	int32 HeroSn  = 1;
+	int32 ItemId  = 2; // 消耗道具Id
+	int32 ItemCnt = 3; // 消耗道具数量
+}
+
+// 英雄升级
+message HeroLvUpRs {
+	ReturnCode ReturnCode = 1;
+	int32      HeroSn     = 2;
+	int32      Level      = 3;
+	int32      Exp        = 4; // 当前经验
+}
+
+// 英雄觉醒
+message HeroEnergySkillUp {
+	int32 HeroSn = 1;
+}
+
+// 英雄觉醒
+message HeroEnergySkillUpRs {
+	ReturnCode ReturnCode  = 1;
+	int32      HeroSn      = 2;
+	int32      EnergySkill = 3; // 能量技能
+}
+
+// 英雄突破
+message HeroPhaseUp {
+	int32 HeroSn = 1;
+}
+
+// 英雄突破
+message HeroPhaseUpRs {
+	ReturnCode ReturnCode = 1;
+	int32      HeroSn     = 2;
+	int32      PhaseId    = 3; // 军衔id:PhaseUpCfg中的id
 }

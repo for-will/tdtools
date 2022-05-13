@@ -106,14 +106,12 @@ func (r *Robot) HeroQualityUp() {
 
 func (r *Robot) GetCrystalBackpack() {
 
-	r.SendMsg(&GameMsg.CrystalBackPack{})
+	r.SendMsg(&GameMsg.EquipBackPack{})
 }
 
 func (r *Robot) EquipCrystal() {
-	r.SendMsg(&GameMsg.EquipCrystal{
-		Sn:     11239,
-		HeroSn: 1639376076,
-		Slot:   1,
+	r.SendMsg(&GameMsg.SuitUpEquip{
+
 	})
 }
 

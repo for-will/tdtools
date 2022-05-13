@@ -479,11 +479,11 @@ func (m *Model) GenDeleteFunc(funcName string) string {
 
 	text := `func (conn *DbConnect) {{.FUNC}}({{.IN}}) bool {
 
-	var args []interface{}
-	var sqlSb strings.Builder
-	sqlSb.WriteString("{{.SQL}}")
+	var ARGS []interface{}
+	var SQL strings.Builder
+	SQL.WriteString("{{.SQL}}")
 	{{.COND_BUILD}}
-	result, err1 := conn.db.Exec(sqlSb.String(), args...)
+	result, err1 := conn.db.Exec(SQL.String(), ARGS...)
 	if err1 != nil {
 		log.Error("{{.FUNC}}({{.DUMP_FMT}}) failed: %v", {{.ARGS}}, err1)
 		return false

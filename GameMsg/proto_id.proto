@@ -46,11 +46,11 @@ enum MsgId {
 	C2S_CardUnLock                 = 25;  // 酒馆-卡牌解锁
 	S2C_CardUnLockRs               = 26;  //
 
-	C2S_CrystalBackPack            = 27;  // 获取水晶背包
-	S2C_CrystalBackPackRs          = 28;  //
+	C2S_EquipBackPack              = 27;  // 获取水晶背包
+	S2C_EquipBackPackRs            = 28;  //
 
-	C2S_EquipCrystal               = 29;  // 装备水晶
-	S2C_EquipCrystalRs             = 30;
+	C2S_SuitUpEquip                = 29;  // 装备水晶
+	S2C_SuitUpEquipRs              = 30;
 
 	C2S_UnlockUnit                 = 31;  // 解锁军团或建筑
 	S2C_UnlockUnitRs               = 32;  //
@@ -239,4 +239,18 @@ enum MsgId {
 
 	S2C_PopPayListRs               = 158; // 弹出支付礼包
 
+	// 英雄培养
+	C2S_HeroLvUp                   = 159; // 英雄升级
+	S2C_HeroLvUpRs                 = 160;
+	C2S_HeroEnergySkillUp          = 161; // 英雄觉醒
+	S2C_HeroEnergySkillUpRs        = 162;
+	C2S_HeroPhaseUp                = 163; // 英雄突破
+	S2C_HeroPhaseUpRs              = 164;
+
+	// 装备升级
+	S2C_SyncEquipDestroyed         = 165; // 装备(水晶)被销毁
+	C2S_LockUnlockEquipReq         = 166; // 锁定/解锁装备(水晶)
+	S2C_LockUnlockEquipRs          = 167;
+	C2S_EquipLvUpReq               = 168; // 升级装备(水晶)
+	S2C_EquipLvUpRs                = 169;
 }

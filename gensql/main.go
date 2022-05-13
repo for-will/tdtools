@@ -8,12 +8,12 @@ import (
 func main() {
 
 	game := &GameSql{}
-	//game.BuildLootMission()
-	//game.BuildCrystal()
+	game.BuildLootMission()
 	game.BuildSeasonTask()
 	game.BuildSeasonPlayer()
 	game.BuildSeasonReward()
 	game.BuildSignIn()
+	game.BuildEquip()
 }
 
 func init() {

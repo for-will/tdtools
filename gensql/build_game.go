@@ -22,6 +22,7 @@ const (
 	SeasonPlayerGoFileName = "season_player.go"
 	SeasonRewardGoFileName = "season_reward.go"
 	SignInGoFileName       = "signin.go"
+	EquipGoFileName        = "equip.go"
 )
 
 func (g *GameSql) ReloadPackage() *packages.Package {
@@ -63,30 +64,30 @@ func (g *GameSql) BuildLootMission() {
 	})
 }
 
-func (g *GameSql) BuildCrystal() {
-	g.Init("Crystal", GameDbDir, CrystalGoFileName)
-
-	g.GenerateMethod("GetPlayerCrystals", func(model *Model, MethodName string) string {
-		return model.DbSelect().Where("PlayerId").
-			GenFixedQueryFunc(MethodName)
-	})
-
-	g.GenerateMethod("BatchInsertCrystal", func(model *Model, MethodName string) string {
-		return model.GenBatchInsertFunc()
-	})
-
-	g.GenerateMethod("CreateCrystal", func(model *Model, MethodName string) string {
-		return model.GenCreateFunc()
-	})
-
-	g.GenerateMethod("UpdateCrystal", func(model *Model, MethodName string) string {
-		return model.GenUpdateFunc(MethodName, "Locked", "Lv", "Expr")
-	})
-
-	g.GenerateMethod("DeleteCrystals", func(model *Model, MethodName string) string {
-		return model.Where("Id IN (?)").GenDeleteFunc(MethodName)
-	})
-}
+//func (g *GameSql) BuildCrystal() {
+//	g.Init("Crystal", GameDbDir, CrystalGoFileName)
+//
+//	g.GenerateMethod("GetPlayerCrystals", func(model *Model, MethodName string) string {
+//		return model.DbSelect().Where("PlayerId").
+//			GenFixedQueryFunc(MethodName)
+//	})
+//
+//	g.GenerateMethod("BatchInsertCrystal", func(model *Model, MethodName string) string {
+//		return model.GenBatchInsertFunc()
+//	})
+//
+//	g.GenerateMethod("CreateCrystal", func(model *Model, MethodName string) string {
+//		return model.GenCreateFunc()
+//	})
+//
+//	g.GenerateMethod("UpdateCrystal", func(model *Model, MethodName string) string {
+//		return model.GenUpdateFunc(MethodName, "Locked", "Lv", "Expr")
+//	})
+//
+//	g.GenerateMethod("DeleteCrystals", func(model *Model, MethodName string) string {
+//		return model.Where("Id IN (?)").GenDeleteFunc(MethodName)
+//	})
+//}
 
 func (g *GameSql) BuildSeasonPlayer() {
 	g.Init("SeasonPlayer", GameDbDir, SeasonPlayerGoFileName)
@@ -176,5 +177,44 @@ func (g GameSql) BuildSignIn() {
 
 	g.GenerateMethod("UpdateDailySignIn", func(model *Model, MethodName string) string {
 		return model.GenUpdateFunc(MethodName, "Signed", "NextDay", "NextMonth")
+	})
+}
+
+func (g GameSql) BuildEquip() {
+	g.Init("Equip", GameDbDir, EquipGoFileName)
+
+	g.GenerateMethod("NewTblEquip", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
+	g.GenerateMethod("GetPlayerEquips", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").
+			GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("CreateEquip", func(model *Model, MethodName string) string {
+		return model.GenCreateFunc()
+	})
+
+	g.GenerateMethod("BatchInsertEquip", func(model *Model, MethodName string) string {
+		return model.GenBatchInsertFunc()
+	})
+
+	g.GenerateMethod("UpdateEquip", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName,
+			"Lv",
+			"Expr",
+			"Locked",
+			"Attr",
+			"MinorCnt",
+			"Attr1", "Lv1",
+			"Attr2", "Lv2",
+			"Attr3", "Lv3",
+			"Attr4", "Lv4",
+			"Hero")
+	})
+
+	g.GenerateMethod("DeleteEquips", func(model *Model, MethodName string) string {
+		return model.Where("Id IN (?)").GenDeleteFunc(MethodName)
 	})
 }

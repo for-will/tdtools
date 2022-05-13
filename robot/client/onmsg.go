@@ -11,7 +11,7 @@ var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_SyncMainlineTask:        OnSyncMainlineTaskRs,
 	GameMsg.MsgId_S2C_AccountCheckRs:          OnAccountCheckRs,
 	GameMsg.MsgId_S2C_SyncPlayer:              OnSyncPlayer,
-	GameMsg.MsgId_S2C_CrystalBackPackRs:       OnCrystalBackPackRs,
+	GameMsg.MsgId_S2C_EquipBackPackRs:       OnCrystalBackPackRs,
 	GameMsg.MsgId_S2C_SyncPlayerTalentList:    OnSyncPlayerTalentList,
 	GameMsg.MsgId_S2C_HeroTalentInfoRs:        OnHeroTalentInfoRs,
 	GameMsg.MsgId_S2C_StoreInfoRs:             OnStoreInfoRs,
@@ -69,7 +69,7 @@ func OnSyncMainlineTaskRs(r *Robot, msg *GameMsg.SyncMainTask) {
 	//fmt.Println("OnSyncMainlineTaskRs", JsonString(r), JsonString(msg))
 }
 
-func OnCrystalBackPackRs(r *Robot, msg *GameMsg.CrystalBackPackRs) {
+func OnCrystalBackPackRs(r *Robot) {
 	r.EquipCrystal()
 }
 
