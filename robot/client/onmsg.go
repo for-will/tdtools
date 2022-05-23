@@ -11,7 +11,7 @@ var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_SyncMainlineTask:        OnSyncMainlineTaskRs,
 	GameMsg.MsgId_S2C_AccountCheckRs:          OnAccountCheckRs,
 	GameMsg.MsgId_S2C_SyncPlayer:              OnSyncPlayer,
-	GameMsg.MsgId_S2C_EquipBackPackRs:       OnCrystalBackPackRs,
+	GameMsg.MsgId_S2C_EquipBackPackRs:         OnCrystalBackPackRs,
 	GameMsg.MsgId_S2C_SyncPlayerTalentList:    OnSyncPlayerTalentList,
 	GameMsg.MsgId_S2C_HeroTalentInfoRs:        OnHeroTalentInfoRs,
 	GameMsg.MsgId_S2C_StoreInfoRs:             OnStoreInfoRs,
@@ -159,5 +159,6 @@ func OnLoginComplete(r *Robot) {
 	//r.SeasonLvRewardReq()
 	//r.DailySignReq()
 	//r.SeasonReq()
-	r.ReportReq()
+	//r.ReportReq()
+	r.EquipLvUpReq()
 }

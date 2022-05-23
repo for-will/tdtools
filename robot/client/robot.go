@@ -110,9 +110,7 @@ func (r *Robot) GetCrystalBackpack() {
 }
 
 func (r *Robot) EquipCrystal() {
-	r.SendMsg(&GameMsg.SuitUpEquip{
-
-	})
+	r.SendMsg(&GameMsg.SuitUpEquip{})
 }
 
 func (r *Robot) UpgradePlayerTalent() {
@@ -326,5 +324,12 @@ func (r *Robot) ReportReq() {
 		Type:     []string{"有害信息", "广告拉人"},
 		Chat:     "马勒戈壁",
 		Chanel:   "世界",
+	})
+}
+
+func (r *Robot) EquipLvUpReq() {
+	r.SendMsg(&GameMsg.EquipLvUpReq{
+		EquipSn:   79,
+		UseEquips: []int32{81},
 	})
 }
