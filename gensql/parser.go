@@ -4,6 +4,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"go/ast"
 	"go/format"
+	"go/parser"
 	"go/token"
 	"golang.org/x/tools/go/packages"
 	"io/ioutil"
@@ -26,6 +27,22 @@ func loadPackage(dir string, patterns ...string) *packages.Package {
 		log.Fatalf("error: %d packages found", len(pkgs))
 	}
 	return pkgs[0]
+}
+
+func parseFile(path string) *FileSyntax {
+	fset := token.NewFileSet()
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	file, err2 := parser.ParseFile(fset, path, content, parser.ParseComments)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	return &FileSyntax{
+		Fset:   fset,
+		Syntax: file,
+	}
 }
 
 func parseModel(file *ast.File) []*Model {
@@ -109,6 +126,23 @@ func editFunction(pkg *packages.Package, funcName string, funcText string) bool 
 			ioutil.WriteFile(a.Filename, out, 0644)
 			return true
 		}
+	}
+	return false
+}
+
+func replaceFunction(fset *token.FileSet, syntax *ast.File, funcName string, funcText string) bool {
+	funcDecl := extractFunc(syntax, funcName)
+	if funcDecl != nil {
+		a, b := fset.Position(funcDecl.Pos()), fset.Position(funcDecl.End())
+		text, _ := ioutil.ReadFile(a.Filename)
+		src := string(text[:a.Offset]) + funcText + string(text[b.Offset:])
+		out, err := format.Source([]byte(src))
+		if err != nil {
+			out = []byte(src)
+		}
+
+		ioutil.WriteFile(a.Filename, out, 0644)
+		return true
 	}
 	return false
 }

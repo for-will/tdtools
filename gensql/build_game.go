@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"go/ast"
+	"go/token"
 	"golang.org/x/tools/go/packages"
 	"log"
 )
@@ -25,18 +27,33 @@ const (
 	EquipGoFileName        = "equip.go"
 )
 
+type FileSyntax struct {
+	Fset   *token.FileSet
+	Syntax *ast.File
+}
+
 func (g *GameSql) ReloadPackage() *packages.Package {
 	return loadPackage(g.PkgDir, g.SrcFiles...)
+}
+
+func (g *GameSql) ReloadFile() *FileSyntax {
+	//var files []string
+	//for _, file := range g.SrcFiles {
+	//	files = append(files, g.PkgDir+file)
+	//}
+	return parseFile(g.PkgDir + g.SrcFiles[0])
 }
 
 func (g *GameSql) Init(ModelName string, PkgDir string, Files ...string) {
 	g.PkgDir = PkgDir
 	g.SrcFiles = Files
 
-	pkg := g.ReloadPackage()
-	for _, syntax := range pkg.Syntax {
-		g.Models = append(g.Models, parseModel(syntax)...)
-	}
+	//pkg := g.ReloadPackage()
+	//for _, syntax := range pkg.Syntax {
+	//	g.Models = append(g.Models, parseModel(syntax)...)
+	//}
+	file := g.ReloadFile()
+	g.Models = append(g.Models, parseModel(file.Syntax)...)
 	g.OnModel = g.GetModel(ModelName)
 }
 
@@ -53,7 +70,9 @@ func (g *GameSql) GetModel(name string) *Model {
 func (g *GameSql) GenerateMethod(MethodName string, Generator func(model *Model, MethodName string) string) {
 	log.Output(2, fmt.Sprintf("GenerateMethod: %s", MethodName))
 	MethodSrc := Generator(g.OnModel, MethodName)
-	editFunction(g.ReloadPackage(), MethodName, MethodSrc)
+	//editFunction(g.ReloadPackage(), MethodName, MethodSrc)
+	f := g.ReloadFile()
+	replaceFunction(f.Fset, f.Syntax, MethodName, MethodSrc)
 }
 
 func (g *GameSql) BuildLootMission() {
