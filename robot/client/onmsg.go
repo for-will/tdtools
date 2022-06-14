@@ -18,6 +18,8 @@ var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_ExploreRs:               OnExploreRs,
 	GameMsg.MsgId_S2C_ShowWebViewRs:           OnShowWebViewRs,
 	GameMsg.MsgId_S2C_SyncHeroValidTalentPage: OnSyncHeroValidTalentPage,
+	GameMsg.MsgId_S2C_UpdateInfo:              OnUpdateInfo,
+	GameMsg.MsgId_S2C_SyncEquipDestroyed:      OnEquipDestroyed,
 }
 
 func OnConnected(r *Robot) {
@@ -139,6 +141,18 @@ func OnSyncHeroValidTalentPage(r *Robot, msg *GameMsg.SyncHeroValidTalentPage) {
 	OnLoginComplete(r)
 }
 
+func OnUpdateInfo(r *Robot, msg *GameMsg.UpdateInfo) {
+	for _, e := range msg.EquipList {
+		r.UpdateEquip(e)
+	}
+}
+
+func OnEquipDestroyed(r *Robot, msg *GameMsg.SyncEquipDestroyed) {
+	for _, sn := range msg.EquipsSn {
+		r.DeleteEquip(sn)
+	}
+}
+
 func OnLoginComplete(r *Robot) {
 	//r.QuestionnaireReq()
 	//r.RewardLootMission()
@@ -160,5 +174,6 @@ func OnLoginComplete(r *Robot) {
 	//r.DailySignReq()
 	//r.SeasonReq()
 	//r.ReportReq()
-	r.EquipLvUpReq()
+	//r.EquipLvUpReq()
+	r.UpgradeTowerReq()
 }

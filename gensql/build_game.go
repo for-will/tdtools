@@ -25,6 +25,7 @@ const (
 	SeasonRewardGoFileName = "season_reward.go"
 	SignInGoFileName       = "signin.go"
 	EquipGoFileName        = "equip.go"
+	TowerGoFileName        = "tower.go"
 )
 
 type FileSyntax struct {
@@ -235,5 +236,26 @@ func (g GameSql) BuildEquip() {
 
 	g.GenerateMethod("DeleteEquips", func(model *Model, MethodName string) string {
 		return model.Where("Id IN (?)").GenDeleteFunc(MethodName)
+	})
+}
+
+func (g GameSql) BuildTower() {
+	g.Init("Tower", GameDbDir, TowerGoFileName)
+
+	g.GenerateMethod("NewTblTower", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
+	g.GenerateMethod("GetPlayerTowers", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").
+			GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("CreateTower", func(model *Model, MethodName string) string {
+		return model.GenCreateFunc()
+	})
+
+	g.GenerateMethod("UpdateTower", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Lv", "InUse")
 	})
 }

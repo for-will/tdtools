@@ -17,6 +17,7 @@ type Robot struct {
 	MsgHandler  map[GameMsg.MsgId]interface{}
 	ValidCardSn int32
 	SyncPlayer  *GameMsg.SyncPlayer
+	Equips      []*GameMsg.EquipInfo
 	Account     string
 	Password    string
 
@@ -328,8 +329,44 @@ func (r *Robot) ReportReq() {
 }
 
 func (r *Robot) EquipLvUpReq() {
-	r.SendMsg(&GameMsg.EquipLvUpReq{
-		EquipSn:   79,
-		UseEquips: []int32{81},
-	})
+	req := &GameMsg.EquipLvUpReq{
+		EquipSn: 372,
+	}
+	for i := 0; i < 20; i++ {
+		sn := r.Equips[i].GetSn()
+		if sn != req.EquipSn {
+			req.UseEquips = append(req.UseEquips, sn)
+		}
+		if len(req.UseEquips) >= 10 {
+			break
+		}
+	}
+	r.SendMsg(req)
+}
+
+func (r *Robot) UpdateEquip(e *GameMsg.EquipInfo) {
+	for i := range r.Equips {
+		if r.Equips[i].GetSn() == e.GetSn() {
+			r.Equips[i] = e
+			return
+		}
+	}
+	r.Equips = append(r.Equips, e)
+}
+
+func (r *Robot) DeleteEquip(sn int32) {
+	for i := range r.Equips {
+		if r.Equips[i].GetSn() == sn {
+			r.Equips = append(r.Equips[:i], r.Equips[i+1:]...)
+			return
+		}
+	}
+}
+
+func (r *Robot) UpgradeTowerReq() {
+	req := &GameMsg.UpgradeTowerReq{
+		TowerSn: 3,
+	}
+
+	r.SendMsg(req)
 }

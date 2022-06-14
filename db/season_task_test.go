@@ -45,7 +45,7 @@ func TestSeasonTask(t *testing.T) {
 			Model: &_SeasonTask{},
 			UserAdd: func(model *db.TableModel, sb *strings.Builder) {
 				sb.WriteString("\n")
-				sb.WriteString(model.BuildUpdateFunc("UpdateSeasonTask", "State", "Progress", "Loop"))
+				//sb.WriteString(model.BuildUpdateFunc("UpdateSeasonTask", "State", "Progress", "Loop"))
 			},
 		},
 		&AutoModel{

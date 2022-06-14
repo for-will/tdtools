@@ -247,10 +247,31 @@ enum MsgId {
 	C2S_HeroPhaseUp                = 163; // 英雄突破
 	S2C_HeroPhaseUpRs              = 164;
 
+	// 抽卡
+	C2S_CardPoolInfoReq            = 165;
+	S2C_CardPoolInfoRs             = 166;
+	C2S_RandCardReq                = 167;
+	S2C_RandCardRs                 = 168;
+
 	// 装备升级
-	S2C_SyncEquipDestroyed         = 165; // 装备(水晶)被销毁
-	C2S_LockUnlockEquipReq         = 166; // 锁定/解锁装备(水晶)
-	S2C_LockUnlockEquipRs          = 167;
-	C2S_EquipLvUpReq               = 168; // 升级装备(水晶)
-	S2C_EquipLvUpRs                = 169;
+	S2C_SyncEquipDestroyed         = 169; // 装备(水晶)被销毁
+	C2S_LockUnlockEquipReq         = 170; // 锁定/解锁装备(水晶)
+	S2C_LockUnlockEquipRs          = 171;
+	C2S_EquipLvUpReq               = 172; // 升级装备(水晶)
+	S2C_EquipLvUpRs                = 173;
+
+	// 剧情
+	C2S_PlotInfoReq                = 174; // 剧情信息
+	S2C_PlotInfoRs                 = 175;
+	C2S_ActivePlotReq              = 176; // 激活碎片
+	C2S_PlotSectionRewardReq       = 177; // 剧情节点奖励
+	S2C_PlotSectionRewardRs        = 178;
+	C2S_PlotChapterRewardReq       = 179; // 剧情章奖励
+	S2C_PlotChapterRewardRs        = 180;
+
+	// 防御塔
+	C2S_UpgradeTowerReq            = 181; // 升级
+	S2C_UpgradeTowerRs             = 182;
+	C2S_SetTowerReq                = 183; // 上阵
+	S2C_SetTowerRs                 = 184;
 }

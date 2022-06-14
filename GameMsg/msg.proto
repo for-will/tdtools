@@ -157,6 +157,12 @@ enum ReturnCode {
 
 	// 锁定装备(水晶)
 	LockEquipInvalidSn             = 240;
+
+	// 剧情
+	PlotSectionUnlock              = 250; // 节剧情未解锁
+	PlotSectionRewarded            = 251; // 节奖励已领过
+	PlotChapterUnlock              = 252; // 章奖励未解锁
+	PlotChapterRewarded            = 253; // 章奖励已领过
 }
 
 // 装备属性
@@ -263,6 +269,13 @@ message SyncCard {
 	int32 PhaseId     = 7; // 军衔id:PhaseUpCfg中的id
 }
 
+message SyncTower {
+	int32 Sn      = 1;
+	int32 TowerId = 2;
+	int32 Lv      = 3;
+	bool  InUse   = 4;
+}
+
 message TeamHero {
 	int32 HeroSn    = 1;
 	int32 SoliderSn = 2;
@@ -275,7 +288,7 @@ message SyncTeam {
 
 message StageItem {
 	int32 StageId = 1; // 己完成的关卡
-	int32 StarNum = 2; // 星星数量
+	int32 Diff    = 2; // 己完成的难度
 }
 
 message StageReward {
@@ -287,11 +300,6 @@ message StageReward {
 message SyncStage {
 	repeated StageItem   StageItems   = 1; // 己完成的关卡
 	repeated StageReward StageRewards = 2; // 已领取的宝箱
-}
-
-message StageInfo {
-	repeated int32 StageIds   = 1; // 己完成的关卡
-	repeated int32 StageDiffs = 2; // 关卡的难度
 }
 
 message SyncShip {
@@ -347,7 +355,6 @@ message SyncPlayer {
 	repeated EquipInfo EquipList  = 9;   // 装备列表
 	int32              LogintTime = 10;  // 登录时间 秒
 	int32              ReportTime = 11;  // 上次举报的时间 秒
-	StageInfo          StageData  = 12;  // 新版关卡数据
 
 	// 客户端使用
 	int32              Version    = 100;
@@ -357,6 +364,7 @@ message UpdateInfo {
 	SyncPlayerBase     Base      = 1;
 	repeated Item      Items     = 2; // 道具
 	repeated EquipInfo EquipList = 3; // 装备列表
+	repeated SyncTower Towers    = 4; // 防御塔
 }
 
 message EnterStage {
@@ -379,6 +387,7 @@ message OverStage {
 	int32          KillNum   = 5;
 	repeated int32 EnemyList = 6; // 怪物列表
 	repeated int32 EnemyNum  = 7; // 击杀怪物数量
+	int32          Diff      = 8; //难度
 }
 
 message OverStageRs {
@@ -1434,6 +1443,8 @@ message PayResult {
 	repeated Item      Items      = 2; // 道具
 	repeated EquipInfo EquipList  = 3; // 装备
 	repeated SyncCard  Cards      = 4; // 英雄
+	int32              GoodsId    = 5; // 商品ID
+	int32              IsFirst    = 6; // 是否首充（0：否，1：是）
 }
 
 // 弹出支付礼包
@@ -1508,4 +1519,98 @@ message HeroPhaseUpRs {
 	ReturnCode ReturnCode = 1;
 	int32      HeroSn     = 2;
 	int32      PhaseId    = 3; // 军衔id:PhaseUpCfg中的id
+}
+
+// 卡池信息
+message CardPoolInfoReq {
+}
+
+message CardPoolRefreshTimeInfo {
+	int32 CardPoolID = 1;
+	int32 Countdown  = 2; // 倒计时（秒）
+}
+
+message CardPoolInfoRs {
+	ReturnCode                       ReturnCode = 1;
+	repeated CardPoolRefreshTimeInfo CardPools  = 2;
+}
+
+// 抽卡
+message RandCardReq {
+	int32        PoolID = 1; // 卡池ID
+	ExploreTimes Times  = 2; // 抽卡次数
+}
+
+// 抽卡
+message RandCardRs {
+	ReturnCode        ReturnCode = 1;
+	repeated SyncCard Cards      = 2; // 英雄
+	repeated Item     Items      = 3; // 道具
+	repeated int32    CardIds    = 4; // 英雄ID列表
+}
+
+// 剧情章节
+message PlotChapter {
+	int32 ChapterId = 1; // 章
+	int32 SectionId = 2; // 节
+}
+
+// 剧情信息
+message PlotInfoReq {
+}
+
+message PlotInfoRs {
+	ReturnCode           ReturnCode     = 1;
+	repeated int32       Items          = 2; // 已激活的剧情碎片
+	repeated PlotChapter PlotRewards    = 3; // 已领取的节点奖励
+	repeated int32       ChapterRewards = 4; // 已领取的章奖励
+}
+
+// 激活碎片
+message ActivePlotReq {
+	int32 Item = 1; // 激活剧情碎片
+}
+
+// 剧情节点奖励
+message PlotSectionRewardReq {
+	int32 ChapterId = 1; // 章
+	int32 SectionId = 2; // 节
+}
+
+message PlotSectionRewardRs {
+	ReturnCode         ReturnCode = 1;
+	repeated Item      Items      = 2; // 奖励道具
+	repeated EquipInfo EquipList  = 3; // 奖励装备
+	repeated SyncCard  Cards      = 4; // 英雄
+}
+
+// 剧情章奖励
+message PlotChapterRewardReq {
+	int32 ChapterId = 1; // 章
+}
+
+message PlotChapterRewardRs {
+	ReturnCode         ReturnCode = 1;
+	repeated Item      Items      = 2; // 奖励道具
+	repeated EquipInfo EquipList  = 3; // 奖励装备
+	repeated SyncCard  Cards      = 4; // 英雄
+}
+
+// 升级防御塔
+message UpgradeTowerReq {
+	int32 TowerSn = 1;
+}
+
+message UpgradeTowerRs {
+	ReturnCode ReturnCode = 1;
+	SyncTower  Tower      = 2; // 防御塔信息
+}
+
+message SetTowerReq {
+	repeated int32 InUseTowers = 1; //上阵的tower sn
+}
+
+message SetTowerRs {
+	ReturnCode         ReturnCode = 1;
+	repeated SyncTower Towers     = 2; // 防御塔信息
 }

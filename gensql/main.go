@@ -14,6 +14,7 @@ func main() {
 	game.BuildSeasonReward()
 	game.BuildSignIn()
 	game.BuildEquip()
+	game.BuildTower()
 }
 
 func init() {
