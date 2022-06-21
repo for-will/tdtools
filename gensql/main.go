@@ -15,6 +15,9 @@ func main() {
 	game.BuildSignIn()
 	game.BuildEquip()
 	game.BuildTower()
+	game.BuildPlayerSchedule()
+	game.BuildPlayerTask()
+	game.BuildTaskInfo()
 }
 
 func init() {

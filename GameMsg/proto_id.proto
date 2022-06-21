@@ -272,6 +272,11 @@ enum MsgId {
 	// 防御塔
 	C2S_UpgradeTowerReq            = 181; // 升级
 	S2C_UpgradeTowerRs             = 182;
-	C2S_SetTowerReq                = 183; // 上阵
-	S2C_SetTowerRs                 = 184;
+
+	// 任务
+	C2S_PlayerTasksReq             = 183; // 获取任务列表
+	S2C_PlayerTasksRs              = 184;
+	S2C_PlayerTaskSync             = 185; // 任务进度更新
+	C2S_PlayerTaskRewardReq        = 186; // 领取任务奖励
+	S2C_PlayerTaskRewardRs         = 187;
 }

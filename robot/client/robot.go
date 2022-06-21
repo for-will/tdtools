@@ -25,9 +25,10 @@ type Robot struct {
 	ExploreAreaId  int32
 	ExploreTimes   int32
 
-	OverStages []int32
-	KillNum    int32
-	Stars      int32
+	OverStages  []int32
+	KillNum     int32
+	Stars       int32
+	RequestTime time.Time
 }
 
 const (
@@ -367,6 +368,13 @@ func (r *Robot) UpgradeTowerReq() {
 	req := &GameMsg.UpgradeTowerReq{
 		TowerSn: 3,
 	}
+
+	r.SendMsg(req)
+}
+
+func (r *Robot) HeartBeat() {
+	r.RequestTime = time.Now()
+	req := &GameMsg.HeartBeat{}
 
 	r.SendMsg(req)
 }

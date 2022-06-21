@@ -20,6 +20,16 @@ func (f ModelField) SqlName() string {
 
 func (f ModelField) SqlType() string {
 
+	tag := f.Tag.Get("db")
+
+	words := strings.Split(tag, ",")
+	for _, word := range words {
+		kv := strings.Split(word, ":")
+		if kv[0] == "type" {
+			return kv[1]
+		}
+	}
+
 	switch f.Type {
 	case "bool":
 		return "bool"

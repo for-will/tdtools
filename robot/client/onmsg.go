@@ -1,9 +1,11 @@
 package client
 
 import (
+	"fmt"
 	"go.uber.org/zap"
 	"market/GameMsg"
 	"os"
+	"time"
 )
 
 var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
@@ -20,6 +22,7 @@ var DefaultMsgHandler = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_SyncHeroValidTalentPage: OnSyncHeroValidTalentPage,
 	GameMsg.MsgId_S2C_UpdateInfo:              OnUpdateInfo,
 	GameMsg.MsgId_S2C_SyncEquipDestroyed:      OnEquipDestroyed,
+	GameMsg.MsgId_S2C_HeartBeatRs:             OnHeartBeatRs,
 }
 
 func OnConnected(r *Robot) {
@@ -133,7 +136,7 @@ func OnRobotAutoOverStage(r *Robot, msg *GameMsg.OverStageRs) {
 }
 
 func OnShowWebViewRs(r *Robot, msg *GameMsg.ShowWebViewRs) {
-
+	r.HeartBeat()
 }
 
 func OnSyncHeroValidTalentPage(r *Robot, msg *GameMsg.SyncHeroValidTalentPage) {
@@ -151,6 +154,11 @@ func OnEquipDestroyed(r *Robot, msg *GameMsg.SyncEquipDestroyed) {
 	for _, sn := range msg.EquipsSn {
 		r.DeleteEquip(sn)
 	}
+}
+
+func OnHeartBeatRs(r *Robot, msg *GameMsg.HeartBeatRs) {
+	d := time.Now().Sub(r.RequestTime)
+	fmt.Printf("%f", d.Seconds())
 }
 
 func OnLoginComplete(r *Robot) {

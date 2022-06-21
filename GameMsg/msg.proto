@@ -163,6 +163,11 @@ enum ReturnCode {
 	PlotSectionRewarded            = 251; // 节奖励已领过
 	PlotChapterUnlock              = 252; // 章奖励未解锁
 	PlotChapterRewarded            = 253; // 章奖励已领过
+
+	// 防御塔
+	TowerInvalidSn                 = 260; // 无效SN
+	TowerLvMax                     = 261; // 等级上限
+	TowerUpgradeAssetsUnmet        = 262; // 材料不足
 }
 
 // 装备属性
@@ -273,7 +278,6 @@ message SyncTower {
 	int32 Sn      = 1;
 	int32 TowerId = 2;
 	int32 Lv      = 3;
-	bool  InUse   = 4;
 }
 
 message TeamHero {
@@ -1606,11 +1610,42 @@ message UpgradeTowerRs {
 	SyncTower  Tower      = 2; // 防御塔信息
 }
 
-message SetTowerReq {
-	repeated int32 InUseTowers = 1; //上阵的tower sn
+enum TaskStatus {
+	TaskLocked   = 0; // 未解锁
+	TaskOngoing  = 1; // 进行中
+	TaskFinished = 2; // 已完成
+	TaskRewarded = 3; // 已领取
 }
 
-message SetTowerRs {
-	ReturnCode         ReturnCode = 1;
-	repeated SyncTower Towers     = 2; // 防御塔信息
+// 任务信息
+message PlayerTask {
+	int32      Sn       = 1;
+	int32      TaskId   = 2;
+	int32      Progress = 3;
+	TaskStatus Status   = 4;
+}
+
+// 获取任务列表
+message PlayerTasksReq {
+}
+
+message PlayerTasksRs {
+	ReturnCode          ReturnCode = 1;
+	repeated PlayerTask Tasks      = 2;
+}
+
+// 任务进度更新
+message PlayerTaskSync {
+	repeated PlayerTask Tasks = 1;
+}
+
+// 领取任务奖励
+message PlayerTaskRewardReq {
+	int32 Sn = 1;
+}
+
+message PlayerTaskRewardRs {
+	ReturnCode    ReturnCode = 1;
+	repeated Item Items      = 2;
+	PlayerTask    Task       = 3;
 }

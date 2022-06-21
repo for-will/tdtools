@@ -188,6 +188,9 @@ var MessageIdMap = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_PlotChapterRewardRs:        (*GameMsg.PlotChapterRewardRs)(nil),
 	GameMsg.MsgId_C2S_UpgradeTowerReq:            (*GameMsg.UpgradeTowerReq)(nil),
 	GameMsg.MsgId_S2C_UpgradeTowerRs:             (*GameMsg.UpgradeTowerRs)(nil),
-	GameMsg.MsgId_C2S_SetTowerReq:                (*GameMsg.SetTowerReq)(nil),
-	GameMsg.MsgId_S2C_SetTowerRs:                 (*GameMsg.SetTowerRs)(nil),
+	GameMsg.MsgId_C2S_PlayerTasksReq:             (*GameMsg.PlayerTasksReq)(nil),
+	GameMsg.MsgId_S2C_PlayerTasksRs:              (*GameMsg.PlayerTasksRs)(nil),
+	GameMsg.MsgId_S2C_PlayerTaskSync:             (*GameMsg.PlayerTaskSync)(nil),
+	GameMsg.MsgId_C2S_PlayerTaskRewardReq:        (*GameMsg.PlayerTaskRewardReq)(nil),
+	GameMsg.MsgId_S2C_PlayerTaskRewardRs:         (*GameMsg.PlayerTaskRewardRs)(nil),
 }

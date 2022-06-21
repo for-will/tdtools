@@ -47,7 +47,7 @@ func (m *Model) CondBuild() string {
 	for _, cond := range m.Conditions {
 		condList = append(condList, cond.Condition())
 	}
-	return strings.Join(condList, "\n\tSQL.WriteString(\"AND\")")
+	return strings.Join(condList, "\n\tSQL.WriteString(\" AND\")")
 }
 
 func (m *Model) DbSelect() *Model {
