@@ -272,6 +272,8 @@ message SyncCard {
 	int32 Exp         = 5; // 当前经验
 	int32 EnergySkill = 6; // 能量技能
 	int32 PhaseId     = 7; // 军衔id:PhaseUpCfg中的id
+	int32 Fight       = 8; // 战力
+	int32 CreatedAt   = 9; // 获取时间
 }
 
 message SyncTower {
@@ -286,8 +288,10 @@ message TeamHero {
 }
 
 message SyncTeam {
-	int32             Sn    = 1;
-	repeated TeamHero Heros = 2;
+	int32             Sn     = 1;
+	repeated TeamHero Heros  = 2;
+	repeated int32    Towers = 3;
+	string            Name   = 4;
 }
 
 message StageItem {
@@ -1201,6 +1205,18 @@ message S2C_MailGetAwardRsp {
 	int32      MailState  = 3;
 }
 
+//  一键领取全部邮件
+message MailGetAllAwardReq {
+}
+
+message MailGetAllAwardRsp {
+	ReturnCode         ReturnCode  = 1;
+	repeated uint32    MailID      = 2;
+	repeated Item      Items       = 3; // 奖励道具
+	repeated EquipInfo CrystalList = 4; // 奖励装备
+	repeated SyncCard  Cards       = 5; // 奖励英雄
+}
+
 // 解锁怪物列表
 message GetUnLockEnemyListReq {
 
@@ -1632,6 +1648,9 @@ message PlayerTasksReq {
 message PlayerTasksRs {
 	ReturnCode          ReturnCode = 1;
 	repeated PlayerTask Tasks      = 2;
+	int32               FreshTime  = 3;
+	int32               NextDay    = 4;
+	int32               NextWeek   = 5;
 }
 
 // 任务进度更新
@@ -1641,11 +1660,53 @@ message PlayerTaskSync {
 
 // 领取任务奖励
 message PlayerTaskRewardReq {
-	int32 Sn = 1;
+	repeated int32 Sn = 1;
 }
 
 message PlayerTaskRewardRs {
-	ReturnCode    ReturnCode = 1;
-	repeated Item Items      = 2;
-	PlayerTask    Task       = 3;
+	ReturnCode          ReturnCode = 1;
+	repeated Item       Items      = 2;
+	repeated PlayerTask Task       = 3;
+}
+
+// 活动任务信息
+message ActivityTask {
+	int32      Sn       = 1;
+	int32      TaskId   = 2;
+	int32      Progress = 3;
+	TaskStatus Status   = 4;
+}
+
+message ActivityInfo {
+	int32                 ActivityId = 1;
+	int32                 EndTime    = 2;
+	repeated ActivityTask Tasks      = 3;
+}
+
+// 活动任务列表请求
+message ActivityListReq {
+
+}
+
+message ActivityListRs {
+	ReturnCode            ReturnCode = 1;
+	repeated ActivityInfo Activities = 2;
+}
+
+// 活动任务进度更新
+message ActivityTaskSync {
+	repeated ActivityTask Tasks = 1;
+}
+
+// 领取活动任务奖励
+message ActivityRewardReq {
+	repeated int32 TasksSn = 1;
+}
+
+message ActivityRewardRs {
+	ReturnCode            ReturnCode = 1;
+	repeated Item         Items      = 2;
+	repeated EquipInfo    Equips     = 3;
+	repeated SyncCard     Cards      = 4;
+	repeated ActivityTask Task       = 5;
 }

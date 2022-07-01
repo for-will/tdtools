@@ -112,14 +112,14 @@ enum MsgId {
 	C2S_GetOtherPlayerInfo         = 69;  // 获取其他玩家信息
 	S2C_GetOtherPlayerInfoRs       = 70;
 
-	C2C_MailList                   = 71;  // 获取邮件列表
+	C2C_MailList                   = 71;  // 获取邮件列表（废弃）
 	S2C_MailListRs                 = 72;
 
-	C2C_MailDelete                 = 73;  // 删除邮件
+	C2C_MailDelete                 = 73;  // 删除邮件（废弃）
 	S2C_MailDeleteRs               = 74;
 
-	C2C_MailGetAward               = 75;  // 领取邮件
-	S2C_MailGetAwardRs             = 76;
+	C2C_MailGetAllAward            = 75;  // 领取全部邮件
+	S2C_MailGetAllAwardRs          = 76;
 
 	C2C_RankList                   = 77;  // 排行榜列表
 	S2C_RankListRs                 = 78;
@@ -279,4 +279,11 @@ enum MsgId {
 	S2C_PlayerTaskSync             = 185; // 任务进度更新
 	C2S_PlayerTaskRewardReq        = 186; // 领取任务奖励
 	S2C_PlayerTaskRewardRs         = 187;
+
+	// 活动
+	C2S_ActivityListReq            = 188; // 获取活动列表
+	S2C_ActivityListRs             = 189;
+	C2S_ActivityRewardReq          = 190; // 领取活动奖励
+	S2C_ActivityRewardRs           = 191;
+	S2C_ActivityTaskSync           = 192; // 任务进度更新
 }

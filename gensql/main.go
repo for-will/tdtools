@@ -18,6 +18,7 @@ func main() {
 	game.BuildPlayerSchedule()
 	game.BuildPlayerTask()
 	game.BuildTaskInfo()
+	game.BuildActivityTask()
 }
 
 func init() {

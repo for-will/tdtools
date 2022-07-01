@@ -28,6 +28,7 @@ const (
 	PlayerScheduleGoFileName = "player_schedule.go"
 	PlayerTaskGoFileName     = "player_task.go"
 	PlayerTaskTestGoFileName = "player_task_test.go"
+	ActivityTaskGoFileName   = "activity_task.go"
 )
 
 type FileSyntax struct {
@@ -321,5 +322,34 @@ func (g GameSql) BuildTaskInfo() {
 
 	g.GenerateMethod("BatchInsertTaskInfo", func(model *Model, MethodName string) string {
 		return model.GenBatchInsertFunc()
+	})
+}
+
+func (g GameSql) BuildActivityTask() {
+	g.Init("ActivityTask", GameDbDir, ActivityTaskGoFileName)
+
+	g.GenerateMethod("NewTblActivityTask", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
+	g.GenerateMethod("GetPlayerActivityTask", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").
+			GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("BatchInsertActivityTask", func(model *Model, MethodName string) string {
+		return model.GenBatchInsertFunc()
+	})
+
+	g.GenerateMethod("CreateActivityTask", func(model *Model, MethodName string) string {
+		return model.GenCreateFunc()
+	})
+
+	g.GenerateMethod("UpdateActivityTask", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Status", "Progress")
+	})
+
+	g.GenerateMethod("DeletePlayerActivityTask", func(model *Model, MethodName string) string {
+		return model.Where("PlayerSn=?", "ActivityId=?").GenDeleteFunc(MethodName)
 	})
 }
