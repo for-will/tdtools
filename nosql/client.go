@@ -23,11 +23,11 @@ func Connect() *mongo.Client {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	cli, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	return client
+	return cli
 }
 
 type PostInfo struct {
@@ -49,32 +49,74 @@ func FIndOne() {
 	log.Printf("%+v", post.UpdatedAt)
 }
 
-func Upsert() {
+type MdbFilterBson struct {
+	filter interface{}
+}
+
+func (filter *MdbFilterBson) MarshalBSON() ([]byte, error) {
+	return bson.Marshal(filter.filter)
+}
+
+func MdbCond(cond interface{}) *MdbFilterBson {
+	return &MdbFilterBson{filter: cond}
+}
+
+type MdbUpdateBson struct {
+	Cmd struct {
+		SET    interface{}         `bson:"$set,omitempty"`
+		UNSET  map[string]struct{} `bson:"$unset,omitempty"`
+		RENAME map[string]string   `bson:"$rename,omitempty"`
+	}
+}
+
+func (upd *MdbUpdateBson) MarshalBSON() ([]byte, error) {
+	return bson.Marshal(upd.Cmd)
+}
+
+func (upd *MdbUpdateBson) Set(v interface{}) *MdbUpdateBson {
+	upd.Cmd.SET = v
+	return upd
+}
+
+func (upd *MdbUpdateBson) Unset(unset ...string) *MdbUpdateBson {
+	if upd.Cmd.UNSET == nil {
+		upd.Cmd.UNSET = map[string]struct{}{}
+	}
+	for _, s := range unset {
+		upd.Cmd.UNSET[s] = struct{}{}
+	}
+	return upd
+}
+
+func (upd *MdbUpdateBson) Rename(oldName string, newName string) *MdbUpdateBson {
+	if upd.Cmd.RENAME == nil {
+		upd.Cmd.RENAME = map[string]string{}
+	}
+	upd.Cmd.RENAME[oldName] = newName
+	return upd
+}
+
+func MdbUpdate() *MdbUpdateBson {
+	return &MdbUpdateBson{}
+}
+
+func UpdateOne() {
 	missions := config.LoadConfig()
-	//mission := missions[0]
-	//data := client.JsonString(mission)
-	//log.Println(data)
 
 	collections := db.Database("td_game").Collection("mission_conf")
 
 	for _, mission := range missions {
-		data := client.JsonString(mission)
 
-		result, err := collections.UpdateOne(context.Background(),
-			bson.D{{Key: "id", Value: mission.Id}},
-			bson.D{
-				{
-					Key: "$set",
-					Value: bson.D{
-						{
-							Key:   "id",
-							Value: mission.Id,
-						},
-						{"json", data},
-						{"updated_at", time.Now()},
-					},
-				},
-			},
+		result, err := collections.UpdateOne(
+			context.Background(),
+			MdbCond(struct {
+				Id int
+				//Condition int32
+			}{Id: mission.Id}),
+			MdbUpdate().
+				//Unset("type", "thespoils").
+				Set(mission),
+			//Command().Unset("lv", "name", "sort").Rename("type", "typo"),
 			options.Update().SetUpsert(true),
 		)
 		if err != nil {

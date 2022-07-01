@@ -7,7 +7,7 @@ func TestFIndOne(t *testing.T) {
 }
 
 func TestUpsert(t *testing.T) {
-	Upsert()
+	UpdateOne()
 }
 
 func TestUpsertInterface(t *testing.T) {
