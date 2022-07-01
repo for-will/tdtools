@@ -80,8 +80,6 @@ var MessageIdMap = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_MailListRs:                 (*GameMsg.MailInfoRes)(nil),
 	GameMsg.MsgId_C2C_MailDelete:                 (*GameMsg.MailDeleteReq)(nil),
 	GameMsg.MsgId_S2C_MailDeleteRs:               (*GameMsg.MailDeleteRs)(nil),
-	GameMsg.MsgId_C2C_MailGetAward:               (*GameMsg.MailGetAwardReq)(nil),
-	GameMsg.MsgId_S2C_MailGetAwardRs:             (*GameMsg.MailGetAwardRs)(nil),
 	GameMsg.MsgId_C2C_RankList:                   (*GameMsg.RankListReq)(nil),
 	GameMsg.MsgId_S2C_RankListRs:                 (*GameMsg.RankListRes)(nil),
 	GameMsg.MsgId_C2S_LootMissionList:            (*GameMsg.LootMissionList)(nil),
@@ -193,4 +191,9 @@ var MessageIdMap = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_S2C_PlayerTaskSync:             (*GameMsg.PlayerTaskSync)(nil),
 	GameMsg.MsgId_C2S_PlayerTaskRewardReq:        (*GameMsg.PlayerTaskRewardReq)(nil),
 	GameMsg.MsgId_S2C_PlayerTaskRewardRs:         (*GameMsg.PlayerTaskRewardRs)(nil),
+	GameMsg.MsgId_C2S_ActivityListReq:            (*GameMsg.ActivityListReq)(nil),
+	GameMsg.MsgId_S2C_ActivityListRs:             (*GameMsg.ActivityListRs)(nil),
+	GameMsg.MsgId_C2S_ActivityRewardReq:          (*GameMsg.ActivityRewardReq)(nil),
+	GameMsg.MsgId_S2C_ActivityRewardRs:           (*GameMsg.ActivityRewardRs)(nil),
+	GameMsg.MsgId_S2C_ActivityTaskSync:           (*GameMsg.ActivityTaskSync)(nil),
 }

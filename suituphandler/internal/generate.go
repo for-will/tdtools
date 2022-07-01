@@ -338,7 +338,6 @@ var SpecialMsgId = map[GameMsg.MsgId]interface{}{
 	GameMsg.MsgId_C2C_MailList:          &GameMsg.MailInfoReq{},
 	GameMsg.MsgId_S2C_MailListRs:        &GameMsg.MailInfoRes{},
 	GameMsg.MsgId_C2C_MailDelete:        &GameMsg.MailDeleteReq{},
-	GameMsg.MsgId_C2C_MailGetAward:      &GameMsg.MailGetAwardReq{},
 	GameMsg.MsgId_C2C_RankList:          &GameMsg.RankListReq{},
 	GameMsg.MsgId_S2C_RankListRs:        &GameMsg.RankListRes{},
 	GameMsg.MsgId_C2C_MailGetDesc:       &GameMsg.MailGetDescReq{},

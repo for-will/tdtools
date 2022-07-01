@@ -17,7 +17,8 @@ func Test_OsCmd(t *testing.T) {
 		//"-lc", "'pwd;date;sleep 100;'",
 	)
 
-	t.Log(cmd.Output())
+	cmd.Run()
+	//t.Log(cmd.Output())
 
 	//if err := cmd.Run(); err != nil {
 	//	t.Fatal(err)

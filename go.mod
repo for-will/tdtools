@@ -7,6 +7,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/json-iterator/go v1.1.11
 	github.com/myPuffer/gotosql v0.1.0
+	go.mongodb.org/mongo-driver v1.9.1 // indirect
 	go.uber.org/zap v1.17.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	golang.org/x/tools v0.1.8

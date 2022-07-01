@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"market/GameMsg"
@@ -28,7 +27,7 @@ type LootMission struct {
 
 var LootMissionCfg []*LootMission
 
-func LoadConfig() {
+func LoadConfig() []*LootMission {
 
 	jsoniter.RegisterTypeEncoderFunc("GameMsg.TASK_CONDITION", func(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 		stream.WriteString((*GameMsg.TASK_CONDITION)(ptr).String())
@@ -45,7 +44,7 @@ func LoadConfig() {
 		}
 	})
 
-	b, err := ioutil.ReadFile("bin/LootMissionsCfg.json")
+	b, err := ioutil.ReadFile("../bin/LootMissionsCfg.json")
 	if err != nil {
 		panic(err)
 	}
@@ -54,6 +53,7 @@ func LoadConfig() {
 		panic(err)
 	}
 
-	s, _ := jsoniter.MarshalIndent(LootMissionCfg, "", "    ")
-	fmt.Printf("%+v", string(s))
+	//s, _ := jsoniter.MarshalIndent(LootMissionCfg, "", "    ")
+	//fmt.Printf("%+v", string(s))
+	return LootMissionCfg
 }
