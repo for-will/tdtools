@@ -4,6 +4,7 @@ import (
 	"context"
 	jsoniter "github.com/json-iterator/go"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"market/config"
 	"market/robot/client"
@@ -37,16 +38,73 @@ type PostInfo struct {
 	UpdatedAt time.Time `bson:"updated_at"`
 }
 
-func FIndOne() {
-	table := db.Database("td_game").Collection("mission_conf")
+type ObjectId = primitive.ObjectID
 
-	post := &PostInfo{}
-	err := table.FindOne(context.Background(), bson.D{{"id", 100110}}).Decode(&post)
+func NewOid(hex string) ObjectId {
+	oid, _ := primitive.ObjectIDFromHex(hex)
+	return oid
+}
+
+type FindMissionCond struct {
+	Oid       ObjectId `bson:"_id,omitempty"`
+	Id        int32    `bson:"id,omitempty"`
+	Type      int32    `bson:"type,omitempty"`
+	Condition int32    `bson:"condition,omitempty"`
+}
+
+func FindOne() {
+	table := db.Database("td").Collection("mission")
+
+	var data interface{}
+	err := table.FindOne(
+		context.Background(),
+		MdbCond(FindMissionCond{
+			//Oid:  NewOid("62beb74af43c378725e82674"),
+			//Id:   100120,
+			//Type: 1,
+			Condition: 8,
+		}),
+	).Decode(&data)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("%+v", post)
-	log.Printf("%+v", post.UpdatedAt)
+
+	js, err := bson.MarshalExtJSON(data, false, false)
+	log.Println(string(js), err)
+
+	kvs := data.(bson.D).Map()
+	log.Printf("%+v", kvs["_id"].(primitive.ObjectID).Hex())
+	//log.Println(client.JsonString(kvs))
+	//log.Printf("%+v", post.UpdatedAt)
+}
+
+func FindMany() {
+	table := db.Database("td").Collection("mission")
+
+	cur, err := table.Find(
+		context.Background(),
+		MdbCond(FindMissionCond{
+			//Oid:  NewOid("62beb74af43c378725e82674"),
+			//Id:   100120,
+			Condition: 6,
+		}),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	for cur.Next(context.Background()) {
+		var data interface{}
+		cur.Decode(&data)
+		js, err := bson.MarshalExtJSON(data, false, false)
+
+		kvs := data.(bson.D).Map()
+		oid := kvs["_id"].(primitive.ObjectID).Hex()
+		log.Println(oid, string(js), err)
+	}
+
+	//log.Println(client.JsonString(kvs))
+	//log.Printf("%+v", post.UpdatedAt)
 }
 
 type MdbFilterBson struct {
@@ -132,19 +190,9 @@ func InsertOne() {
 	collections := db.Database("td").Collection("mission")
 
 	for _, mission := range missions {
-		js := client.JsonString(mission)
-		var v interface{}
-		if err := jsoniter.UnmarshalFromString(js, &v); err != nil {
-			log.Fatal(err)
-		}
-		data, err := bson.Marshal(v)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		result, err := collections.InsertOne(
 			context.Background(),
-			data,
+			MakeDocument(mission),
 		)
 		if err != nil {
 			log.Fatal(err)

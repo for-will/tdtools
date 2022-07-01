@@ -3,7 +3,7 @@ package nosql
 import "testing"
 
 func TestFIndOne(t *testing.T) {
-	FIndOne()
+	FindOne()
 }
 
 func TestUpsert(t *testing.T) {
@@ -16,4 +16,8 @@ func TestUpsertInterface(t *testing.T) {
 
 func TestInsertMany(t *testing.T) {
 	InsertMany()
+}
+
+func TestFindMany(t *testing.T) {
+	FindMany()
 }
