@@ -107,6 +107,10 @@ func genMarshallerFunc(typ *StructDecl) string {
 			val = val + ".String()"
 		}
 
+		if addType == "StringArray" {
+			addType = "Array"
+		}
+
 		if empty, ok := omitempty[k]; ok {
 			sb.WriteString(fmt.Sprintf("if obj.%s != %s{\n", f.Name, empty))
 			sb.WriteString(
@@ -192,19 +196,37 @@ func loadPackage() *packages.Package {
 func extractStructFields(fl *ast.FieldList) []*StructFieldDecl {
 	var fields []*StructFieldDecl
 	for _, field := range fl.List {
-		typ, ok := field.Type.(*ast.Ident)
-		if !ok {
-			continue
-		}
-		typeName := typ.Name
 
-		for _, name := range field.Names {
-			fields = append(fields, &StructFieldDecl{
-				Name:    name.Name,
-				Type:    typeName,
-				JsonTag: extractJsonTag(field.Tag.Value),
-			})
+		switch field.Type.(type) {
+		case *ast.Ident:
+			typ := field.Type.(*ast.Ident)
+			typeName := typ.Name
+
+			for _, name := range field.Names {
+				fields = append(fields, &StructFieldDecl{
+					Name:    name.Name,
+					Type:    typeName,
+					JsonTag: extractJsonTag(field.Tag.Value),
+				})
+			}
+
+		case *ast.InterfaceType:
+			//typ := field.Type.(*ast.InterfaceType)
+			//typeName := "Reflected"
+
+			for _, name := range field.Names {
+				fields = append(fields, &StructFieldDecl{
+					Name:    name.Name,
+					Type:    "Reflected",
+					JsonTag: extractJsonTag(field.Tag.Value),
+				})
+			}
+
+		default:
+			log.Printf("%#v", field.Type)
+			log.Println(field.Names)
 		}
+
 	}
 	return fields
 }
