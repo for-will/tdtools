@@ -201,6 +201,41 @@ func InsertOne() {
 	}
 }
 
+func UniqueInsert(userId string, invitedBy string) {
+
+	col := db.Database("patt").Collection("invite")
+
+	type Invite struct {
+		UserId    string `bson:"user_id,omitempty"`
+		InvitedBy string `bson:"invited_by,omitempty"`
+	}
+
+	upd := Invite{
+		UserId: userId,
+	}
+	result, err := col.UpdateOne(
+		context.Background(),
+		MdbCond(upd),
+		MdbUpdate().Set(upd),
+		options.Update().SetUpsert(true),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%+v", result)
+	if result.UpsertedCount > 0 {
+		col.UpdateOne(
+			context.Background(),
+			MdbCond(upd),
+			MdbUpdate().Set(Invite{
+				UserId:    userId,
+				InvitedBy: invitedBy,
+			}),
+			options.Update().SetUpsert(false),
+		)
+	}
+}
+
 func InsertMany() {
 
 	var rows []interface{}

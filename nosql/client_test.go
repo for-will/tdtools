@@ -1,6 +1,9 @@
 package nosql
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestFIndOne(t *testing.T) {
 	FindOne()
@@ -20,4 +23,12 @@ func TestInsertMany(t *testing.T) {
 
 func TestFindMany(t *testing.T) {
 	FindMany()
+}
+
+func TestUpsert1(t *testing.T) {
+	for i := 10; i < 20; i++ {
+		userId := fmt.Sprintf("%v", i+10000)
+		UniqueInsert(userId, "120000")
+		UniqueInsert(userId, "110000")
+	}
 }
