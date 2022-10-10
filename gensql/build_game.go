@@ -17,18 +17,20 @@ type GameSql struct {
 }
 
 const (
-	GameDbDir                = "D:/work/P/Server/LeafServer/src/server/db/"
-	LootMissionGoFileName    = "lootmission.go"
-	SeasonTaskGoFileName     = "season_task.go"
-	SeasonPlayerGoFileName   = "season_player.go"
-	SeasonRewardGoFileName   = "season_reward.go"
-	SignInGoFileName         = "signin.go"
-	EquipGoFileName          = "equip.go"
-	TowerGoFileName          = "tower.go"
-	PlayerScheduleGoFileName = "player_schedule.go"
-	PlayerTaskGoFileName     = "player_task.go"
-	PlayerTaskTestGoFileName = "player_task_test.go"
-	ActivityTaskGoFileName   = "activity_task.go"
+	GameDbDir                  = "D:/work/P/Server/LeafServer/src/server/db/"
+	LootMissionGoFileName      = "lootmission.go"
+	SeasonTaskGoFileName       = "season_task.go"
+	SeasonPlayerGoFileName     = "season_player.go"
+	SeasonRewardGoFileName     = "season_reward.go"
+	SignInGoFileName           = "signin.go"
+	EquipGoFileName            = "equip.go"
+	TowerGoFileName            = "tower.go"
+	PlayerScheduleGoFileName   = "player_schedule.go"
+	PlayerTaskGoFileName       = "player_task.go"
+	PlayerTaskTestGoFileName   = "player_task_test.go"
+	ActivityTaskGoFileName     = "activity_task.go"
+	PlayerStoreGoFileName      = "player_store.go"
+	PlayerStoreGoodsGoFileName = "player_store_goods.go"
 )
 
 type FileSyntax struct {
@@ -167,6 +169,10 @@ func (g *GameSql) BuildSeasonTask() {
 
 func (g GameSql) BuildSeasonReward() {
 	g.Init("SeasonReward", GameDbDir, SeasonRewardGoFileName)
+
+	g.GenerateMethod("NewTblSeasonReward", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
 
 	g.GenerateMethod("LoadSeasonReward", func(model *Model, MethodName string) string {
 		return model.DbSelect().Where("PlayerSn").
@@ -351,5 +357,59 @@ func (g GameSql) BuildActivityTask() {
 
 	g.GenerateMethod("DeletePlayerActivityTask", func(model *Model, MethodName string) string {
 		return model.Where("PlayerSn=?", "ActivityId=?").GenDeleteFunc(MethodName)
+	})
+
+	g.GenerateMethod("UpdateActivityTaskStart", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Status", "StartAt")
+	})
+}
+
+func (g GameSql) BuildPlayerStore() {
+	g.Init("PlayerStore", GameDbDir, PlayerStoreGoFileName)
+
+	g.GenerateMethod("NewTblPlayerStore", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
+	g.GenerateMethod("GetPlayerStores", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").
+			GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("CreatePlayerStore", func(model *Model, MethodName string) string {
+		return model.GenCreateFunc()
+	})
+
+	g.GenerateMethod("UpdatePlayerStore", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Refreshed", "NextFreshTime")
+	})
+}
+
+func (g GameSql) BuildPlayerStoreGoods() {
+	g.Init("PlayerStoreGoods", GameDbDir, PlayerStoreGoodsGoFileName)
+
+	g.GenerateMethod("NewTblPlayerStoreGoods", func(model *Model, MethodName string) string {
+		return model.GenNewTblFunc()
+	})
+
+	g.GenerateMethod("GetPlayerStoreGoods", func(model *Model, MethodName string) string {
+		return model.DbSelect().Where("PlayerSn").
+			GenFixedQueryFunc(MethodName)
+	})
+
+	g.GenerateMethod("BatchInsertPlayerStoreGoods", func(model *Model, MethodName string) string {
+		return model.GenBatchInsertFunc()
+	})
+
+	g.GenerateMethod("CreatePlayerStoreGoods", func(model *Model, MethodName string) string {
+		return model.GenCreateFunc()
+	})
+
+	g.GenerateMethod("UpdatePlayerStoreGoods", func(model *Model, MethodName string) string {
+		return model.GenUpdateFunc(MethodName, "Purchased")
+	})
+
+	g.GenerateMethod("DeletePlayerStoreGoods", func(model *Model, MethodName string) string {
+		return model.Where("PlayerSn=?", "StoreId=?").GenDeleteFunc(MethodName)
 	})
 }

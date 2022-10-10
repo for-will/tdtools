@@ -27,6 +27,7 @@ enum ReturnCode {
 	AccountBanLogin                = 40;  // 账号被封停
 	AccountBanChat                 = 41;  // 账号被禁言
 	AccountBanRank                 = 42;  // 账号被禁止排行榜
+	AccountKickOut                 = 43;  // 账号被GM踢下线
 
 	EnterStage_Forbid              = 100; // 不能进该关卡
 
@@ -164,10 +165,18 @@ enum ReturnCode {
 	PlotChapterUnlock              = 252; // 章奖励未解锁
 	PlotChapterRewarded            = 253; // 章奖励已领过
 
+	// 图鉴
+	PokedexRewarded                = 255; // 图鉴奖励已领过
+	PokedexNoHero                  = 256; // 英雄图鉴未激活
+
 	// 防御塔
 	TowerInvalidSn                 = 260; // 无效SN
 	TowerLvMax                     = 261; // 等级上限
 	TowerUpgradeAssetsUnmet        = 262; // 材料不足
+
+	StageDiffRewarded              = 263; //关卡难度奖励已领过
+	StageDiffRewardValueError      = 264; //该难度未有奖励
+	StageDiffNotPass               = 265; //该关卡难度未通关
 }
 
 // 装备属性
@@ -221,6 +230,7 @@ message DeviceInfo {
 	string SAuthLoginType = 28;
 	string Isp            = 29;
 	string Network        = 30;
+	string FirstUdid      = 31; //
 }
 
 message AccountCheck {
@@ -245,6 +255,7 @@ message SdkLoginRs {
 	string     UnisdkLoginJson = 4;
 	string     LoginSessionId  = 5; // 游戏服务器返回的LoginSessionId，用于断线重连
 	int32      Aid             = 6;
+	string     UserName        = 7;
 }
 
 // 断线重连
@@ -295,8 +306,9 @@ message SyncTeam {
 }
 
 message StageItem {
-	int32 StageId = 1; // 己完成的关卡
-	int32 Diff    = 2; // 己完成的难度
+	int32          StageId    = 1; // 己完成的关卡
+	int32          Diff       = 2; // 己完成的难度
+	repeated int32 DiffReward = 3; //难度奖励
 }
 
 message StageReward {
@@ -311,17 +323,18 @@ message SyncStage {
 }
 
 message SyncShip {
-	int32 MaxHp              = 1;  // 初始基地生命值
-	int32 BattlePoint        = 2;  // 初始矿石资源值
-	int32 WavePoint          = 3;  // 波次奖励矿石资源值
-	int32 BuildPoint         = 4;  // 初始建筑能量值
-	int32 SkillInitialEnergy = 5;  // 英雄初始能量
-	int32 SkillChargeRate    = 6;  // 技能充能速率（点/秒）
-	int32 SkillConsumeEnergy = 7;  // 一次技能消耗的能量
-	int32 HeroCostRate       = 8;  // 英雄上场费用参数
-	int32 MaxPackItemNum     = 9;  // 一个背包格子的上限
-	int32 MaxPackGridNum     = 10; // 背包格子数的上限
-	int32 MailMax            = 11; // 邮件数量上限
+	int32          MaxHp               = 1;  // 初始基地生命值
+	int32          BattlePoint         = 2;  // 初始矿石资源值
+	int32          WavePoint           = 3;  // 波次奖励矿石资源值
+	int32          BuildPoint          = 4;  // 初始建筑能量值
+	int32          SkillInitialEnergy  = 5;  // 英雄初始能量
+	int32          SkillChargeRate     = 6;  // 技能充能速率（点/秒）
+	int32          SkillConsumeEnergy  = 7;  // 一次技能消耗的能量
+	int32          HeroCostRate        = 8;  // 英雄上场费用参数
+	int32          MaxPackItemNum      = 9;  // 一个背包格子的上限
+	int32          MaxPackGridNum      = 10; // 背包格子数的上限
+	int32          MailMax             = 11; // 邮件数量上限
+	repeated int32 MaterialBattlePoint = 12; // 副本初始矿石资源值
 }
 
 message Item {
@@ -363,6 +376,8 @@ message SyncPlayer {
 	repeated EquipInfo EquipList  = 9;   // 装备列表
 	int32              LogintTime = 10;  // 登录时间 秒
 	int32              ReportTime = 11;  // 上次举报的时间 秒
+	int32              ShowCard   = 12;  // 首页展示的英雄Sn
+	string             Guide      = 13;  // 新手引导进度
 
 	// 客户端使用
 	int32              Version    = 100;
@@ -386,23 +401,31 @@ message EnterStageRs {
 	int32      TeamSn     = 3;
 }
 
+message EnemyStat {
+	int32 UnitId  = 1; // 敌方UnitId
+	int32 DeadNum = 2; // 被击杀数量
+}
+
 message OverStage {
 
-	int32          StageId   = 1;
-	bool           IsWin     = 2;
-	//optional int32 StarNum = 3;
-	int32          Param     = 4;
-	int32          KillNum   = 5;
-	repeated int32 EnemyList = 6; // 怪物列表
-	repeated int32 EnemyNum  = 7; // 击杀怪物数量
-	int32          Diff      = 8; //难度
+	int32              StageId   = 1;
+	bool               IsWin     = 2;
+	//optional int32 StarNum     = 3;
+	int32              Param     = 4;
+	int32              KillNum   = 5;
+	repeated int32     EnemyList = 6;  // 怪物列表
+	repeated int32     EnemyNum  = 7;  // 击杀怪物数量
+	int32              Diff      = 8;  // 难度
+	repeated EnemyStat EnemyStat = 9;  // 敌方战场统计数据
+	int32              CurWave   = 10; // 当前波次
+	int32              AliveTime = 11; // 生存时间
 }
 
 message OverStageRs {
 	ReturnCode         ReturnCode  = 1;
 	int32              StageId     = 2;
 	bool               IsWin       = 3;
-	int32              Param       = 4;
+	int32              Diff        = 4;
 	int32              LvOld       = 5;  // 旧等级
 	int32              ExpOld      = 6;
 	int32              ExpAdd      = 7;  // 经验
@@ -434,6 +457,19 @@ message GetRewardStageRs {
 	int32              Diamond     = 9;  // 奖励钻石
 	repeated Item      Items       = 10; // 奖励道具
 	repeated EquipInfo CrystalList = 11; // 奖励装备
+}
+
+// 领取关卡难度奖励
+message GetDiffRewardStage {
+	int32 Id   = 1;
+	int32 Diff = 2;
+}
+
+message GetDiffRewardStageRs {
+	ReturnCode         ReturnCode  = 1;
+	StageItem          StageInfo   = 2;
+	repeated Item      Items       = 3; // 奖励道具
+	repeated EquipInfo CrystalList = 4; // 奖励装备
 }
 
 message ChangeTeam {
@@ -1121,12 +1157,13 @@ message MailEnclosure {
 	int32 EnclosureType = 1;
 	int32 EnclosureID   = 2;
 	int32 EnclosureNum  = 3;
+	int32 Quality       = 4;
 }
 
 //  邮件头
 message MailHead {
 	uint32                 MailID            = 1;
-	int32                  MailState         = 2;  //邮件状态 0：已领取 1：未领取
+	int32                  MailState         = 2;  //邮件状态 0：已领取 1：未领取 2：已读未领取
 	int32                  TitleFlag         = 3;  //0: MailTitle; 1: TitleID(后端从MailTemplateConfig.json读取TitleID)
 	string                 MailTitle         = 4;
 	int32                  TitleID           = 5;
@@ -1200,9 +1237,12 @@ message C2S_MailGetAwardReq {
 }
 
 message S2C_MailGetAwardRsp {
-	ReturnCode ReturnCode = 1;
-	uint32     MailID     = 2;
-	int32      MailState  = 3;
+	ReturnCode         ReturnCode  = 1;
+	uint32             MailID      = 2;
+	int32              MailState   = 3;
+	repeated Item      Items       = 4; // 奖励道具
+	repeated EquipInfo CrystalList = 5; // 奖励装备
+	repeated SyncCard  Cards       = 6; // 奖励英雄
 }
 
 //  一键领取全部邮件
@@ -1266,14 +1306,14 @@ message StoreInfoReq {
 }
 
 message StoreFreshTimeInfo {
-	int32 StoreID       = 1;
-	int32 NextFreshTime = 2;
+	int32                   StoreID       = 1;
+	int32                   NextFreshTime = 2;
+	repeated StoreGoodsInfo Goods         = 3;
 }
 
 message StoreInfoRs {
 	ReturnCode                  ReturnCode = 1;
-	repeated StoreGoodsInfo     GoodsList  = 2;
-	repeated StoreFreshTimeInfo Stores     = 3;
+	repeated StoreFreshTimeInfo Stores     = 2;
 }
 
 // 游戏内购买
@@ -1285,6 +1325,16 @@ message StorePurchaseReq {
 message StorePurchaseRs {
 	ReturnCode     ReturnCode = 1;
 	StoreGoodsInfo GoodsInfo  = 2;
+}
+
+// 手动刷新商店
+message RefreshStoreReq {
+	int32 ShopTabId = 1;
+}
+
+message RefreshStoreRs {
+	ReturnCode         ReturnCode = 1;
+	StoreFreshTimeInfo Store      = 2;
 }
 
 // 开服七日活动
@@ -1541,6 +1591,12 @@ message HeroPhaseUpRs {
 	int32      PhaseId    = 3; // 军衔id:PhaseUpCfg中的id
 }
 
+// 英雄战力
+message HeroFight {
+	int32 HeroSn = 1;
+	int32 Fight  = 2;
+}
+
 // 卡池信息
 message CardPoolInfoReq {
 }
@@ -1551,8 +1607,10 @@ message CardPoolRefreshTimeInfo {
 }
 
 message CardPoolInfoRs {
-	ReturnCode                       ReturnCode = 1;
-	repeated CardPoolRefreshTimeInfo CardPools  = 2;
+	ReturnCode                       ReturnCode        = 1;
+	repeated CardPoolRefreshTimeInfo CardPools         = 2;
+	int32                            RandCardNotSSRCnt = 3; // 抽卡结果连续不为SSR的次数
+	int32                            RandCardRCnt      = 4; // 抽卡结果连续R的次数
 }
 
 // 抽卡
@@ -1563,10 +1621,12 @@ message RandCardReq {
 
 // 抽卡
 message RandCardRs {
-	ReturnCode        ReturnCode = 1;
-	repeated SyncCard Cards      = 2; // 英雄
-	repeated Item     Items      = 3; // 道具
-	repeated int32    CardIds    = 4; // 英雄ID列表
+	ReturnCode        ReturnCode        = 1;
+	repeated SyncCard Cards             = 2; // 英雄
+	repeated Item     Items             = 3; // 道具
+	repeated int32    CardIds           = 4; // 英雄ID列表
+	int32             RandCardNotSSRCnt = 5; // 抽卡结果连续不为SSR的次数
+	int32             RandCardRCnt      = 6; // 抽卡结果连续R的次数
 }
 
 // 剧情章节
@@ -1671,10 +1731,11 @@ message PlayerTaskRewardRs {
 
 // 活动任务信息
 message ActivityTask {
-	int32      Sn       = 1;
-	int32      TaskId   = 2;
-	int32      Progress = 3;
-	TaskStatus Status   = 4;
+	int32      Sn         = 1;
+	int32      ActivityId = 2;
+	int32      TaskId     = 3;
+	int32      Progress   = 4;
+	TaskStatus Status     = 5;
 }
 
 message ActivityInfo {
@@ -1709,4 +1770,67 @@ message ActivityRewardRs {
 	repeated EquipInfo    Equips     = 3;
 	repeated SyncCard     Cards      = 4;
 	repeated ActivityTask Task       = 5;
+}
+
+// 玩家升级
+message PlayerLvUpRs {
+	int32 LvOld        = 1; // 旧等级
+	int32 LvNew        = 2; // 新等级
+	int32 MaxStrength  = 3; // 体力上限
+	int32 SendStrength = 4; // 赠送体力
+}
+
+// 保存首页展示的英雄
+message SaveShowCardReq {
+	int32 CardSn = 1;
+}
+
+message SaveShowCardRs {
+	ReturnCode ReturnCode = 1;
+	int32      CardSn     = 2;
+}
+
+// 图鉴信息
+message PokedexInfoReq {
+}
+
+message PokedexInfoRs {
+	ReturnCode     ReturnCode = 1;
+	repeated int32 Rewards    = 2; // 已领取的图鉴奖励
+}
+
+// 图鉴奖励
+message PokedexRewardReq {
+	int32 Id = 1;
+}
+
+message PokedexRewardRs {
+	ReturnCode         ReturnCode = 1;
+	repeated Item      Items      = 2; // 奖励道具
+	repeated EquipInfo EquipList  = 3; // 奖励装备
+	repeated SyncCard  Cards      = 4; // 英雄
+}
+
+// 退出关卡
+message QuitStage {
+	int32 StageId = 1;
+}
+
+// 新邮件提示
+message NewMailRs {
+	ReturnCode ReturnCode = 1;
+}
+
+// 系统提示消息
+message MessageTipsRs {
+	ReturnCode ReturnCode = 1;
+}
+
+// 保存新手引导进度
+message SaveGuide {
+	string Guide = 1; // 新手引导进度
+}
+
+message SaveGuideRs {
+	ReturnCode ReturnCode = 1;
 }

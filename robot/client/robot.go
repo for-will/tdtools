@@ -248,7 +248,7 @@ func (r *Robot) StoreInfoReq() {
 
 func (r *Robot) StorePurchaseReq() {
 	r.SendMsg(&GameMsg.StorePurchaseReq{
-		Id:  5,
+		Id:  3,
 		Cnt: 1,
 	})
 }
@@ -367,6 +367,37 @@ func (r *Robot) DeleteEquip(sn int32) {
 func (r *Robot) UpgradeTowerReq() {
 	req := &GameMsg.UpgradeTowerReq{
 		TowerSn: 3,
+	}
+
+	r.SendMsg(req)
+}
+
+func (r *Robot) MailGetAllAwardReq() {
+	req := &GameMsg.MailGetAllAwardReq{}
+
+	r.SendMsg(req)
+}
+
+func (r *Robot) ActivityRewardReq() {
+	req := &GameMsg.ActivityRewardReq{
+		TasksSn: []int32{1588},
+	}
+
+	r.SendMsg(req)
+}
+
+func (r *Robot) ActivityListReq() {
+	<-time.After(3 * time.Second)
+	req := &GameMsg.ActivityListReq{}
+
+	r.SendMsg(req)
+}
+
+func (r *Robot) RandCardReq() {
+	<-time.After(1 * time.Second)
+	req := &GameMsg.RandCardReq{
+		PoolID: 1,
+		Times:  GameMsg.ExploreTimes_Ten,
 	}
 
 	r.SendMsg(req)

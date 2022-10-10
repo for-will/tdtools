@@ -88,6 +88,9 @@ func extractStructFields(fl *ast.FieldList) []*ModelField {
 		}
 
 		for _, name := range field.Names {
+			if extractTag(field.Tag).Get("db") == "-" {
+				continue
+			}
 			fields = append(fields, &ModelField{
 				Name: name.Name,
 				Type: typeName,

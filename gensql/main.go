@@ -19,6 +19,8 @@ func main() {
 	game.BuildPlayerTask()
 	game.BuildTaskInfo()
 	game.BuildActivityTask()
+	game.BuildPlayerStore()
+	game.BuildPlayerStoreGoods()
 }
 
 func init() {

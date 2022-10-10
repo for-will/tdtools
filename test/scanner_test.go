@@ -30,3 +30,24 @@ func TestScanner(t *testing.T) {
 	}
 	w.Flush()
 }
+
+func TestCap(t *testing.T) {
+	var l1 []int32
+	for i := 0; i < 10; i++ {
+		l1 = append(l1, int32(i))
+	}
+
+	t.Log(len(l1), cap(l1))
+
+	l2 := l1[5:]
+	l2 = append(l2, 200)
+	l1 = append(l1, 100)
+	var l3 []int32
+	l3 = append(l3, l1...)
+	copy(l3, l2)
+
+	//t.Log(cap(l2), len(l2))
+	t.Log(l1)
+	t.Log(l2)
+	t.Log(l3)
+}

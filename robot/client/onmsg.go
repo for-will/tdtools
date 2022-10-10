@@ -136,7 +136,7 @@ func OnRobotAutoOverStage(r *Robot, msg *GameMsg.OverStageRs) {
 }
 
 func OnShowWebViewRs(r *Robot, msg *GameMsg.ShowWebViewRs) {
-	r.HeartBeat()
+	//r.HeartBeat()
 }
 
 func OnSyncHeroValidTalentPage(r *Robot, msg *GameMsg.SyncHeroValidTalentPage) {
@@ -162,6 +162,7 @@ func OnHeartBeatRs(r *Robot, msg *GameMsg.HeartBeatRs) {
 }
 
 func OnLoginComplete(r *Robot) {
+	<-time.After(2 * time.Second)
 	//r.QuestionnaireReq()
 	//r.RewardLootMission()
 	//r.OverStage()
@@ -183,5 +184,10 @@ func OnLoginComplete(r *Robot) {
 	//r.SeasonReq()
 	//r.ReportReq()
 	//r.EquipLvUpReq()
-	r.UpgradeTowerReq()
+	//r.UpgradeTowerReq()
+	//r.ActivityListReq()
+	//r.ActivityRewardReq()
+	//r.RandCardReq()
+	//r.MailGetAllAwardReq()
+	r.StorePurchaseReq()
 }

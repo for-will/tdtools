@@ -87,7 +87,7 @@ func genMarshallerFunc(typ *StructDecl) string {
 	)
 
 	var omitempty = map[string]string{
-		"old_accountid": `""`,
+		//"old_accountid": `""`,
 		"axis":          `""`,
 		"offline_money": `""`,
 		"offline_exp":   `""`,
@@ -253,6 +253,7 @@ var getterMethodsName = map[string]string{
 	"os_ver":           "GetOsVer",
 	"mac_addr":         "GetMacAddr",
 	"udid":             "GetUDId",
+	"first_udid":       "GetFirstUDId",
 	"app_channel":      "GetAppChannel",
 	"app_ver":          "GetAppVer",
 	"server":           "GetServer",

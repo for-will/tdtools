@@ -286,4 +286,41 @@ enum MsgId {
 	C2S_ActivityRewardReq          = 190; // 领取活动奖励
 	S2C_ActivityRewardRs           = 191;
 	S2C_ActivityTaskSync           = 192; // 任务进度更新
+
+	// 英雄战力
+	S2C_HeroFightRs                = 193;
+
+	// 玩家升级
+	S2C_PlayerLvUpRs               = 194;
+
+	// 保存首页展示的英雄
+	C2S_SaveShowCardReq            = 195;
+	S2C_SaveShowCardRs             = 196;
+
+	// 图鉴
+	C2S_PokedexInfoReq             = 197; // 图鉴信息
+	S2C_PokedexInfoRs              = 198;
+	C2S_PokedexRewardReq           = 199; // 图鉴奖励
+	S2C_PokedexRewardRs            = 200;
+
+	// 退出关卡
+	C2S_QuitStage                  = 201;
+
+	// 新邮件提示
+	S2C_NewMail                    = 202;
+
+	//领取关卡难度奖励
+	C2S_GetDiffRewardStage         = 203;
+	S2C_GetDiffRewardStageRs       = 204;
+
+	//系统提示消息
+	S2C_MessageTipsRs              = 205;
+
+	//保存新手引导进度
+	C2S_SaveGuide                  = 206;
+	S2C_SaveGuideRs                = 207;
+
+	// 手动刷新商店
+	C2S_RefreshStoreReq            = 208;
+	S2C_RefreshStoreRs             = 209;
 }
